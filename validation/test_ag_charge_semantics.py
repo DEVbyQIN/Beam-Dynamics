@@ -41,9 +41,12 @@ from validation.backend import run_ag  # noqa: E402
 SECTION = "full"
 ZS = 777.0                        # sample plane [mm]
 
-# v0.13 no-SC AG baseline sample values (documented, deterministic ODE)
-AG_BASELINE_X = 1984.191          # µm
-AG_BASELINE_Z = 477.001           # µm
+# v0.13 no-SC AG baseline sample values (deterministic ODE)
+# v0.15 fix (AG longitudinal 1/γ² factor): σz 477.001 → 474.018 (aligned with
+# OCELOT 474.022, 0.0008%); σx unchanged 1984.191.  See
+# validation/reports/AG_longitudinal_fix_proposal.md
+AG_BASELINE_X = 1984.191          # µm (unchanged by the fix)
+AG_BASELINE_Z = 474.018           # µm (post-fix, was 477.001)
 
 
 def sample(r, key):

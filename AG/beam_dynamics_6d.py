@@ -274,11 +274,20 @@ class Beam6D:
 
     @property
     def theta_z(self) -> float:
-        """Longitudinal RMS divergence (dimensionless slope)."""
+        """Longitudinal RMS divergence (dimensionless slope).
+
+        v0.15 fix (approved 2026-08-16): the longitudinal particle slope is
+        Δz' = δ/γ² (relativistic kinematics; dβ/dδ = β/γ²), so the
+        emittance-derived divergence carries the 1/γ² factor:
+            Λz = εnz/(βγ³σz) = σδ/γ²   (uncorrelated case)
+        Previously the 1/γ² factor was missing (θz ≈ σδ), overestimating the
+        longitudinal expansion by ~γ² (×1.4 at 100 keV, ×116 at 5 MeV).
+        See validation/reports/AG_longitudinal_fix_proposal.md.
+        """
         p0 = self.p0
         if p0 < 1e-12 or self.sigma_z < 1e-15:
             return 0.0
-        eps_geo = self.eps_nz / p0
+        eps_geo = self.eps_nz / p0 / (self.gamma**2)   # εnz/(γ³β) = σδ/γ²
         return np.sqrt(eps_geo**2 / self.sigma_z**2 + self.nu_z**2)
 
     def state_vector(self) -> np.ndarray:

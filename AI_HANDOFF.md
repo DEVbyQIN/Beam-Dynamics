@@ -115,9 +115,10 @@ scripts/          sync_to_phone.py（iCloud 同步 + bundle + gpt_review 版本�
   （run_ocelot SC OFF，config seed 42，N=5e4，dz=0.001，full beamline）→ **`7790fd9c2a2b`**
   旧 `e041d6ae9fb7a0d2` 不再追踪：其输入对象/算法未记录，无法严格复现
 - 6 项全 PASS：config_schema（Level-1 一致性）、drift（σ_x 0.2%、σ_δ_p 语义 0.022%）、solenoid（0.40%）、rf（σ_δ_p <1%、kick 语义 6e-13）、full_beamline（七项量化：σ_x 0.60%、σ_y 0.36%、σ_δ_p 0.46%、ε_nx 0.53%、ε_ny 0.26%、σ_z 0.63%、σ_t 0.63%、腰 Δz=0.4mm）、gpt_route（样品面 <1%）
-- full_beamline 样品面参考值：AG σ_x=1984.191µm/σ_z=477.001µm（位级固定）；OCELOT σ_x=1996.205/σ_z=474.022（同 seed 位级，hash e041d6ae9fb7a0d2）
+- full_beamline 样品面参考值：AG σ_x=1984.191µm/σ_z=**474.018µm**（v0.15 纵向修复后重固化，原 477.001；与 OCELOT 474.022 差 0.0008%）；OCELOT σ_x=1996.205/σ_z=474.022（同 seed 位级，canonical hash 7790fd9c2a2b）
 - r56_convention：raw slope=−1.163624、闭合残差 2.11e-3、naive 0.826 —— 冻结不变
-- AG 数组位级不变；OCELOT 同 seed 位级可复现
+- AG 数组确定性位级可复现（σz baseline 于 2026-08-16 纵向修复后更新为 474.018）；OCELOT 同 seed 位级可复现
+- **AG 纵向修复（v0.15，2026-08-16）**：theta_z 补 1/γ² 相对论因子（Δz'=δ/γ²，Kelisani Eq.6 Λz=σδ/γ²）；修复前纵向膨胀高估 ~γ²（5 MeV 案例 σz 0.923mm vs 论文图 ~0.05mm）；修复后论文案例 σz=34.8µm（OCELOT 37µm）、项目 no-SC σz=474.018（OCELOT 474.022）；横向与 SC 公式未动；方案与推导见 `validation/reports/AG_longitudinal_fix_proposal.md`
 
 ## 14. 下一阶段 v0.14.1 明确任务（SC 正式 beamline 验证）
 1. **✅ 已完成（2026-08-12）**：manual counter vs OCELOT native scheduler 等价性证明。结论：非一般等价（T5–T7 差异），production 已迁移到 native `get_next_step()`（SC ON），SC OFF 位级不变；SC 覆盖修正为 cathode→sample。证据：`validation/test_sc_scheduler_equivalence.py`（T1–T7 + acceptance A–F 全 PASS）、run_all 6/6、r56 不变
