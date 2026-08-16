@@ -1010,3 +1010,53 @@
     F saved JSON sc_enabled == sc_effective
   - 回归: Task1 scheduler equivalence（A-F PASS）、Task2 charge semantics（PASS）、
     run_all 6/6、r56 不变
+
+## [drift] 2026-08-16 20:56
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699752, 'sigma_y_um': 0.6342565055448941, 'sigma_z_um': 1.8000933557025134, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=1.75% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-08-16 20:56
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [rf] 2026-08-16 20:57
+  RF standardized to thin-lens in BOTH backends (Option A):
+    longitudinal kick δ += K·sin(φ+kz), H=-9.779 m^-1, σ_δ AG=2.953e-3 vs OCELOT=2.939e-3 (PASS)
+    transverse RF kick K_trans=-2.680 m^-1 added to OCELOT; σ_x AG=1119 vs OCELOT=1122 um (PASS)
+    switch OFF vs ON: AG σ_x 1119->542 um, OCELOT 1122->537 um (both read physics_switches.rf_transverse_kick)
+    R56 adapter: kick semantic PASS, routing {'drift': 0, 'solenoid': 0, 'rf': 1, 'full': 1} PASS
+  RESOLVED: input δ-variable convention (B) fixed by the adapter; σ_z at sample agrees with AG (residual few-µm at the waist).
+
+## [full] 2026-08-16 20:57
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.46%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 477 vs OCELOT 474 um (0.63%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [v0.15-native-sc-baseline] 2026-08-16
+  native SC 基线 + 收敛固化 + AG vs OCELOT 四级比较（阶段 1-5）:
+  - 新增 validation/sc_native_diagnostics.py（生产入口 run_ocelot，0.5m drift 同 v0.14 口径）:
+    smoke @500fC: OFF 725.3/302.0 → ON 2436.1/1594.9（+236%/+428%，与 v0.14 manual 逐位一致——
+    T1 全覆盖场景等价性的数值确认）
+    charge 单调: 725→787→1004→1230→2436→3439 µm ✓
+    收敛: N ±0.3%（2444/2436/2439）、mesh ±0.6%（33³:2425/63³:2436/127³:2439）、
+    step≤5（step5:+1.5% step10:+7.5%）
+  - full beamline @100 fC native 基线（首次）: σx 1996.2→2557.3（+28%）、
+    σz 474.0→524.9（+11%）、σδ 2.94→4.69e-3（+60%）、εnx 0.080→0.129（+61%）
+  - 收敛参数固化: config 注释（N=5e4/mesh=63³/step≤5 + baseline 数值；仅注释，SHA 不变）
+  - AG vs OCELOT 四级比较（SC_AG_vs_OCELOT_comparison.md + 曲线图）:
+    方向/趋势一致；量级差异显著——横向 +84% vs +28%，纵向 σz +380% vs +11%
+    隔离实验（0.5m drift）: AG 纵向 SC 约为 OCELOT 2.5 倍（+1088% vs +428%），
+    AG σδ 在纯 drift 不变 → full beamline σδ +385% 为 RF chirp 反馈环
+    （SC→σz↑→chirp→σδ↑→R56→σz↑）；εnx 差异为模型能力（AG 0% vs OCELOT +61%）
+    **禁止调参拟合；纵向差异列 v0.15 第 2 轮（证据链核对）**
+  - 证据链初稿: reports/SC_physics_evidence_chain.md（Kelisani 2023/Luiten 2004/
+    van Oudheusden 2010 锚点，主项已锚定，括号项/α 表待论文全文核对）

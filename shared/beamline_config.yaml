@@ -31,6 +31,15 @@ space_charge:
   enabled: false             # SC off by default (enable for SC mode)
   mesh: [63, 63, 63]        # PIC mesh dimensions (GPT)
   step: 1                    # apply every step
+  # ── v0.15 hardened convergence parameters (see SC_native_baseline.md) ──
+  # N (macroparticles, beam.n_particles) = 5e4 → σx converged ±0.3%
+  #   (1e4: 2444.1 / 5e4: 2436.1 / 1e5: 2438.9 µm @500 fC, 0.5 m drift)
+  # mesh = 63³               → σx converged ±0.6%
+  #   (33³: 2424.9 / 63³: 2436.1 / 127³: 2438.9 µm — 127³ is 8× slower)
+  # SC step ≤ 5              → step=10 deviates +7.5% (step=5: +1.5%)
+  # Full-beamline native SC baseline @100 fC (production, dz=0.001):
+  #   σx 1996→2557 µm (+28%), σz 474→525 µm (+11%), σδ 2.94→4.69e-3 (+60%),
+  #   εnx 0.080→0.129 (+61%); coverage [0, 0.777] = cathode→sample.
 
 physics_switches:
   # RF thin-lens model switches — read identically by BOTH backends.

@@ -15,7 +15,7 @@
 
 ## 1. 当前阶段 / 下一阶段
 - 当前阶段：**v0.14.1 SC 正式 beamline 验证准备**——task 1（scheduler equivalence）已完成：manual counter 经 characterization 证明非一般等价（T5–T7），production 已迁移到 OCELOT native `get_next_step()` 调度（SC ON），SC OFF 位级不变；SC 覆盖修正为 cathode→sample（0→0.777m，stop anchor 来自 lattice.elements 的 sample marker）；**SC 数值仍未经正式 beamline 验证，未声称 fully validated**
-- 当前阶段：**v0.14.1 三个代码硬化任务全部完成**（scheduler equivalence / AG charge semantics / SC runtime state contract，见 §10/§11/§12/§14）；**待冻结 `v0.14.1-SC-integration-hardened`**；v0.15（native SC 数值验证、收敛固化、AG vs OCELOT SC 物理对比）未开始
+- 当前阶段：**v0.15（SC 正式 beamline 验证）阶段 1-5 进行中**——native SC 基线已建立（full beamline @100 fC：σx 1996→2557 +28%、σz 474→525 +11%）、收敛参数已固化（N=5e4/mesh=63³/step≤5，config 注释）、AG vs OCELOT 四级比较初稿完成（方向/趋势一致，纵向量级差 4-6 倍，禁止调参）、证据链审计初稿（Kelisani/Luiten/van Oudheusden 锚点）；v0.14.1 已冻结（标签 v0.14.1-SC-integration-hardened）
 - 长期目标：SC 验证完成后才有资格讨论 AG/OCELOT 的 SC 物理对比、GUI、优化
 - 禁止事项：修改 AG/OCELOT 核心、RF 方程、R56、lattice 几何、测试阈值、随机策略；未获批准不得实施 v0.14.1 task 2/3 或任何 SC 参数调整
 
@@ -123,8 +123,8 @@ scripts/          sync_to_phone.py（iCloud 同步 + bundle + gpt_review 版本�
 1. **✅ 已完成（2026-08-12）**：manual counter vs OCELOT native scheduler 等价性证明。结论：非一般等价（T5–T7 差异），production 已迁移到 native `get_next_step()`（SC ON），SC OFF 位级不变；SC 覆盖修正为 cathode→sample。证据：`validation/test_sc_scheduler_equivalence.py`（T1–T7 + acceptance A–F 全 PASS）、run_all 6/6、r56 不变
 2. **✅ 已完成（2026-08-12）**：AG charge semantics——`run_ag`/`run_shared` 注入 `Ne_phys = Q/e`（≈6.24e5）；SC OFF 位级不变（1984.191/477.001）；n_particles 不变性测试全 PASS（详见 CHECKPOINTS v0.14.1-ag-charge-semantics）
 3. **✅ 已完成（2026-08-12）**：SC 状态机（六态 + HARD FAIL，shared/sc_state.py）与双状态源统一（step=capability、config=requested、effective=apply_count>0）；测试 test_sc_runtime_state.py A-F 全 PASS
-4. 固化 SC 收敛参数：N=5e4、mesh=63³、SC step≤5（文档化到 config 注释与报告）——**属 v0.15**
-5. AG vs OCELOT SC 四级比较：方向（SC ON/OFF 一致）→ 趋势（charge 单调一致）→ 量级 → 定量解释；**禁止逐点强求一致**；ε 增长差异（AG 天然不增长 vs OCELOT PIC 投影增长）是模型能力差异，**不可调参消除**——**属 v0.15**
+4. **进行中（v0.15 阶段 2）**：固化 SC 收敛参数 N=5e4、mesh=63³、SC step≤5——已写入 config 注释与 SC_native_baseline.md（native 数据：N ±0.3%、mesh ±0.6%、step≤5）
+5. **进行中（v0.15 阶段 3）**：AG vs OCELOT SC 四级比较——方向/趋势一致；量级差异：横向 +84% vs +28%、纵向 σz +380% vs +11%（隔离实验显示 AG 纵向 SC 为 OCELOT ~2.5 倍；full beamline σδ 差异为 RF chirp 反馈环）；**禁止调参拟合**；ε 增长差异为模型能力。报告：SC_AG_vs_OCELOT_comparison.md + 曲线图
 7. **物理证据链审计（v0.15 新增，来源：GPT 审核意见 2026-08-16）**：为每个 AG SC 公式建立「公式 → 原始论文 → 代码实现行号 → 独立验证」证据链。已知外部锚点：Kelisani et al. 2023 PRA（6D envelope + Gaussian SC，f_b ∝ Ne）、Luiten et al. 2004 PRL（均匀椭球 SC，线性内部场）、van Oudheusden et al. 2010 PRL（95 keV/200 fC RF 压缩，UED 同量级基准）。目标：排除"测试全 PASS 但公式源于 AI 生成"的风险（测试只证明代码符合已规定行为，不证明规定本身正确）。验证方式：复现论文关键图 + 与 OCELOT PIC 独立对比
 6. 每步回归：no-SC 6 项 + r56 保持 PASS；SC ON 结果附完整 provenance（含 seed/mesh/step/N）
 - **禁止**：声称 SC fully validated；修改 AG/OCELOT 核心；调整测试阈值；进入 GUI；优化参数让两模型吻合
