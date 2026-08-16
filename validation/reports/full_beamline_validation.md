@@ -8,26 +8,26 @@ Date: 2026-08-01 · shared config · RF transverse kick OFF (`physics_switches`)
 |---|---|---|---|---|
 | sigma_x_um | 1984.191 | 1996.205 | 0.60 | PASS |
 | sigma_y_um | 1984.191 | 1991.415 | 0.36 | PASS |
-| sigma_delta_e3 | 2.953 | 2.939 | 0.46 | PASS |
+| sigma_delta_e3 | 2.939 | 2.939 | 0.00 | PASS |
 | eps_nx_mm_mrad | 0.080 | 0.080 | 0.53 | PASS |
 | eps_ny_mm_mrad | 0.080 | 0.080 | 0.26 | PASS |
-| sigma_z_um | 477.001 | 474.022 | 0.63 | PASS |
-| time_res_fs | 2902.307 | 2884.180 | 0.63 | PASS |
+| sigma_z_um | 474.018 | 474.022 | 0.00 | PASS |
+| time_res_fs | 2884.155 | 2884.180 | 0.00 | PASS |
 
 ## Passed transverse / RF-kick metrics
 
 - **sigma_x_um**: dev = 0.60% (threshold 5.0%) — PASS
 - **sigma_y_um**: dev = 0.36% (threshold 5.0%) — PASS
-- **sigma_delta_e3**: dev = 0.46% (threshold 2.0%) — PASS
+- **sigma_delta_e3**: dev = 0.00% (threshold 2.0%) — PASS
 - **eps_nx_mm_mrad**: dev = 0.53% (threshold 5.0%) — PASS
 - **eps_ny_mm_mrad**: dev = 0.26% (threshold 5.0%) — PASS
-- **sigma_z_um**: dev = 0.63% (threshold 5.0%) — PASS
-- **time_res_fs**: dev = 0.63% (threshold 5.0%) — PASS
+- **sigma_z_um**: dev = 0.00% (threshold 5.0%) — PASS
+- **time_res_fs**: dev = 0.00% (threshold 5.0%) — PASS
 
 ## Longitudinal (R56 adapter applied)
 
-- σ_z at sample: AG 477.0 µm vs OCELOT 474.0 µm (dev 0.63%, threshold 5%).
-- σ_t at sample: AG 2902.3 fs vs OCELOT 2884.2 fs (dev 0.63%).
+- σ_z at sample: AG 474.0 µm vs OCELOT 474.0 µm (dev 0.00%, threshold 5%).
+- σ_t at sample: AG 2884.2 fs vs OCELOT 2884.2 fs (dev 0.00%).
 - compression waist: AG z=546 mm vs OCELOT z=546 mm (Δz=0.4 mm).
 - The input δ-variable convention mismatch (classification B) was resolved by the OCELOT longitudinal adapter (p_oc = β0·δ_p input, δ_p = p_oc/β0 output); see `CHANGELOG_r56_variable_adapter.md` and `R56_convention_resolution.md`.
 
