@@ -100,15 +100,18 @@ def compute_all_alpha(kx: float, ky: float) -> dict:
         denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2) * (s**2 + 1.0)**3)
         return kx * ky * s / denom
 
-    # α_xx  (Eq.24)
+    # α_xx  (Eq.24)  — Kelisani 2023 Eq.24: 3k_x⁴s/(2√(...)⁵...)
+    # v0.15 P0-2 fix: paper has 1/2 in the denominator (PDF + LaTeX source
+    # verified); implemented as 1.5·k⁴·s/√(...).  Only affects the Gaussian
+    # O(1/γ) bracket terms (<0.01% on Fs); ellipsoid model does not use it.
     def f_axx(s, kx, ky):
         denom = np.sqrt((s**2 + kx**2)**5 * (s**2 + ky**2) * (s**2 + 1.0))
-        return 3.0 * kx**4 * s / denom
+        return 1.5 * kx**4 * s / denom
 
     # α_yy  (Eq.25)  — symmetric: α_yy(kx, ky) = α_xx(ky, kx)
     def f_ayy(s, kx, ky):
         denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2)**5 * (s**2 + 1.0))
-        return 3.0 * ky**4 * s / denom
+        return 1.5 * ky**4 * s / denom
 
     # α_zz  (Eq.26)
     def f_azz(s, kx, ky):
@@ -961,7 +964,12 @@ def envelope_ode(z: float, y: np.ndarray,
 
     gamma2_beta2 = gamma**2 * beta**2
     if gamma2_beta2 > 1e-15 and gamma > 1.0:
-        damping_coeff = gamma * gamma_prime / gamma2_beta2
+        # v0.15 P0-1 fix: Kelisani 2023 Eq.3 damping coefficient
+        #   D = γ₀γ'₀/(γ₀²p₀²) = γ'/(γ³β²)   (p₀ = γ₀β₀)
+        # Previously γγ'/(γ²β²) = γ'/(γβ²) — a factor γ² too large.
+        # Current beamline has γ' = 0 (no acceleration) → no-acceleration
+        # baseline bit-identical; the fix matters for future acceleration.
+        damping_coeff = gamma_prime / (gamma**3 * beta**2)
     else:
         damping_coeff = 0.0
 

@@ -119,6 +119,7 @@ scripts/          sync_to_phone.py（iCloud 同步 + bundle + gpt_review 版本�
 - r56_convention：raw slope=−1.163624、闭合残差 2.11e-3、naive 0.826 —— 冻结不变
 - AG 数组确定性位级可复现（σz baseline 于 2026-08-16 纵向修复后更新为 474.018）；OCELOT 同 seed 位级可复现
 - **AG 纵向修复（v0.15，2026-08-16）**：theta_z 补 1/γ² 相对论因子（Δz'=δ/γ²，Kelisani Eq.6 Λz=σδ/γ²）；修复前纵向膨胀高估 ~γ²（5 MeV 案例 σz 0.923mm vs 论文图 ~0.05mm）；修复后论文案例 σz=34.8µm（OCELOT 37µm）、项目 no-SC σz=474.018（OCELOT 474.022）；横向与 SC 公式未动；方案与推导见 `validation/reports/AG_longitudinal_fix_proposal.md`
+- **P0-1/P0-2 RESOLVED（v0.15，2026-08-16）**：Eq.3 阻尼系数 γ'/(γ³β²)（旧 γ'/(γβ²) 差 γ²，仅加速路径；当前 γ'=0 baseline 位级不变）；αxx/αyy 补 1/2（Eq.24-25，影响 <0.01%，ellipsoid 路径不受影响）。证据与实施见 `validation/reports/v0.15_formula_resolution_P0.md` + `v0.15_P0_implementation.md`
 
 ## 14. 下一阶段 v0.14.1 明确任务（SC 正式 beamline 验证）
 1. **✅ 已完成（2026-08-12）**：manual counter vs OCELOT native scheduler 等价性证明。结论：非一般等价（T5–T7 差异），production 已迁移到 native `get_next_step()`（SC ON），SC OFF 位级不变；SC 覆盖修正为 cathode→sample。证据：`validation/test_sc_scheduler_equivalence.py`（T1–T7 + acceptance A–F 全 PASS）、run_all 6/6、r56 不变
