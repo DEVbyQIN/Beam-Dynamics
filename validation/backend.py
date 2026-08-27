@@ -137,13 +137,19 @@ def _section_regions(cfg, section):
 # ════════════════════════════════════════════════════════════════════════
 
 def run_ag(cfg, section, n_points=2000, sc_enabled=None,
-           solenoid_coupling=True, switches=None):
+           solenoid_coupling=True, switches=None, sc_model=None):
     """Drive the AG 6D envelope ODE through the section.
 
     RF is handled by the STANDARDIZED THIN-LENS model (see _rf_constants):
     the continuous cavity chirp is replaced by apply_rf_thin_lens(H) at the
     cavity entrance; the RF TRANSVERSE force follows the shared
     physics_switches (default OFF).
+
+    sc_model : 'gaussian' (default, Kelisani 2023) or 'ellipsoid' (Luiten
+    2004).  v0.15 D-2: production default is now GAUSSIAN — our initial beam
+    is a Gaussian distribution, so the Gaussian model is self-consistent and
+    agrees with OCELOT (Benchmark 4: 0.3% on σz); the ellipsoid model is kept
+    as a switchable option (for future K-V / ellipsoid-bunch studies).
     """
     from beam_dynamics_6d import (make_beam_100keV, ExtFieldRegion,
                                   get_alpha_interpolators, propagate,
@@ -223,7 +229,10 @@ def run_ag(cfg, section, n_points=2000, sc_enabled=None,
     beam_k = beam0.copy()
     if not sc_enabled:
         beam_k.Ne = 0.0
-    sc_model = "ellipsoid" if sc_enabled else "gaussian"
+    # v0.15 D-2: default SC model is GAUSSIAN (consistent with Gaussian
+    # initial beam; agrees with OCELOT in Benchmark 4).  sc_model param
+    # overrides (e.g. 'ellipsoid' for K-V / ellipsoid-bunch studies).
+    sc_model = sc_model or "gaussian"
 
     rf_elems = ([e for e in _lattice_elements(cfg)
                  if e["type"] == "rf_cavity" and e["length"] > 0
@@ -284,6 +293,7 @@ def run_ag(cfg, section, n_points=2000, sc_enabled=None,
                                                    # (adapter injects Ne=Q/e)
               "physical_charge_C": float(P.beam.Q_C),
               "physical_electron_number": float(ne_phys),
+              "sc_model": sc_model,               # v0.15 D-2 traceability
               "ag_ne_phys": float(ne_phys),       # alias (task 2 compat, NOT
                                                    # the formal contract)
               "rf": "thin-lens (H) + transverse kick" if sw["rf_transverse_kick"]

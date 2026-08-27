@@ -133,7 +133,9 @@ def main():
     beam_k = beam0.copy()
     if not sc_enabled:
         beam_k.Ne = 0.0
-    sc_model = "ellipsoid" if sc_enabled else "gaussian"
+    # v0.15 D-2: default SC model is GAUSSIAN (consistent with Gaussian beam;
+    # agrees with OCELOT in Benchmark 4).  SC OFF uses Ne=0 → model irrelevant.
+    sc_model = "gaussian"
 
     rf_elems = [e for e in cfg["lattice"]["elements"]
                 if e["type"] == "rf_cavity" and e["length"] > 0]
@@ -199,7 +201,7 @@ def main():
 
     meta = {
         "model": "Kelisani 6D envelope ODE",
-        "sc_model": "ellipsoid" if sc_enabled else "none (Ne=0)",
+        "sc_model": sc_model if sc_enabled else "none (Ne=0)",
         # v0.14.1 task 3 AG state metadata (formal contract, mirrors
         # validation/backend.py::run_ag):
         "sc_requested": sc_enabled,
