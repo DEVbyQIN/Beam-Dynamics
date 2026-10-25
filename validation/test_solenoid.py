@@ -52,7 +52,10 @@ def main():
     sxp0 = d["sigma_xp"]
 
     # ── 1. run the two backends (AG with and without reduced-order coupling) ──
-    oc = run_ocelot(cfg, SECTION)
+    # This analytical curve regression was calibrated on a 1-mm output grid.
+    # A coarser grid changes interpolation near the narrow waist. Keep the
+    # original profile explicit; default-config behavior is tested separately.
+    oc = run_ocelot(cfg, SECTION, dz=0.001)
     ag_on = run_ag(cfg, SECTION, solenoid_coupling=True)     # AG as-is
     ag_off = run_ag(cfg, SECTION, solenoid_coupling=False)   # round-beam corrected
 
@@ -79,7 +82,7 @@ def main():
     print(f"  3. momentum      : p = γβm_ec = {p_SI:.4e} kg·m/s "
           f"(γ={gamma:.4f}, β={beta:.4f})  [identical]")
     print(f"  4. focusing      : F = −k_s²σ,  k_s² = {k_s**2:.2f} m⁻²  [identical]")
-    print(f"  5. x-y coupling  : AG reduced-order Larmor terms ACTIVE by default;\n"
+    print(f"  5. x-y coupling  : AG reduced-order Larmor terms ON in explicit comparison;\n"
           f"                     exact 4×4 transport ⇒ σ_xy ≡ 0 for round beam.")
 
     m_on = common.compare_metrics(ag_on, oc)

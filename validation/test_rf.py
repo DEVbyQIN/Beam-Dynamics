@@ -3,8 +3,8 @@
 Validation test — RF section (standardized thin-lens model).
 
 Both backends use the SAME standardized RF thin-lens model:
-  - longitudinal kick:  δ += K·sin(φ+k·z),   K = eV/(β²E₀)
-  - chirp reference:    H = eV·k·cosφ/(β²E₀) = −9.78 m⁻¹
+  - reference-subtracted time-phase modulation; AG uses its linear limit
+  - chirp reference:    H = eV·k·cosφ/(β³E₀) ≈ −17.84 m⁻¹
   - transverse kick:    x' += K_trans·x      (Panofsky-Wenzel, both backends)
 
 Checks:
@@ -59,7 +59,7 @@ def main():
     sd_ref = abs(H) * sz_cav
 
     print("\n═══ RF — standardized thin-lens model (shared config) ═══")
-    print(f"  chirp  H  = e·V·k·cosφ/(β²E₀)  = {H:+.3f} m⁻¹")
+    print(f"  chirp  H  = e·V·k·cosφ/(β³E₀)  = {H:+.3f} m⁻¹")
     print(f"  transverse K_trans               = {K_trans:+.3f} m⁻¹")
     print(f"  σ_δ after cavity: AG {sd_ag*1e3:.3f}e-3 | OCELOT {sd_oc*1e3:.3f}e-3 "
           f"| analytic |H|·σ_z = {sd_ref*1e3:.3f}e-3")
@@ -109,9 +109,10 @@ def main():
     d_delta_meas = dp_out - dp_in
     k_rf = 2.0 * np.pi * rf_elem["parameters"]["frequency_GHz"] * 1e9 / C_SI
     E_tot = d["gamma"] * 511.0 * 1e3
-    d_delta_ref = (rf_elem["parameters"]["voltage_kV"] * 1e3
-                   / (d["beta"]**2 * E_tot)) * np.sin(
-        rf_elem["parameters"]["phase_rad"] + k_rf * zc)
+    time=-zc/(d['beta']*C_SI)
+    phi=rf_elem['parameters']['phase_rad']
+    d_delta_ref=(rf_elem['parameters']['voltage_kV']*1e3/(d['beta']**2*E_tot))*(
+        np.sin(phi-2*np.pi*rf_elem['parameters']['frequency_GHz']*1e9*time)-np.sin(phi))
     kick_err = np.max(np.abs(d_delta_meas - d_delta_ref)
                       / np.maximum(np.abs(d_delta_ref), 1e-15))
     # chirp slope vs analytic H

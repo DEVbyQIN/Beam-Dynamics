@@ -14,6 +14,7 @@ Usage:
 
 import os
 import hashlib
+import warnings
 
 import yaml
 
@@ -33,10 +34,16 @@ def config_path(path: str = None) -> str:
 
 
 def load_config(path: str = None) -> dict:
-    """Load the shared YAML config (raw dict, keys identical to the old
-    GPT模拟/beamline_config.yaml)."""
+    """Load YAML and reject inconsistent geometry without changing values.
+
+    Returns the raw mapping; geometry is checked again by formal drivers
+    because callers may subsequently edit the mapping in memory.
+    """
     with open(config_path(path), "r") as f:
-        return yaml.safe_load(f)
+        cfg = yaml.safe_load(f)
+    from shared.geometry import validate_geometry
+    validate_geometry(cfg)
+    return cfg
 
 
 def config_sha(cfg: dict) -> str:
@@ -150,13 +157,18 @@ class BeamParams:
         self.spot_rms_um        = ib["spot_rms_um"]
         self.bunch_length_um    = ib["bunch_length_um"]
         self.epsilon_n_mm_mrad  = ib["epsilon_n_mm_mrad"]
-        self.epsilon_nz_mm_mrad = ib["epsilon_nz_mm_mrad"]
+        self.epsilon_nz_mm_mrad = (BeamReference.from_energy_keV(self.energy_keV).beta_gamma
+                                   * ib["bunch_length_um"] * ib["sigma_delta"])
+        if "epsilon_nz_mm_mrad" in ib:
+            warnings.warn("initial_distribution.epsilon_nz_mm_mrad is obsolete and ignored; "
+                          "longitudinal emittance is derived from shared bunch length, "
+                          "sigma_delta and zero initial correlation", UserWarning, stacklevel=3)
         self.sigma_delta        = ib["sigma_delta"]
         # SI
         self.spot_rms           = ib["spot_rms_um"] * 1e-6
         self.sig_z0             = ib["bunch_length_um"] * 1e-6
         self.eps_n              = ib["epsilon_n_mm_mrad"] * 1e-6
-        self.eps_nz             = ib["epsilon_nz_mm_mrad"] * 1e-6
+        self.eps_nz             = self.epsilon_nz_mm_mrad * 1e-6
 
 
 class SolenoidParams:

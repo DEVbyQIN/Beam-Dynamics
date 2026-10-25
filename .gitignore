@@ -29,3 +29,6 @@ log/
 validation/reports/*_results.json
 validation/reports/r56_convention_results.json
 shared/results/*.json
+
+# Local GUI per-run configuration, logs and regenerable data
+/gui_runs/

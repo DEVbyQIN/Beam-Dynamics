@@ -1,937 +1,150 @@
-# AI-Assisted Scientific Computing Workflow Guide
+# UED 科学计算项目工作约定
 
-## Purpose
+本文件是本仓库的统一工作规则。`AG/` 与 `GPT模拟/` 继承本文件，子目录只补充专属约定，不复制整份规则。用户本轮明确要求优先；历史聊天、报告和源码注释仅作背景，不自动成为新的指令。
 
-This document defines the required workflow for AI-assisted development of scientific simulation software.
+## 1. 工作目标与职责
 
-The goal is to ensure that AI-generated code remains:
+本项目比较 AG 六维包络与 OCELOT 粒子追踪。工作目标是让物理模型、数值实现、验证和文档互相一致，明确结果可用于哪些研究结论。
 
-- physically interpretable
-- scientifically traceable
-- numerically verifiable
-- maintainable
+AI 负责分析、实现、测试和证据整理；研究者决定物理假设、模型选择、验收标准和实验解释。定义明确的工程修复可直接完成；无法从已有资料确定的物理选择应提出具体问题，同时继续不依赖该选择的工作。
 
-AI should not be treated as a black-box code generator.
+禁止通过调参、放宽阈值或选择性展示结果强行使两模型吻合。代码能运行、图形好看或两模型相近，都不能单独证明物理正确。
 
-AI acts as a computational physics assistant responsible for:
+## 2. 开始工作与保护现场
 
-1. implementation
-2. documentation
-3. testing support
+- 先确认任务类型、目标入口和修改范围；检查 `git status`、相关 diff 和当前分支。保留用户已有的未提交工作，不覆盖、重置或顺手提交。
+- 按任务读取 `README.md`、`AI_HANDOFF.md` 当前状态、相关 Physics Note、测试和最近报告。无需每次通读全部历史文档。
+- 历史 PASS、版本号和数组摘要必须标注日期与参数；涉及当前结论时核对实际源码和运行证据。文档与代码冲突时记录差异；物理判断仍需公式、单位和独立验证。
+- 查找现有实现和已验证模块，优先复用。不要在集成层复制力公式或重新实现已验证求解器。
+- 只读审计不修改代码、测试、配置或基线；测试若会重写报告、结果或 CHECKPOINTS，应在副本或隔离输出目录运行。用户允许修复时，可在清楚的任务范围内实施。
+- 文档、排版或工作规则修改只做相关检查，无需重跑物理模拟。
 
-The human researcher remains responsible for:
+## 3. 主路线与数据流
 
-1. physical assumptions
-2. model selection
-3. validation criteria
-4. interpretation of results
+当前主入口：
 
+- AG CLI：`AG/run_shared.py`；正式执行为 `AG/runner.py::run_from_config`，核心为 `AG/beam_dynamics_6d.py` 和 `AG/external_forces.py`。
+- OCELOT CLI 与正式执行：`GPT模拟/ued_beamline_v2.py::run_from_config` → `build_lattice_from_shared` / `run_beamline`。
+- 验证适配：`validation/backend.py` 只调用上述正式实现，不另建初态、束线或追踪循环；测试入口为 `validation/run_all.py`，另有专项脚本。
+- 结果容器：`shared/beam_result.py`；旧 `validation/beam_result.py` 只保留导入兼容。
+- 共享契约：`shared/beamline_config.yaml`、`shared/params.py`、物理常量、坐标适配和结果定义。
 
----
+共有 YAML 不等于执行语义相同。涉及入口、RF、SC、采样或输出的修改，必须核对正式 CLI、后端 API、验证入口和保存结果的相关路径。
 
-# Core Principle
+历史脚本、AG-prime 和协方差原型不自动视为已验证替代路线。旧 Windows/MFC 控制工程不纳入束流模型物理验收；未经任务授权，不运行硬件控制程序。
 
-## Every physics implementation must have a corresponding Physics Note.
+## 4. 坐标、单位与模型比较
 
-No new physics module should be created without documentation.
+- 区分束线位置 `s`、束内纵向坐标 `z/tau`、时间和各自单位；不能仅凭同名变量认定定义一致。
+- 区分几何斜率、归一化动量、几何/归一化发射度，以及动量偏差与能量偏差。
+- 当前动量接口约定：`delta_p = Δp/p0`，OCELOT 原生 `p_oc = ΔE/(c p0)`；一阶适配 `p_oc ≈ beta0 * delta_p`。乘除 `beta0` 必须集中在明确的适配边界，避免重复转换。
+- 纵向束长、到达时间、chirp、R56 和纵向发射度必须从同一坐标定义推导；无法确认定义时，不用经验因子补偿。
+- 区分物理电荷和宏粒子数量：AG 物理电子数 `Ne = |Q|/e`；OCELOT `n_particles` 是数值分辨率。不得将宏粒子数直接作为实际束团电荷。
+- 比较应明确同一初态、元件顺序/位置、有效开关和诊断面。AG 包络近似与粒子非线性模型的适用域不同，不要求所有工况强制一致。
+- 输出须明确 RMS 定义、单位、相关矩、参考能量及实际诊断位置。区分 nominal/actual 和精确采样/插值；查询超出轨迹范围必须失败或明确标注，不能静默夹取末值。
 
-For every:
+## 5. 按任务规模执行
 
-- force model
-- beamline element
-- numerical solver
-- coordinate transformation
-- diagnostic quantity
+### 物理新增或修改
 
-create a corresponding:
-
-```
-
-xxx_physics_note.md
-
-```
-
-Example:
-
-```
-
-solenoid.py
-
-solenoid_physics_note.md
-
-```
-
----
-
-# Development Workflow
-
-All AI coding tasks must follow the sequence:
-
-```
-
-Physical definition
-
-```
-    ↓
-```
-
-Mathematical model
-
-```
-    ↓
-```
-
-Numerical implementation
-
-```
-    ↓
-```
-
-Unit validation
-
-```
-    ↓
-```
-
-Integration test
-
-```
-    ↓
-```
-
-Documentation update
-
-```
-
-
-Do not directly jump from:
-
-"implement feature"
-
-to
-
-"modify code".
-
----
-
-# Before Modifying Code
-
-AI must first analyze:
-
-## 1. Existing implementation
-
-Answer:
-
-- Does this function already exist?
-- Is there previous validated code?
-- Can existing modules be reused?
-
-Never duplicate existing physics.
-
-
----
-
-## 2. Physical definition
-
-Before coding, provide:
-
-### Purpose
-
-What physical phenomenon is modeled?
-
-
-Example:
-
-"Model transverse focusing caused by solenoid magnetic field."
-
-
----
-
-### Coordinate system
-
-Clearly define:
-
-Example:
-
-Transverse:
-
-\[
-(x,x')
-\]
-
-
-Longitudinal:
-
-\[
-(z,\delta)
-\]
-
-
-or particle coordinates:
-
-\[
-(x,p_x,y,p_y,z,\delta)
-\]
-
-
----
-
-### Variables and units
-
-Every variable must have:
-
-|Variable|Meaning|Unit|
-|-|-|-|
-|B|magnetic field|Tesla|
-|E|electric field|V/m|
-|sigma_x|beam RMS size|m|
-|delta|relative momentum deviation|-|
-
-
-No undefined variables.
-
----
-
-# Physics Note Template
-
-Every module must generate:
-
-```
-
-xxx_physics_note.md
-
-```
-
-with the following structure.
-
-
----
-
-# [Module Name] Physics Note
-
-
-## 1. Physical Purpose
-
-Describe:
-
-- what physical component is modeled
-- what effect it produces
-
-
-Example:
-
-"The solenoid lens focuses electron beams through the azimuthal magnetic field and Larmor rotation."
-
-
----
-
-## 2. Physical Model
-
-
-Write governing equations.
-
-Example:
-
-Solenoid focusing:
-
-\[
-k_s=\frac{eB_z}{2p}
-\]
-
-
-Envelope equation:
-
-\[
-\sigma''+k_s^2\sigma=0
-\]
-
-
-Explain every term.
-
-
----
-
-## 3. Assumptions
-
-
-Explicitly list:
-
-Example:
-
-- paraxial approximation
-- hard-edge magnetic field
-- Gaussian beam distribution
-- neglect fringe field
-
-
----
-
-## 4. Coordinate Definition
-
-
-Must specify:
-
-
-Input coordinates:
-
-\[
-(x,x')
-\]
-
-
-Output coordinates:
-
-\[
-(x_f,x_f')
-\]
-
-
-Transformation:
-
-\[
-X_f=MX_i
-\]
-
-
----
-
-## 5. Numerical Implementation
-
-
-Explain:
-
-- algorithm
-- integration method
-- step size
-- interpolation
-- approximations
-
-
-Example:
-
-"Fourth-order Runge-Kutta integration is used for envelope propagation."
-
-
----
-
-## 6. Input Parameters
-
-
-Example:
-
-```
-
-Bz:
-length:
-energy:
-charge:
-
-```
-
-
----
-
-## 7. Output Quantities
-
-
-Example:
-
-```
-
-sigma_x(z)
-
-sigma_y(z)
-
-emittance
-
-phase space
-
-```
-
-
----
-
-## 8. Validation
-
-
-Every module requires validation.
-
-
-Include:
-
-### Analytical limit
-
-Example:
-
-Drift:
-
-\[
-\sigma_x(z)
-=
-\sqrt{
-\sigma_{x0}^2+
-\sigma_{x'}^2z^2
-}
-\]
-
-
-### Numerical comparison
-
-Compare:
-
-simulation
-
-vs
-
-analytical solution
-
-
-### Expected behavior
-
-Example:
-
-Increasing solenoid strength should reduce beam size.
-
-
----
-
-## 9. Known Limitations
-
-
-Must explicitly state:
-
-
-Example:
-
-Current model:
-
-- ignores fringe field
-- ignores nonlinear aberration
-- assumes Gaussian distribution
-
-
----
-
-# Modification Report Requirement
-
-Every AI code modification must produce:
-
-```
-
-CHANGELOG_xxx.md
-
-```
-
-
-Format:
-
-
-# Modification
-
-## Date
-
-
-## Reason
-
-Why was this modification needed?
-
-
----
-
-## Previous Problem
-
-Example:
-
-"RF compression did not produce longitudinal chirp."
-
-
----
-
-## Physical Cause
-
-Example:
-
-"Tau coordinate unit mismatch."
-
-
----
-
-## Modification
-
-Describe code changes.
-
-
----
-
-## Physics Impact
-
-Explain:
-
-Before:
-
-\[
-\sigma_z=...
-\]
-
-
-After:
-
-\[
-\sigma_z=...
-\]
-
-
----
-
-## Validation Result
-
-
-Include:
-
-- figures
-- numerical comparison
-- tests passed
-
-
----
-
-# Debugging Rules
-
-
-When simulation result is wrong:
-
-Do NOT immediately modify parameters.
-
-
-Follow:
-
-
-## Step 1
-
-Check units.
-
-
-Examples:
-
-- mm vs m
-- eV vs Joule
-- time vs length
-
-
----
-
-## Step 2
-
-Check coordinate definition.
-
-
-Examples:
-
-Is delta:
-
-\[
-\frac{\Delta p}{p_0}
-\]
-
-or:
-
-\[
-\frac{\Delta E}{E_0}
-\]
-
-
----
-
-## Step 3
-
-Check limiting cases.
-
-
-Examples:
-
-Space charge OFF:
-
-Should:
-
-\[
-\epsilon=constant
-\]
-
-
-No field:
-
-Should:
-
-\[
-beam=drift
-\]
-
-
----
-
-## Step 4
-
-Compare with analytical solution.
-
-
----
-
-# Integration Rules
-
-
-A validated module should not be rewritten during integration.
-
-
-Example:
-
-
-Already validated:
-
-```
-
-solenoid.py
-rf.py
-space_charge.py
-
-```
-
-
-Beamline assembly should only:
-
-- import
-- configure
-- connect
-
-
-Never:
-
-- copy formulas
-- duplicate force calculation
-
-
----
-
-# Model Comparison Rules
-
-
-When multiple simulation models exist:
-
-
-Example:
-
-AG model:
-
-RMS envelope
-
-
-GPT/OCELOT:
-
-Particle tracking
-
-
-They should share:
-
-
-```
-
-beam_parameters
-
-beamline_definition
-
-physical constants
-
-```
-
-
-Comparison outputs must use identical definitions:
-
-
-```
-
-sigma_x
-
-sigma_y
-
-sigma_z
-
-emittance
-
-energy spread
-
-time resolution
-
-chirp
-
-```
-
-
----
-
-# AI Behavior Rules
-
-
-AI must:
-
-
-1. Explain physics before coding.
-
-2. Identify assumptions.
-
-3. Reuse existing verified modules.
-
-4. Generate documentation.
-
-5. Provide validation.
-
-
-AI must NOT:
-
-
-1. Rewrite working modules unnecessarily.
-
-2. Introduce unexplained formulas.
-
-3. Hide unit conversions.
-
-4. Optimize parameters to force agreement.
-
-5. Claim physical correctness only because code runs.
-
-
----
-
-# Final Research Principle
-
-
-A simulation result is trustworthy only when:
-
-\[
-\boxed{
-Physical\ Model
-+
-Numerical\ Implementation
-+
-Validation
-+
-Documentation
-}
-\]
-
-are all consistent.
-
-
-A beautiful plot without physical explanation is not a scientific result.
-
-A simple model with clear assumptions and validation is more valuable than a complicated black-box simulation.
-
-# 任务结束时的审核输出规范
-
-任务完成后，不要只输出“已完成”或文件列表。
-
-必须在最终回复中输出一个完整的「给用户和 GPT 审核的摘要」，即使代码和报告已经写入文件，也必须把最关键的信息直接写在终端回复中。
-
-## 一、最终回复固定结构
-
-### 1. 一句话结论
-
-用一句话说明：
-
-- 本轮到底做了什么；
-- 是否修改物理；
-- 是否通过验收；
-- 是否仍有开放问题。
-
-示例：
-
-> 本轮仅重构 GPT 主路由的 lattice 数据流，未修改任何物理公式；主路由与 validation 路由几何完全一致，四项回归测试全部通过。
-
----
-
-### 2. 修改范围
-
-列出：
-
-- 修改的文件；
-- 每个文件修改的作用；
-- 明确说明哪些核心文件没有修改。
-
-格式：
-
-| 文件 | 修改内容 | 风险等级 |
-|---|---|---|
-| `xxx.py` | …… | 低/中/高 |
-
-同时单独列出：
+按以下顺序开展：
 
 ```text
-确认未修改：
-- AG 核心……
-- OCELOT 核心……
-- RF 方程……
+现有实现与证据 → 物理定义/假设 → 方程和坐标/单位
+→ 数值方案 → 实现 → 解析/单元验证 → 集成验证 → 文档
+```
 
-3. 最关键的代码变化
-不要粘贴完整文件。
-只粘贴最关键的 2～5 段代码，每段控制在 10～40 行，并标注：
-* 文件路径；
-* 函数名；
-* 修改前逻辑；
-* 修改后逻辑；
-* 为什么这样改。
-优先展示容易产生数据流错误、单位错误或重复调用的代码。
-必须包括：
-1. 参数从哪里读取；
-2. 物理量在哪里转换；
-3. 元件在哪里组装；
-4. 开关在哪里生效；
-5. 输出量在哪里计算。
-若代码较长，使用精简伪代码或 diff，不要省略关键乘除因子、单位和条件判断。
+修改前说明目的、关键方程、变量单位、适用域与验收依据。新模型或会改变研究结论的假设需要研究者裁定；在已有模型中修复可明确证明的实现错误，无需重复询问是否继续。
 
-4. 数据流与调用链
-用纯文本画出本轮实际调用链，例如：
-beamline_config.yaml
-        ↓
-shared.params
-        ↓
-validation.backend.run_ocelot
-        ↓
-lattice builder
-        ↓
-OCELOT tracking
-        ↓
-BeamResult
-        ↓
-test_full_beamline
-必须特别指出：
-* 是否存在重复参数源；
-* 是否存在旧路径仍被调用；
-* 是否存在未使用的历史脚本；
-* 是否存在某个测试绕过了正式入口。
+### 工程修复或重构
 
-5. 验收结果
-用表格给出关键数值，不能只说 PASS。
-至少包括：
-* 修改前；
-* 修改后；
-* 参考值或另一后端；
-* 相对偏差；
-* 阈值；
-* PASS/FAIL。
-示例：
-指标	修改前	修改后	参考	偏差	判定
-若有随机宏粒子噪声，必须说明：
-* 随机种子策略；
-* 预期噪声范围；
-* 本轮差异是否在噪声范围内。
+先定位触发条件和数据流，再做最小修复。保持已验证公式和与任务无关的确定性结果。优先修复真实入口、参数优先级、事件调度、失败处理和输出契约。
 
-6. 图像摘要
-如果任务产生多张图，额外生成一张：
-validation/reports/review_summary.png
-要求：
-* 将最关键的 3～6 幅结果放进一张合并图；
-* 每幅图有清晰标题；
-* 标出元件位置、关键差异和样品面；
-* 分辨率适合手机查看；
-* 不要只给本地文件路径。
-最终回复中说明这张图包含什么，以及最值得人工检查的位置。
-如果当前终端支持 Markdown 图片显示，输出：
-![审核汇总图](validation/reports/review_summary.png)
-如果终端不显示图片，则明确告诉用户：
-最值得上传给 GPT 审核的图片是 validation/reports/review_summary.png。
+### 审计或文档任务
 
-7. 风险与开放问题
-必须分成三类：
-已解决
-列出已经有测试和证据支持的问题。
-尚未解决
-列出还不能下结论的问题。
-本轮可能引入的新风险
-例如：
-* 默认参数隐藏；
-* 多实例遗漏；
-* 元件重复调用；
-* 坐标重复转换；
-* 随机数相关性；
-* 测试和正式入口走不同路径；
-* 输出名称与内部变量含义不一致。
-不要为了显得任务成功而省略风险。
+将已证实缺陷、待推导假设和静态风险分开；每项关键结论给出源码位置、证据、影响范围和修改建议。未运行或未核对的部分明确标注，避免把目录盘点描述成全部代码已物理验证。
 
-8. 最值得发给 GPT Plus 审核的材料
-按优先级列出最多 5 项：
-A 级：强烈建议发送
-只包括最容易出现严重错误、仅靠文字难以验证的文件或图片。
-B 级：出现异常时发送
-用于进一步排查。
-C 级：通常不需要发送
-仅作存档。
-示例：
-A级：
-1. validation/backend.py
-   原因：包含双后端接口、RF/R56 转换和元件组装，风险最高。
-2. validation/reports/review_summary.png
-   原因：一张图可同时判断曲线、腰位置和异常跳变。
+## 6. Physics Note 与变更记录
 
-B级：
-3. shared/beamline_config.yaml
-   原因：怀疑参数源或元件顺序时再发。
+新增物理模型，或修改力项、求解方法、坐标转换、诊断定义时，必须创建或更新对应 `xxx_physics_note.md`。可共用一份清晰映射到模块的笔记，不要求每个工程辅助文件各写一份。
 
-C级：
-4. CHECKPOINTS.md
-   原因：用于追溯历史，不是本轮代码正确性的直接证据。
+Physics Note 应包含：
 
-9. 给 GPT 复制的最小审核文本
-在最终回复最后，生成一段可以直接复制给 GPT 的文字，包含：
-* 项目背景一句话；
-* 本轮目标；
-* 修改文件；
-* 关键公式；
-* 修改前后结果；
-* 尚未解决问题；
-* 希望 GPT 重点审核的三件事。
-控制在 800～1500 字以内。
-标题固定为：
-===== 可直接复制给 GPT 审核 =====
+1. 物理目的、参考来源与适用域。
+2. 方程、全部变量和单位。
+3. 假设、忽略项、输入/输出坐标与转换。
+4. 算法、步长/容差、插值和边界处理。
+5. 输入参数、输出定义和调用位置。
+6. 解析极限、独立参考、数值验证和误差预算。
+7. 已验证范围、已知限制和开放问题。
 
-二、停止条件
-出现以下任意情况时，不要继续自动补丁：
-* 原有通过测试变为失败；
-* AG 确定性数组发生非预期变化；
-* config SHA 意外改变；
-* 元件数量或顺序不一致；
-* RF kick 数量错误；
-* 出现 NaN、负方差或发射度接近零；
-* 为使两模型吻合而准备修改参数；
-* 无法确认某变量的定义或单位。
-应立即停止，并在最终回复中给出第一个失败点、相关文件和建议上传给 GPT 审核的材料。
+物理或重要数值变更应有 `CHANGELOG_<主题>.md` 或等效的集中变更记录：日期、触发问题、原因、修改范围、物理影响、验证结果和限制。小型文档/排版修改不强制新增 changelog、图或报告。
 
-三、任务收尾自动同步
-每次任务完成后，自动运行：
+不要为了满足模板伪造修改前后数字。无代码变化时直接说明；基线迁移须解释科学原因并保留旧证据，不能静默覆盖。
 
-    python3 scripts/sync_to_phone.py --gpt-review
+## 7. 调试与运行契约
 
-把 A 级审核文件（核心代码 + 最新报告/图/changelog + CHECKPOINTS）打包到
-iCloud Drive → UED_Sync → gpt_review/，并在最终回复中告知用户该包的路径
-与其中最值得发送的 A 级文件。
+结果异常时，先查单位，再查坐标/参考粒子、参数来源和元件/事件，再查解析极限与数值收敛。不要先改物理参数。
 
-四、代码自动同步到 GitHub
-每次任务完成且代码变更通过验收后，必须自动同步到 GitHub 仓库：
-https://github.com/QIN-SMART/Beam-Dynamics
+重点检查：
 
-执行流程：
-1. 检查变更范围（git status、git diff），确认没有误改或遗留临时文件。
-2. 只 add 与本轮任务相关的文件，禁止 add 大文件、数据结果、密钥或临时产物。
-3. 提交（git commit），提交信息用中文，格式：
+- 配置结构、有效参数优先级、正步长、合法长度/网格和样品面覆盖。
+- RF 在真实元件事件位置执行；每实例计数正确；有效 kick 与到访计数分开；四种纵/横开关组合语义一致。
+- SC 的 requested/effective 状态一致；请求启用时导入、构造、attach、真实 apply 和覆盖失败必须显式报错，不静默退化为无 SC。
+- 积分器 success、返回终点、数组形状和有限值；明显负方差/非正定状态不能通过裁剪掩盖。舍入容差需有依据。
+- 零场/零强度操作、纯漂移、无 SC、对称束等必要不变量。发射度守恒等判据须限定坐标、线性模型和适用条件。
+- 随机源、宏粒子数、网格、步长、插值及依赖版本。固定种子可复现不等于统计或物理收敛。
 
-   <主题>：<一句话说明>
+## 8. 验证与可信范围
 
-   示例：
+分别报告：
 
-   射频压缩：修复 tau 坐标单位不匹配（mm 与 m）
+- **工程契约**：参数和开关生效、调用次数/位置、完整覆盖、保存输出及错误退出。
+- **数值回归**：在指定环境/参数下保持冻结结果。
+- **物理验证**：解析极限、独立参考、守恒/对称性、收敛和适用域。
 
-4. 推送（git push）到 origin main。
+局部 helper、mock、直接积分或模型标签检查不能代替正式入口的物理验收。测试必须针对真实缺陷和必要不变量，避免仅重复实现；故障测试应确认具体失败原因。
 
-必须遵守：
-- 只有用户明确要求时才允许 push；若用户未要求，任务结束时在最终回复中提示
-  “代码已就绪，未推送，是否推送到 GitHub？”。
-- 推送前必须确保原有通过测试仍然通过（参照上文停止条件）。
-- 若 push 失败（如远程有他人提交），先 pull --rebase 再 push，不要强推。
----
+按改动选择相关专项测试；影响公共物理或数据流时运行相关集成回归。`run_all.py` 只代表其实际注册的检查，不能代替所有专项测试。
+
+记录真实退出码和关键数值。数值比较说明参考、相对差定义与阈值；随机模拟记录 seed/N/mesh/dz。没有噪声估计或收敛扫描时明确说明，不凭主观判断把差异归为噪声。
+
+通过相关检查后，不因收尾习惯重复长时间模拟；只有新改动、失败或未解决疑点才扩大验证。
+
+## 9. 失败时怎样继续
+
+### 本轮引入的非预期回归
+
+原已通过检查变为失败，冻结数组/config 摘要意外变化，元件/事件或样品面被误改，或出现新的非法状态时：先暂停扩展修改，定位第一个失败点，撤销或修正本轮相关改动，再重跑相关验证。不得覆盖用户已有工作。
+
+### 发现原有缺陷
+
+原有测试漏检、RF 计数错误、末步遗漏、默认开关错误等，不应仅因“发现了错误”停止整个任务。若用户授权修复，且变量定义、预期行为和验收依据明确，可建立复现、实施最小修复并验证。
+
+### 物理定义或证据不足
+
+无法确认变量单位/坐标，修复需要选择新的闭合模型或物理假设，或只能通过调参强行拟合时：停止该项物理补丁，保留失败证据，提出需要裁定的具体问题。继续独立的审计、文档和定义明确的工程任务。
+
+停止或未完成时说明失败点、涉及文件、影响范围、已做检查与下一步；无需自动生成外部模型审核材料。
+
+## 10. 输出与任务收尾
+
+默认最终回复简洁说明：**做了什么、关键结果、如何验证、尚有哪些问题**。列出实际修改文件或交付物链接；重要物理修改说明物理影响。
+
+根据任务需要增加内容，而非每轮套完整固定模板：
+
+- 多文件或公共数据流修改：给出必要调用链与关键 diff，不粘贴完整文件。
+- 数值/物理验收：给出关键数字、参考/阈值和适用范围；细节放报告。
+- 多张重要结果图：按需要生成汇总图，并解释最值得检查的位置；保留已有有价值图像。
+- 完整审计或重大修改：提供独立报告，按用户指定格式输出；结论、证据和开放问题清楚可查。
+- 纯文档任务：说明规则或内容如何改变及结构检查结果即可。
+
+不强制输出“给 GPT 审核”的摘要、A/B/C 上传清单或长篇可复制文本。仅用户明确需要外部复核时再准备对应材料。
+
+默认将报告保存本地，不自动运行 `sync_to_phone.py --gpt-review` 或上传外部服务。用户要求手机/iCloud 同步时使用现有脚本，按本轮材料打包并核对；说明本机复制完成与手机云下载状态的区别。
+
+结束前检查相关 diff、临时文件和敏感内容。只处理本轮相关文件；大型数据、密钥和可再生成结果不加入 Git。
+
+只有用户明确要求时才 commit 或 push；提交信息使用中文“主题：说明”。推送需相关验证通过，禁止强推。不每轮重复询问是否推送；需要时说明当前未提交/未推送状态即可。
+
+遇到远端分歧先检查本地与远端状态及未提交工作。只有已获推送授权且相关工作可安全保留时才 rebase；不要自动 stash/rebase 混有用户工作的脏工作区。

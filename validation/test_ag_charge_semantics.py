@@ -18,7 +18,7 @@ Test 2 — n_particles invariance:
     - AG SC ON results must be BITWISE identical (AG no longer depends on
       the macroparticle numerical resolution);
     - AG SC OFF results must be bitwise identical and match the v0.13
-      baseline sample values (σ_x = 1984.191 µm, σ_z = 477.001 µm).
+      the explicitly versioned longitudinal-Gz baseline sample values.
 
 Usage: /opt/anaconda3/bin/python3 validation/test_ag_charge_semantics.py
 """
@@ -26,6 +26,8 @@ Usage: /opt/anaconda3/bin/python3 validation/test_ag_charge_semantics.py
 import os
 import sys
 import copy
+import json
+from pathlib import Path
 
 import numpy as np
 
@@ -41,12 +43,12 @@ from validation.backend import run_ag  # noqa: E402
 SECTION = "full"
 ZS = 777.0                        # sample plane [mm]
 
-# v0.13 no-SC AG baseline sample values (deterministic ODE)
-# v0.15 fix (AG longitudinal 1/γ² factor): σz 477.001 → 474.018 (aligned with
-# OCELOT 474.022, 0.0008%); σx unchanged 1984.191.  See
-# validation/reports/AG_longitudinal_fix_proposal.md
-AG_BASELINE_X = 1984.191          # µm (unchanged by the fix)
-AG_BASELINE_Z = 474.018           # µm (post-fix, was 477.001)
+# Scientific migration: arrival-time RF phase and paper Gx/Gy/Gz.
+# The dated manifest retains old references and explains the array changes.
+# The original 1e-3 um numerical thresholds below remain unchanged.
+_BASELINE = json.loads((Path(_THIS_DIR)/'baselines/shared-rf-gxyz-20261021.json').read_text())
+AG_BASELINE_X = _BASELINE['routes']['AG']['endpoint']['sigma_x_um']
+AG_BASELINE_Z = _BASELINE['routes']['AG']['endpoint']['sigma_z_um']
 
 
 def sample(r, key):
@@ -117,7 +119,7 @@ def test2_nparticles_invariance(cfg):
               f"{'PASS' if ident else 'FAIL'}")
         ok &= ident
         if not sc_on:
-            # v0.13 no-SC AG baseline must be preserved exactly
+            # Versioned no-SC baseline; preserve the original 1e-3 um limits.
             r0 = run_ag(cfg_with(cfg, n_particles=nps[0]), SECTION,
                         sc_enabled=False, solenoid_coupling=False)
             sx, sz = sample(r0, "sigma_x_um"), sample(r0, "sigma_z_um")

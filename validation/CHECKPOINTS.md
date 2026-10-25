@@ -1189,3 +1189,247 @@
   full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
   R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
   switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [drift] 2026-09-14 21:31
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699894, 'sigma_y_um': 0.6342565055448065, 'sigma_z_um': 0.09905818830323633, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=0.05% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-09-14 21:31
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [rf] 2026-09-14 21:31
+  RF standardized to thin-lens in BOTH backends (Option A):
+    longitudinal kick δ += K·sin(φ+kz), H=-9.779 m^-1, σ_δ AG=2.939e-3 vs OCELOT=2.939e-3 (PASS)
+    transverse RF kick K_trans=-2.680 m^-1 added to OCELOT; σ_x AG=1119 vs OCELOT=1122 um (PASS)
+    switch OFF vs ON: AG σ_x 1119->542 um, OCELOT 1122->537 um (both read physics_switches.rf_transverse_kick)
+    R56 adapter: kick semantic PASS, routing {'drift': 0, 'solenoid': 0, 'rf': 1, 'full': 1} PASS
+  RESOLVED: input δ-variable convention (B) fixed by the adapter; σ_z at sample agrees with AG (residual few-µm at the waist).
+
+## [full] 2026-09-14 21:31
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [drift] 2026-09-14 21:34
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699894, 'sigma_y_um': 0.6342565055448065, 'sigma_z_um': 0.09905818830323633, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=0.05% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-09-14 21:34
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [full] 2026-09-14 21:34
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [drift] 2026-09-14 21:55
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699894, 'sigma_y_um': 0.6342565055448065, 'sigma_z_um': 0.09905818830323633, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=0.05% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-09-14 21:55
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [rf] 2026-09-14 21:55
+  RF standardized to thin-lens in BOTH backends (Option A):
+    longitudinal kick δ += K·sin(φ+kz), H=-9.779 m^-1, σ_δ AG=2.939e-3 vs OCELOT=2.939e-3 (PASS)
+    transverse RF kick K_trans=-2.680 m^-1 added to OCELOT; σ_x AG=1119 vs OCELOT=1122 um (PASS)
+    switch OFF vs ON: AG σ_x 1119->542 um, OCELOT 1122->537 um (both read physics_switches.rf_transverse_kick)
+    R56 adapter: kick semantic PASS, routing {'drift': 0, 'solenoid': 0, 'rf': 1, 'full': 1} PASS
+  RESOLVED: input δ-variable convention (B) fixed by the adapter; σ_z at sample agrees with AG (residual few-µm at the waist).
+
+## [full] 2026-09-14 21:56
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [drift] 2026-09-14 21:59
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699894, 'sigma_y_um': 0.6342565055448065, 'sigma_z_um': 0.09905818830323633, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=0.05% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-09-14 21:59
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [rf] 2026-09-14 22:00
+  RF standardized to thin-lens in BOTH backends (Option A):
+    longitudinal kick δ += K·sin(φ+kz), H=-9.779 m^-1, σ_δ AG=2.939e-3 vs OCELOT=2.939e-3 (PASS)
+    transverse RF kick K_trans=-2.680 m^-1 added to OCELOT; σ_x AG=1119 vs OCELOT=1122 um (PASS)
+    switch OFF vs ON: AG σ_x 1119->542 um, OCELOT 1122->537 um (both read physics_switches.rf_transverse_kick)
+    R56 adapter: kick semantic PASS, routing {'drift': 0, 'solenoid': 0, 'rf': 1, 'full': 1} PASS
+  RESOLVED: input δ-variable convention (B) fixed by the adapter; σ_z at sample agrees with AG (residual few-µm at the waist).
+
+## [full] 2026-09-14 22:00
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [v0.15-entrypoint-hardening] 2026-08-16
+  生产入口一致性与测试硬化（纯工程逻辑；无物理公式/阈值/baseline 改动）:
+  - A1 run_all 退出码: main() 返回码 + sys.exit(main())；子测试异常→FAIL（不吞）。
+    新 test_run_all_exitcode.py（stub 注入，不跑昂贵模拟）验证：全成功→0、任一失败→1、
+    异常→1；真实进程退出码已实测（1 / 0）
+  - A2 加速阻尼测试: 原实现 D_corrected 直接返回 D_paper（自证）。改为测量生产
+    envelope_ode RHS 的阻尼差分（D_meas=−Δ(dν_u)/ν_u，ν≠0）：D_meas/D_paper=
+    1.000000000000（4 案例）；guard 旧系数 γ'/(γβ²) 比值=γ²（1.429687/116.310962）
+  - A3 scheduler 判据: T1-T4 等价判定纳入 L4 完整粒子数值路径（allclose atol=1e-12，
+    远高于 ~4e-16 浮点底、远低于 ≥1e-5 的真实调度差异）；T5-T7 仍要求"差异"。acceptance
+    逐项分类 [PRODUCTION] / [HELPER-CHAR]；生产 lattice 固定 → 非整数总长/部分覆盖无
+    生产验收（如实报告，未冒充）
+  - B RF 开关统一: run_shared 此前完全不读 physics_switches；OCELOT 两入口用
+    rf_longitudinal_kick 决定实例列表 → 纵向 OFF 时横向连带失效。修复：实例调度=任一
+    角色开启，两角色在 kick 函数内部独立门控（公式未改）。新 test_rf_switches_entrypoints.py
+    三入口×4 组合实测：L=0,T=1 时 σx 仍变（2024.0→1284.1），L=0 时 σδ 与 no-kick 基准
+    逐位一致，三入口语义一致
+  - C GPT SC 契约: 复用 shared/sc_state.SCState（无第二套状态机）；SpaceCharge 按需
+    import（SC OFF 时不可用不阻塞）；import/构造/attach/apply_count=0/coverage 五类
+    HARD FAIL；coverage 期望来自 shared lattice（无硬编码 0.777）。新 test_gpt_sc_contract.py
+    7 类故障注入全 PASS（进程内注入并恢复）
+  - D 尾段与样品面: GPT 无 SC 此前 int(0.777/0.005)=155 步→775mm（sample 777mm 不可达、
+    z777mm probe 缺失）。修复：保留完整步 + 追加剩余长度一步（步长配置不变）；z=0 probe
+    追踪前精确采样；probe 区间闭区间；非对齐 probe 标 z_exact=False + z_actual_mm。
+    新 test_gpt_tail_sample.py：默认终点 0.7770、非整数 0.503→0.503000、整数 0.500 无
+    多余步、z0 精确、z422 标非精确（actual 425.0）。旧 775mm 与新 777mm 分别记录，
+    未作同位置比较。gpt_route 样品面 dev 由 interp 末点改善为 0.00%
+  - E Benchmark4: 原 "AG ellipsoid" 行未指定模型（D-2 后实际跑 gaussian）。改为显式
+    sc_model="ellipsoid"/"gaussian" 走生产入口 + meta 标签核对 PASS；数值不变
+  - 基线保持: canonical OCELOT hash 7790fd9c2a2b 不变；AG 完整确定性数组 hash
+    41f69f8ace7d 不变（sample σx=1984.191437/σz=474.017607）；R56 slope −1.163624
+    不变；run_all 6/6 PASS + OVERALL PASS
+  - 开放登记（本轮只登记不修）: (1) AG 纵向矩变量衔接——H=0 薄透镜仍把 ν_z 重设为
+    C_zδ/(γ²σ_z)（≈0.00106434→≈0.00000315857），疑似 SC 包络 ν_z 与纵向矩不自洽，
+    阻塞完整 SC 物理验收，需单独物理推导+审批；(2) 非整数总长/部分覆盖无生产验收；
+    (3) 422mm 非对齐中间 probe 需改变追踪路径才可精确采样（方案待批）
+  - 报告: validation/reports/entrypoint_consistency_hardening.md
+## [v0.15-entrypoint-hardening-repair] 2026-09-14
+  入口硬化审核返修轮（只做最小补丁；不改物理公式/shared 物理参数/baseline/阈值）:
+  - R1 cfg_override 真正生效: 此前 run_beamline 内所有物理量取自模块导入期全局
+    （energy/charge/spot/sigma_xp/N/dz/probes）、build_lattice_from_shared 用全局 p_SI、
+    apply_rf_kick 用全局能量与 beta → 审核反例（100→200 keV、100→500 fC、85→170 µm、
+    5→10 mm）history 逐位相同。修复：新增 run_params(c) 单点推导全部量（复用
+    BeamReference.from_energy_keV），优先级 显式参数 > cfg_override > 默认 config，
+    不写回全局；results["run_params"] 记录实际生效参数。新 test_gpt_config_override.py
+    6 项全 PASS（步数 156/78、probe 列表随 override 变、σx 1115.232/411.556 µm、
+    电荷和 1e-13/5e-13 C、k_sol 22.375110/15.160412、显式 N 优先、A→B→A 无泄漏）
+  - R2 RF 开关单层化: 此前 builder 先按 cfg 删除 RF 调度项 → 事后显式 switches 无法
+    复活（cfg L=F/T=F + 显式 L=T → 0 kick）。修复：resolve_switches() 只解析一次
+    （逐字段合并），组装与执行同源；RF 实例按 active_types 保留（几何长度不变），
+    纵向/横向在 kick 函数内独立门控。实测：cfg OFF+显式 L=ON → 1 kick σδ=2.9435；
+    cfg ON+显式 L=OFF/T=ON → 1 kick σδ=0.0997 σx=1278.8 µm
+  - R3 probe 位置标记进入最终输出: main() 未把 z_actual_mm/z_exact 传给 make_probe →
+    425 mm 状态被保存为 "422 mm" 且无告警；控制台现对非精确 probe 加标记，meta 持久化
+    SC 运行时契约（scheduler/apply_count/coverage/available/configured/attached）与
+    rf_kicks_applied（实际执行次数）。另修复真实缺陷：样品面 probe 在追踪结果里就缺失
+    （末步落 49.99999999999999 mm，被闭区间 z_p<=z 拒绝）→ 引入纯浮点舍入容差
+    PROBE_TOL_M=1e-12 m（=1e-9 mm，不改步长/追踪路径），原始值始终写入 z_actual_mm。
+    新 test_gpt_saved_output.py（main()→真实 make_probe→真实 write_results→读回 JSON）
+    8 项全 PASS
+  - R4A 阻尼阈值恢复 1e-12（此前被放宽到 1e-9）+ 真实可恢复故障注入：从生产
+    envelope_ode 实时源码派生旧系数版本，monkeypatch 模块属性后由同一测量代码执行，
+    finally 恢复。实测 max|ratio-1|: 0 / 2.22e-16 / 6.66e-16 / 0（< 1e-12）；注入版
+    ratio=γ₀²=1.429686820、max|ratio-1|=4.297e-01 ≫ 1e-12（判据必然 FAIL = 有判别力）；
+    锚点数=1（源码被改动则 guard FAIL）；恢复后逐位相同
+  - R4B RF 入口覆盖增至 4 入口×4 组合（新增 validation.backend.run_ocelot 行；
+    入口 1/4 走 config 路径、入口 2 走 run_shared 解析、入口 3 走 GPT switches 实参）：
+    4 行全 PASS，OCELOT 行与 GPT 行数值一致（2.9213/1284.1）
+  - R4C test_gpt_tail_sample.py 单位混用修复: z_actual_mm(mm) % dz(m) → 统一 mm
+    （旧式实测 425.0 % 0.005 ×1e3 = 4.999999999991 > 1e-6 → 必然假 FAIL；新式残差
+    2.842e-13 mm PASS）
+  - R4D test_gpt_route_equivalence.py 插值前断言轨迹覆盖（np.interp 越界会被端点钳位
+    而"假装通过"）：sample_checked() 越界抛 AssertionError 并打印 FAIL；GPT/validation
+    两侧各自断言
+  - R4E git diff --check 退出码 0（尾随空格清除）
+  - 基线复核不变: canonical OCELOT hash 7790fd9c2a2b、末点 777.0 mm、AG 完整数组 hash
+    41f69f8ace7d（σx=1984.191437 / σz=474.017607）、R56 −1.163624、config SHA 不变
+  - 未修（登记）: AG 纵向矩变量衔接（H=0 薄透镜重设 ν_z）仍为开放项；非对齐中间 probe
+    仍为步末采样+标注；SC 物理未完全验收（本轮只固化运行时契约）
+  - 报告: validation/reports/entrypoint_consistency_hardening.md 附录 R；审核汇总图
+    validation/reports/review_summary.png（validation/make_review_summary.py 生成）
+
+## [drift] 2026-09-14 23:04
+  drift transverse: AG vs OCELOT max rel dev {'sigma_x_um': 0.3767796798699894, 'sigma_y_um': 0.6342565055448065, 'sigma_z_um': 0.09905818830323633, 'eps_nx_mm_mrad': 0.31140389844541905, 'sigma_delta_e3': 0.02245152598292253}
+  analytic drift reference matches (sigma_x=sqrt(s0^2+(s0'z)^2))
+  sigma_z analytic ref sqrt(sz0^2+(z*sd_p/gamma^2)^2): AG=0.05% OCELOT=0.08%
+  R56 adapter σ_δ_p semantic: 0.022% (PASS)
+  verdict: PASS — report /Users/qin/Desktop/shuyan/Beam_dynamics_simu/validation/reports/drift_AG_vs_OCELOT.png
+
+## [solenoid] 2026-09-14 23:05
+  ROOT CAUSE: AG reduced-order Larmor coupling (dnu_x⊃-2ks·nu_y, dnu_y⊃+2ks·nu_x, dsxy⊃2ks(sx^2-sy^2)).
+  Exact hard-edge 4x4 (Brown-Chao, == OCELOT SolenoidTM) gives sxy≡0 for a round uncorrelated beam; AG coupling creates spurious sxy and under-focusing.
+  k_s (Bz/(2Brho)) = 22.3751 m^-1, k_s^2 = 500.65 m^-2 — identical in both backends.
+  AG as-is:  sx=963.4 sy=2468.9 um (x-y broken)
+  AG coupling=OFF: sx=1984.2 sy=1984.2 um
+  OCELOT (ref):    sx=1996.2 sy=1991.4 um
+  AG(off) vs OCELOT sigma_x max dev = 0.60% (<1% PASS) | AG(on) = 389.28% (FAIL)
+  FIX: for round beams the coupling must be disabled in the AG force adapter (validation/backend.run_ag solenoid_coupling=False). Not a parameter tune; enforces exact round-beam transport.
+
+## [rf] 2026-09-14 23:05
+  RF standardized to thin-lens in BOTH backends (Option A):
+    longitudinal kick δ += K·sin(φ+kz), H=-9.779 m^-1, σ_δ AG=2.939e-3 vs OCELOT=2.939e-3 (PASS)
+    transverse RF kick K_trans=-2.680 m^-1 added to OCELOT; σ_x AG=1119 vs OCELOT=1122 um (PASS)
+    switch OFF vs ON: AG σ_x 1119->542 um, OCELOT 1122->537 um (both read physics_switches.rf_transverse_kick)
+    R56 adapter: kick semantic PASS, routing {'drift': 0, 'solenoid': 0, 'rf': 1, 'full': 1} PASS
+  RESOLVED: input δ-variable convention (B) fixed by the adapter; σ_z at sample agrees with AG (residual few-µm at the waist).
+
+## [full] 2026-09-14 23:05
+  full beamline: sample devs — σ_x 0.60%, σ_y 0.36%, σ_δ 0.00%, ε_nx 0.53%, ε_ny 0.26% (PASS)
+  R56 resolved — σ_z: AG 474 vs OCELOT 474 um (0.00%, PASS), waist Δz=0.4 mm
+  switches: {'rf_longitudinal_kick': True, 'rf_transverse_kick': False} == {'rf_longitudinal_kick': True, 'rf_transverse_kick': False}
+
+## [2026-10-05 runner-unification] 正式实现与验证入口共用
+
+- 范围：AG / OCELOT CLI + validation/backend；各共用一个正式driver。物理核心、共享YAML、冻结基线及已有模拟结果保持。
+- 默认统一：AG coupling=False；OCELOT dz继承配置，补足尾步；None SC继承cfg；RF全关计0。
+- 数值回归：14组同参数完整数组逐位不变；AG 41f69f8ace7d（coupling=False/n_points=2000）；OCELOT 7790fd9c2a2b（seed42/N50000/显式dz=0.001）；config 23e97edb733b。
+- 验收：最终run_all 7/7/rc0；9个专项组rc0；新增真实CLI JSON/后端数组严格一致检查。
+- 首次失败及修正：solenoid 默认5-mm输出在窄焦点附近插值 dev2.48% > 原1%；该既有解析回归显式保留原1-mm条件后dev0.60%，阈值未放宽。默认5-mm流程另有入口合同覆盖。原失败日志保留。
+- 信任边界：运行合同与指定回归通过，不是完整SC+RF物理验收；AG纵向状态、非对齐RF和SC收敛继续开放。
+- 详细记录：CHANGELOG_runner_unification_20261005.md；用户HTML/JSON/patch/zip位于本聊天outputs。副本测试没有重写原报告/基线。
+## [2026-10-16] AG longitudinal Gz / SC-to-RF state consistency
+
+- 研究者选择：纵向 Gz，初态共享 sigma_z/sigma_delta 优先；横向发射度仍固定。
+- 仅积分一组纵向状态，相关矩与展宽派生；RF 的 H=0、±H 和行列式检查通过。
+- 隔离副本 run_all 8/8；新增纵向专项 15 项；电荷/阻尼/退出码专项及真实 CLI 保存通过，原验收阈值保持。
+- 一致初态 .4 m Gaussian-SC：sigma_delta 1e-4→0.00152231291，H=0 对 nu_z 相对变化为 0（修复前 -99.7032%）。
+- AG full SC ON：sigma_z 1117.416172→524.432385 um；sigma_delta_e3 7.00436328→4.70665942。
+- AG full SC OFF 新基线 sigma_x=1984.189024、sigma_z=473.922215 um，hash02012b2143f5。另存新基线及迁移原因，旧档案不覆盖。
+- OCELOT SC OFF canonical 实跑7790fd9c2a2b；config23e97edb733b。短PIC差异（sigma_z1.89%、sigma_delta11.47%）仍为诊断，SC完整物理验收未完成。
+- Note: AG/longitudinal_state_physics_note.md；changelog: CHANGELOG_ag_longitudinal_gz_20261016.md。未提交、未推送、未同步外部服务。

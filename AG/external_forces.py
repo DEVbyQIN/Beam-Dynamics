@@ -405,7 +405,7 @@ if __name__ == "__main__":
     print("\n── 1. Drift propagation ──")
     z_drift, st_drift = propagate(beam0, (0, 0.5), n_points=100,
                                   sc_model='ellipsoid')
-    b1 = Beam6D.from_state(st_drift[-1, :11], st_drift[-1, 11],
+    b1 = Beam6D.from_state(st_drift[-1], st_drift[-1, 11],
                             beam0.Ne, beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
     print(f"  σ_x={b1.sigma_x*1e6:.2f} μm  σ_z={b1.sigma_z*1e6:.2f} μm")
 
@@ -420,7 +420,7 @@ if __name__ == "__main__":
     z_sol, st_sol = propagate(beam0, (0, 0.5), n_points=200,
                               external_force_func=ef_sol,
                               sc_model='ellipsoid')
-    b2 = Beam6D.from_state(st_sol[-1, :11], st_sol[-1, 11],
+    b2 = Beam6D.from_state(st_sol[-1], st_sol[-1, 11],
                             beam0.Ne, beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
     print(f"  σ_x={b2.sigma_x*1e6:.2f} μm  σ_y={b2.sigma_y*1e6:.2f} μm  "
           f"σ_z={b2.sigma_z*1e6:.2f} μm")
@@ -443,7 +443,7 @@ if __name__ == "__main__":
                             gamma_prime_func=gp_rf,
                             rf_chirp_func=ch_rf,
                             sc_model='ellipsoid')
-    b3 = Beam6D.from_state(st_rf[-1, :11], st_rf[-1, 11],
+    b3 = Beam6D.from_state(st_rf[-1], st_rf[-1, 11],
                             beam0.Ne, beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
     print(f"  γ_end={b3.gamma:.4f}  (Δγ≈{b3.gamma-beam0.gamma:.4f})")
     print(f"  σ_x={b3.sigma_x*1e6:.2f} μm  σ_z={b3.sigma_z*1e6:.2f} μm  "

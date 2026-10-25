@@ -72,15 +72,9 @@ def _c3(cfg):
 
 @check("sample == lattice total length (contiguity)")
 def _c4(cfg):
-    z_prev = 0.0
-    gaps = []
-    for e in _lattice_elements(cfg):
-        if e["length"] <= 0:
-            continue
-        if abs(e["z_start"] - z_prev) > 1e-9:
-            gaps.append((e["name"], e["z_start"], z_prev))
-        z_prev = e["z_start"] + e["length"]
-    return not gaps, f"sample={z_sample(cfg)*1e3:.3f}mm, total={z_prev*1e3:.3f}mm"
+    from shared.geometry import validate_geometry
+    geometry = validate_geometry(cfg)
+    return True, f"validated sample={geometry['sample_m']*1e3:.3f}mm; contiguous geometry"
 
 
 @check("lattice element schema")

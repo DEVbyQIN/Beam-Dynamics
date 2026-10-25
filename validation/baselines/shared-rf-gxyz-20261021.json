@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-21",
+  "status": "versioned numerical regression; not a full SC physical certification",
+  "array_fields": [
+    "z_mm",
+    "sigma_x_um",
+    "sigma_y_um",
+    "sigma_z_um",
+    "eps_nx_mm_mrad",
+    "eps_ny_mm_mrad",
+    "sigma_delta_e3"
+  ],
+  "parameters": {
+    "section": "full",
+    "SC": false,
+    "seed": 42,
+    "N_ocelot": 50000,
+    "dz_ocelot_m": 0.001,
+    "n_points_ag": 2000,
+    "coupling_ag": false
+  },
+  "migration_reason": [
+    "RF phase from arrival time introduces the missing 1/beta; H uses beta^3 rather than beta^2. Default phase and voltage unchanged.",
+    "OCELOT emittance uses centered population moments; history now includes the true s=0 row.",
+    "AG evolves all three paper phase areas, including Gx/Gy; internal ODE dimension/scaling changes adaptive integration even with SC off.",
+    "Both routes expose longitudinal covariance, chirp, emittances, duration and actual reference factors."
+  ],
+  "old_evidence_preserved": [
+    "validation/baselines/ag-longitudinal-gz-20261016.json",
+    "AI_HANDOFF.md sections 28-29",
+    "outputs/implementation_20261021/before_runs.json"
+  ],
+  "routes": {
+    "AG": {
+      "old_hash": "02012b2143f5",
+      "new_hash": "62d55ac141e6",
+      "endpoint": {
+        "z_mm": 776.9999999999999,
+        "sigma_x_um": 1984.1914371473424,
+        "sigma_y_um": 1984.1914371473424,
+        "sigma_z_um": 1113.771346780507,
+        "sigma_delta_e3": 5.3660936450831676,
+        "eps_nx_mm_mrad": 0.08,
+        "eps_ny_mm_mrad": 0.08,
+        "C_zdelta_m": 5.976526051932057e-06,
+        "chirp_per_m": 4.817888391326972,
+        "eps_nz_mm_mrad": 0.01966515033420813,
+        "eps_z_zprime_m": 2.0983616543138742e-08,
+        "sigma_t_fs": 6776.723693866731,
+        "energy_keV": 100.0,
+        "beta_ref": 0.5482208635460608,
+        "gamma_ref": 1.195695119849485
+      },
+      "cli_arrays_equal": true,
+      "n_history": 1999,
+      "config_sha": "093a3c496ddb",
+      "effective_dz_m": null,
+      "gamma_provenance": "actual ODE history; not reconstructed from rounded shared rest energy",
+      "cli_config_sha": "69ee09aeec5b",
+      "source_sha256": {
+        "AG/beam_dynamics_6d.py": "c97a5d1fbe991824c528b1e5c4f12c668dd13aa1c494fd8000988d4a0ae0b634",
+        "AG/external_forces.py": "9482bb4f70ef3794119a0cf8b1a54d2dd50596fed446252e42ecca3666e2fffb",
+        "AG/runner.py": "8327f7c213bc6f1f43f12fcda4bc36a32d88e47eb6ef7aefc2cfb29cb0b55b42",
+        "AG/longitudinal_state.py": "d90b51d77f47a0bd484f9859b81918dbd5e98bfcda916b891f5f335ef7c278d3",
+        "AG/beamline_sim.py": "8adbf7b00ee5491144cba61a402f848017909909be2672c5cf67d2a3d74df4dd",
+        "GPT\u6a21\u62df/ued_beamline_v2.py": "b345029d39dfeb1f628c02ed0f0bd67c4747e83289bd25d99e86ec8c5bf83c0c",
+        "shared/params.py": "92412fadc627d317c8f1b3bc3b82aeb133bfbbaed3ede76294f95009ff64571a",
+        "shared/constants.py": "4a8cd1a11df8e2d1b7766b69b0ebb0c46dac1b2b9992ec0651b041f160e934e6",
+        "shared/beam_physics.py": "0829709d5ddf5ad815b99b51c0377f9ea81c01fb0d55d50cf23e684f03422ffe",
+        "shared/diagnostics.py": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50",
+        "shared/rf_model.py": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e",
+        "shared/beam_result.py": "101223e23f06589fc1002c8ac529b9df130d53fd5c343a0a4d4dbd9450c48944"
+      },
+      "dependencies": {
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "ocelot-desy": "unavailable"
+      }
+    },
+    "OCELOT": {
+      "old_hash": "7790fd9c2a2b",
+      "new_hash": "12c087cf62be",
+      "endpoint": {
+        "z_mm": 777.0,
+        "sigma_x_um": 1996.2051333373147,
+        "sigma_y_um": 1991.4150732715254,
+        "sigma_z_um": 1113.296110994674,
+        "sigma_delta_e3": 5.364514709187363,
+        "eps_nx_mm_mrad": 0.08042910634706907,
+        "eps_ny_mm_mrad": 0.08020340054123438,
+        "C_zdelta_m": 5.972217841964414e-06,
+        "chirp_per_m": 4.818526554234007,
+        "eps_nz_mm_mrad": 0.019687655883289416,
+        "eps_z_zprime_m": 2.1007668771743853e-08,
+        "sigma_t_fs": 6773.837450778269,
+        "energy_keV": 100.0,
+        "beta_ref": 0.548220432878698,
+        "gamma_ref": 1.1956947162426614
+      },
+      "cli_arrays_equal": true,
+      "n_history": 778,
+      "config_sha": "093a3c496ddb",
+      "effective_dz_m": 0.001,
+      "cli_config_sha": "69ee09aeec5b",
+      "source_sha256": {
+        "AG/beam_dynamics_6d.py": "b3c48780f5d9f01958cc2f5438a9cd4d8557cc99f6b579e763950a36068d8b34",
+        "AG/external_forces.py": "9482bb4f70ef3794119a0cf8b1a54d2dd50596fed446252e42ecca3666e2fffb",
+        "AG/runner.py": "06a37eea41aa855cefeffdf9f979a76930a80fc7628cbecea24cf52fe5439e73",
+        "AG/longitudinal_state.py": "d90b51d77f47a0bd484f9859b81918dbd5e98bfcda916b891f5f335ef7c278d3",
+        "AG/beamline_sim.py": "ab292fe8db6432fa9ec17e6f68389a9dfa40848521360e0bce6a4733937bd8cc",
+        "GPT\u6a21\u62df/ued_beamline_v2.py": "02bec78b7f99e493644f2db33e69bfa8254a6d499e90c7e8890a517d1bee94e4",
+        "shared/params.py": "92412fadc627d317c8f1b3bc3b82aeb133bfbbaed3ede76294f95009ff64571a",
+        "shared/constants.py": "4a8cd1a11df8e2d1b7766b69b0ebb0c46dac1b2b9992ec0651b041f160e934e6",
+        "shared/beam_physics.py": "0829709d5ddf5ad815b99b51c0377f9ea81c01fb0d55d50cf23e684f03422ffe",
+        "shared/diagnostics.py": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50",
+        "shared/rf_model.py": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e",
+        "shared/beam_result.py": "ff0b91703ccc75860f65d1777e11e738e207ce8099636471f0207fbd037d95e1"
+      },
+      "dependencies": {
+        "numpy": "1.26.4",
+        "scipy": "1.13.1",
+        "ocelot-desy": "unavailable"
+      }
+    }
+  }
+}

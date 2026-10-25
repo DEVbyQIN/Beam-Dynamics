@@ -11,18 +11,45 @@ Implements the 6D coupled envelope ODE framework based on:
 
 The six state variables are:
   σ_x, σ_y, σ_z   — RMS beam sizes (m)
-  ν_x, ν_y, ν_z   — RMS beam slopes σ'_x, σ'_y, σ'_z (dimensionless)
+  ν_x, ν_y, ν_z   — envelope slopes σ'_x, σ'_y, σ'_z (dimensionless)
 
 Plus:
-  γ               — reference particle Lorentz factor (evolves with acceleration)
+  γ               — reference particle Lorentz factor
+
+2026-10-21: SC dispersion evolves through the paired Eqs.(15)-(20) in all
+three axes. Independent phase areas Mx/My/Mz determine the instantaneous
+emittances. Public history keeps the original 12 columns and appends
+eps_nx/eps_ny [m]. This remains the Gaussian reduced closure, not a full
+arbitrary-coupling/high-order external-field model.
 
 Envelope equation (Eq.3):
-  σ_u'' + (γ γ')/(γ² β²) σ_u' = F_u^e + F_u^s + F_u^ε
+  σ_u'' + γ'/(γ³ β²) σ_u' = F_u^e + F_u^s + F_u^ε
 """
 
 import numpy as np
-from scipy.integrate import quad, solve_ivp
-from scipy.interpolate import RectBivariateSpline
+from scipy.integrate import quad, solve_ivp, RK45
+import warnings
+
+
+class _TrialStateOutsideDomain(ValueError):
+    """An RK trial stage has left the valid envelope-state domain."""
+
+
+class _DomainCheckedRK45(RK45):
+    """Reuse SciPy RK45, rejecting invalid trial stages before acceptance.
+
+    SciPy 1.13 RK45 commits t/y only after all trial stages succeed. A failed
+    stage can therefore be retried from the unchanged accepted state. No
+    coordinate/area clipping or altered error tolerance is involved.
+    """
+    def _step_impl(self):
+        for _ in range(32):
+            try:
+                return super()._step_impl()
+            except _TrialStateOutsideDomain:
+                self.h_abs *= 0.5
+                self.domain_rejections = getattr(self, 'domain_rejections', 0) + 1
+        raise RuntimeError("AG RK45 cannot find a valid trial step after 32 reductions")
 from dataclasses import dataclass
 from typing import Tuple, Optional, Callable, List
 import warnings
@@ -56,141 +83,9 @@ def gamma_to_beamK(gamma: float) -> float:
 # Space-charge coefficients  α_ij(k_x, k_y)
 # ═════════════════════════════════════════════════════════════════════════════
 
-def _integrate_alpha(func, kx: float, ky: float) -> float:
-    """
-    Compute one of the α-coefficient integrals ∫₀^∞ f(s; kx, ky) ds.
-    Uses the substitution  s = t/(1-t)  to map [0,∞) → [0,1).
-    """
-    # Handle degenerate cases
-    kx = max(kx, 1e-12)
-    ky = max(ky, 1e-12)
-
-    def integrand(t):
-        s = t / (1.0 - t) if t < 1.0 else 1e15
-        ds_dt = 1.0 / (1.0 - t)**2
-        return func(s, kx, ky) * ds_dt
-
-    result, _ = quad(integrand, 0.0, 0.999999, limit=200)
-    return result
-
-
-def compute_all_alpha(kx: float, ky: float) -> dict:
-    """
-    Compute all 9 space-charge coefficients α_ij for given (k_x, k_y).
-    k_x = σ_x / (γ σ_z),  k_y = σ_y / (γ σ_z).
-
-    Returns dict with keys: 'x','y','z','xx','yy','zz','xy','xz','yz'.
-    """
-    eps_ = 1e-12
-    kx = max(kx, eps_)
-    ky = max(ky, eps_)
-
-    # α_x  (Eq.21)
-    def f_ax(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2)**3 * (s**2 + ky**2) * (s**2 + 1.0))
-        return kx**2 * s / denom
-
-    # α_y  (Eq.22)
-    def f_ay(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2)**3 * (s**2 + 1.0))
-        return ky**2 * s / denom
-
-    # α_z  (Eq.23)
-    def f_az(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2) * (s**2 + 1.0)**3)
-        return kx * ky * s / denom
-
-    # α_xx  (Eq.24)  — Kelisani 2023 Eq.24: 3k_x⁴s/(2√(...)⁵...)
-    # v0.15 P0-2 fix: paper has 1/2 in the denominator (PDF + LaTeX source
-    # verified); implemented as 1.5·k⁴·s/√(...).  Only affects the Gaussian
-    # O(1/γ) bracket terms (<0.01% on Fs); ellipsoid model does not use it.
-    def f_axx(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2)**5 * (s**2 + ky**2) * (s**2 + 1.0))
-        return 1.5 * kx**4 * s / denom
-
-    # α_yy  (Eq.25)  — symmetric: α_yy(kx, ky) = α_xx(ky, kx)
-    def f_ayy(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2)**5 * (s**2 + 1.0))
-        return 1.5 * ky**4 * s / denom
-
-    # α_zz  (Eq.26)
-    def f_azz(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2) * (s**2 + 1.0)**5)
-        return 3.0 * kx * ky * s / denom
-
-    # α_xy  (Eq.27)
-    def f_axy(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2)**3 * (s**2 + ky**2)**3 * (s**2 + 1.0))
-        return 4.0 * kx**2 * ky**2 * s / denom
-
-    # α_xz  (Eq.28)
-    def f_axz(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2)**3 * (s**2 + ky**2) * (s**2 + 1.0)**3)
-        return kx**2 * s / denom
-
-    # α_yz  (Eq.29)
-    def f_ayz(s, kx, ky):
-        denom = np.sqrt((s**2 + kx**2) * (s**2 + ky**2)**3 * (s**2 + 1.0)**3)
-        return ky**2 * s / denom
-
-    return {
-        'x':  _integrate_alpha(f_ax, kx, ky),
-        'y':  _integrate_alpha(f_ay, kx, ky),
-        'z':  _integrate_alpha(f_az, kx, ky),
-        'xx': _integrate_alpha(f_axx, kx, ky),
-        'yy': _integrate_alpha(f_ayy, kx, ky),
-        'zz': _integrate_alpha(f_azz, kx, ky),
-        'xy': _integrate_alpha(f_axy, kx, ky),
-        'xz': _integrate_alpha(f_axz, kx, ky),
-        'yz': _integrate_alpha(f_ayz, kx, ky),
-    }
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# Cached space-charge coefficient table (lazy interpolation)
-# ═════════════════════════════════════════════════════════════════════════════
-
-def _build_alpha_cache(
-    kx_range: Tuple[float, float] = (1e-2, 1e2),
-    ky_range: Tuple[float, float] = (1e-2, 1e2),
-    n_points: int = 15,
-) -> dict:
-    """Precompute α-coefficient tables on a log-spaced grid."""
-    kx_vals = np.logspace(np.log10(kx_range[0]), np.log10(kx_range[1]), n_points)
-    ky_vals = np.logspace(np.log10(ky_range[0]), np.log10(ky_range[1]), n_points)
-    keys = ['x', 'y', 'z', 'xx', 'yy', 'zz', 'xy', 'xz', 'yz']
-    grid = {k: np.zeros((n_points, n_points)) for k in keys}
-
-    for i, kx in enumerate(kx_vals):
-        for j, ky in enumerate(ky_vals):
-            coeffs = compute_all_alpha(kx, ky)
-            for k in keys:
-                grid[k][i, j] = coeffs[k]
-
-    splines = {}
-    for k in keys:
-        splines[k] = RectBivariateSpline(kx_vals, ky_vals, grid[k])
-
-    return splines
-
-
-# Global cache — built lazily on first use
-_ALPHA_CACHE: Optional[dict] = None
-
-
-def get_alpha_interpolators() -> dict:
-    global _ALPHA_CACHE
-    if _ALPHA_CACHE is None:
-        _ALPHA_CACHE = _build_alpha_cache()
-    return _ALPHA_CACHE
-
-
-def alpha_at(kx: float, ky: float) -> dict:
-    """Interpolated α coefficients at (kx, ky).  Clips to grid range."""
-    kx = np.clip(kx, 1e-2, 1e2)
-    ky = np.clip(ky, 1e-2, 1e2)
-    spl = get_alpha_interpolators()
-    return {k: float(spl[k](kx, ky).item()) for k in spl}
+# Single evaluator for both F and G; no table clipping or interpolation.
+from AG.alpha_coefficients import (compute_all_alpha, alpha_at,
+    get_alpha_interpolators, record_evaluations)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -217,8 +112,11 @@ class Beam6D:
         Lorentz factor of the reference particle.
     Ne : float
         Number of electrons in the bunch.
-    eps_nx, eps_ny, eps_nz : float [m·rad]
-        Normalised rms emittances.
+    eps_nx, eps_ny : float [m·rad]
+        Instantaneous normalized transverse rms emittances (evolved SC Gx/Gy).
+    eps_nz : float [m]
+        Momentum-coordinate longitudinal emittance beta*gamma*sqrt(det
+        Sigma[zeta,delta_p]); a diagnostic/compatibility field, not fixed.
     """
     sigma_x: float
     sigma_y: float
@@ -258,7 +156,7 @@ class Beam6D:
     def theta_x(self) -> float:
         """
         RMS divergence in x (rad).
-        From emittance conservation:  ε_geo² = σ²θ² − σ²σ'²
+        From the instantaneous covariance: ε_geo² = σ²θ² − σ²σ'²
         →  θ_x = sqrt(ε_geo² / σ_x² + ν_x²)
         """
         p0 = self.p0
@@ -277,21 +175,13 @@ class Beam6D:
 
     @property
     def theta_z(self) -> float:
-        """Longitudinal RMS divergence (dimensionless slope).
+        """RMS particle slope: theta_z = sigma_delta/gamma².
 
-        v0.15 fix (approved 2026-08-16): the longitudinal particle slope is
-        Δz' = δ/γ² (relativistic kinematics; dβ/dδ = β/γ²), so the
-        emittance-derived divergence carries the 1/γ² factor:
-            Λz = εnz/(βγ³σz) = σδ/γ²   (uncorrelated case)
-        Previously the 1/γ² factor was missing (θz ≈ σδ), overestimating the
-        longitudinal expansion by ~γ² (×1.4 at 100 keV, ×116 at 5 MeV).
-        See validation/reports/AG_longitudinal_fix_proposal.md.
+        Longitudinal dispersion evolves via the paper's Gz equation.
+        eps_nz is an input/compatibility record, not a fixed longitudinal
+        pressure parameter. See longitudinal_state_physics_note.md.
         """
-        p0 = self.p0
-        if p0 < 1e-12 or self.sigma_z < 1e-15:
-            return 0.0
-        eps_geo = self.eps_nz / p0 / (self.gamma**2)   # εnz/(γ³β) = σδ/γ²
-        return np.sqrt(eps_geo**2 / self.sigma_z**2 + self.nu_z**2)
+        return self.sigma_delta / self.gamma**2
 
     def state_vector(self) -> np.ndarray:
         """Return [σx,σy,σz,σxy,σδ,C_zd, νx,νy,νz,νxy,νδ]."""
@@ -302,10 +192,15 @@ class Beam6D:
     @classmethod
     def from_state(cls, y: np.ndarray, gamma: float, Ne: float,
                    eps_nx: float, eps_ny: float, eps_nz: float) -> "Beam6D":
-        return cls(sigma_x=y[0], sigma_y=y[1], sigma_z=y[2],
+        if len(y)>=14:
+            eps_nx,eps_ny=float(y[12]),float(y[13])
+        b = cls(sigma_x=y[0], sigma_y=y[1], sigma_z=y[2],
                    sigma_xy=y[3], sigma_delta=y[4], C_zd=y[5],
                    nu_x=y[6], nu_y=y[7], nu_z=y[8], nu_xy=y[9], nu_delta=y[10],
                    gamma=gamma, Ne=Ne, eps_nx=eps_nx, eps_ny=eps_ny, eps_nz=eps_nz)
+        from AG.longitudinal_state import inspect_longitudinal_state
+        b.eps_nz = inspect_longitudinal_state(b)["epsilon_from_covariance_mm_mrad"] * 1e-6
+        return b
 
     def copy(self) -> "Beam6D":
         return Beam6D(self.sigma_x, self.sigma_y, self.sigma_z, self.sigma_xy,
@@ -364,8 +259,10 @@ def _space_charge_forces(beam: Beam6D) -> Tuple[float, float, float]:
     Compute space-charge forces F_x^s, F_y^s, F_z^s for a 6D Gaussian beam.
 
     Uses the full analytical expressions Eqs.(15)-(17) from Kelisani 2023,
-    with α coefficients interpolated from a precomputed table.
+    with α coefficients evaluated by checked direct quadrature.
     """
+    if beam.Ne == 0:
+        return 0.0, 0.0, 0.0
     gamma = beam.gamma
     beta = beam.beta
     p0 = beam.p0
@@ -375,11 +272,11 @@ def _space_charge_forces(beam: Beam6D) -> Tuple[float, float, float]:
     nx, ny, nz = beam.nu_x, beam.nu_y, beam.nu_z
     tx, ty, tz = beam.theta_x, beam.theta_y, beam.theta_z
 
-    # Aspect ratios in the beam rest frame  (clipped to table range)
-    kx_ = np.clip(sx / (gamma * sz) if sz > 1e-15 else 1e3, 1e-2, 1e2)
-    ky_ = np.clip(sy / (gamma * sz) if sz > 1e-15 else 1e3, 1e-2, 1e2)
+    # Actual rest-frame aspect ratios; evaluator rejects unsupported inputs.
+    kx_ = sx / (gamma * sz)
+    ky_ = sy / (gamma * sz)
 
-    # Get α coefficients by interpolation
+    # Same direct α evaluator used by G/phase-area evolution
     alpha = alpha_at(kx_, ky_)
     ax, ay, az = alpha['x'], alpha['y'], alpha['z']
     axx, ayy, azz = alpha['xx'], alpha['yy'], alpha['zz']
@@ -441,6 +338,35 @@ def _space_charge_forces(beam: Beam6D) -> Tuple[float, float, float]:
     Fs_z = term_z0 - fb/gamma * (A_z + B_z)
 
     return Fs_x, Fs_y, Fs_z
+
+
+def longitudinal_sc_area_log_rate(beam: Beam6D, model: str = 'gaussian') -> float:
+    """Return M'/M [1/m] due to SC, M = sigma_z²(theta_z²-nu_z²).
+
+    Algebraic pairing of Kelisani Eq.(17) and Eq.(20):
+      theta_z*Gz - nu_z*Fz = -(fb/gamma)*(theta_z²-nu_z²)*K
+      K = 3*nu_z*(1-p0²)*alpha_z/(sx*sy)
+          + nu_x*alpha_x/(sx*sz) + nu_y*alpha_y/(sy*sz).
+    This avoids subtracting the equal leading terms in theta*G and nu*F.
+    The uniform ellipsoid's linear internal force preserves M.
+    """
+    return space_charge_area_log_rates(beam,model)[2]
+
+
+def space_charge_area_log_rates(beam: Beam6D, model: str = 'gaussian'):
+    """SC M'/M for all axes, pairing Eqs.(15)-(20); see transverse G Note."""
+    if model not in ('gaussian', 'ellipsoid'):
+        raise ValueError("sc_model must be 'gaussian' or 'ellipsoid'")
+    if beam.Ne == 0 or model == 'ellipsoid':
+        return np.zeros(3)
+    sx, sy, sz = beam.sigma_x, beam.sigma_y, beam.sigma_z
+    alpha = alpha_at(sx / (beam.gamma * sz), sy / (beam.gamma * sz))
+    fb = (E_CHARGE / (M_E * C_LIGHT**2)) * beam.Ne * E_CHARGE / (
+        8.0 * np.pi * np.sqrt(np.pi) * EPSILON_0)
+    X=beam.nu_x*alpha['x']/(sx*sz)
+    Y=beam.nu_y*alpha['y']/(sy*sz)
+    Z=beam.nu_z*(1.-beam.p0**2)*alpha['z']/(sx*sy)
+    return -2.*fb/beam.gamma*np.array([3*X+Y+Z,X+3*Y+Z,X+Y+3*Z])
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -865,14 +791,26 @@ def apply_rf_thin_lens(beam: Beam6D, H: float) -> Beam6D:
     ν_z   → C_zδ_new / (γ²·σ_z)   (consistent with drift kinematics)
     σ_z   unchanged by thin lens
     """
+    from AG.longitudinal_state import inspect_longitudinal_state
+    state = inspect_longitudinal_state(beam)
+    if state['correlation_relative_mismatch'] > state['rtol']:
+        raise ValueError("RF input has inconsistent nu_z and C_zd; repair the upstream state")
+    if not np.isfinite(H):
+        raise ValueError("RF H must be finite [1/m]")
     b = beam.copy()
-    sz2 = beam.sigma_z**2
-    new_var_delta = beam.sigma_delta**2 + 2*H*beam.C_zd + H**2 * sz2
-    b.sigma_delta = np.sqrt(max(new_var_delta, 0.0))
-    b.C_zd = beam.C_zd + H * sz2
-    # Update ν_z to be consistent with post-lens σ_z evolution in drift
-    g2 = max(beam.gamma**2, 1.001)
-    b.nu_z = b.C_zd / (g2 * max(beam.sigma_z, 1e-15))
+    if H == 0:
+        return b
+    # Sigma+ = L Sigma- L.T, written using the uncorrelated variance to
+    # avoid cancellation near a longitudinal focus. Invalid PSD was checked.
+    uncorrelated = state['determinant_m2'] / beam.sigma_z**2
+    if uncorrelated < 0:
+        if not state['psd_roundoff_limited']:
+            raise ValueError("RF input has negative uncorrelated variance")
+        uncorrelated = 0.0
+    b.C_zd = beam.C_zd + H * beam.sigma_z**2
+    b.sigma_delta = np.sqrt(uncorrelated + (b.C_zd / beam.sigma_z)**2)
+    b.nu_z = beam.nu_z + H * beam.sigma_z / beam.gamma**2
+    b.eps_nz = state['epsilon_from_covariance_mm_mrad'] * 1e-6
     return b
 
 
@@ -939,9 +877,10 @@ def envelope_ode(z: float, y: np.ndarray,
                  gamma_prime_func: Optional[Callable] = None,
                  rf_chirp_func: Optional[Callable] = None,
                  sc_model: str = 'gaussian',
+                 _longitudinal_area: Optional[float] = None,
                  ) -> np.ndarray:
     """
-    RHS of the 11-variable envelope ODE system.
+    Compatibility RHS in the public 12-column history coordinates.
 
     State: [σx,σy,σz,σxy,σ_δ,C_zδ, νx,νy,νz,νxy,ν_δ, γ]
     Returns dy/dz = [νx,νy,νz,νxy,ν_δ', dC/dz, dνx/dz,..., dγ/dz]
@@ -949,7 +888,8 @@ def envelope_ode(z: float, y: np.ndarray,
     Parameters
     ----------
     rf_chirp_func : callable, optional
-        (z, beam) → h  where h = dδ/dz at z (RF chirp rate [1/m]).
+        Zero callbacks are retained for compatibility. A nonzero callback
+        fails explicitly; formal longitudinal RF uses the thin lens.
     """
     gamma = y[11]
     beam = Beam6D.from_state(y[:11], gamma, Ne, eps_nx, eps_ny, eps_nz)
@@ -968,7 +908,8 @@ def envelope_ode(z: float, y: np.ndarray,
         #   D = γ₀γ'₀/(γ₀²p₀²) = γ'/(γ³β²)   (p₀ = γ₀β₀)
         # Previously γγ'/(γ²β²) = γ'/(γβ²) — a factor γ² too large.
         # Current beamline has γ' = 0 (no acceleration) → no-acceleration
-        # baseline bit-identical; the fix matters for future acceleration.
+        # coefficient contributes zero. Accelerating coordinates need their
+        # own physical validation; the formal beamline holds gamma fixed.
         damping_coeff = gamma_prime / (gamma**3 * beta**2)
     else:
         damping_coeff = 0.0
@@ -976,7 +917,10 @@ def envelope_ode(z: float, y: np.ndarray,
     # ── Transverse emittance forces ──
     F_eps_x = emittance_force(beam.sigma_x, beam.nu_x, beam.theta_x)
     F_eps_y = emittance_force(beam.sigma_y, beam.nu_y, beam.theta_y)
-    F_eps_z = emittance_force(beam.sigma_z, beam.nu_z, beam.theta_z)
+    area = (_longitudinal_area if _longitudinal_area is not None else
+            beam.sigma_z**2 * (beam.theta_z - abs(beam.nu_z))
+            * (beam.theta_z + abs(beam.nu_z)))
+    F_eps_z = area / beam.sigma_z**3
 
     # ── Space-charge forces ──
     Fs_x, Fs_y, Fs_z = space_charge_forces(beam, model=sc_model)
@@ -992,30 +936,24 @@ def envelope_ode(z: float, y: np.ndarray,
     if rf_chirp_func is not None:
         h_rate = rf_chirp_func(z, beam)
 
-    # ── Longitudinal (z, δ) transport ──
-    # Drift contributions (always active):
-    #   dC_zδ/dz = σ_δ² / γ²   (drift generates z-δ correlation via R_56)
-    sigma_d = max(beam.sigma_delta, 1e-12)
-    gamma2 = max(gamma**2, 1.001)
-    dC_zd_dz = sigma_d**2 / gamma2
-
-    #   dσ_δ/dz = 0 in drift, but RF chirp modifies it:
-    #   In an RF cavity:  δ_out = δ_in + h·z
-    #     σ_δ² → σ_δ² + 2h·C_zδ + h²·σ_z²
-    #   In differential form: d(σ_δ²)/dz = 2h'·C_zδ + 2h'·h·σ_z²
-    #     →  dσ_δ/dz = (h'·C_zδ + h'·h·σ_z²) / σ_δ   (for small h'·dz)
-    if abs(h_rate) > 1e-15 and sigma_d > 1e-12:
-        dsigma_delta_dz = h_rate * (beam.C_zd + h_rate * beam.sigma_z**2) / sigma_d
-        dC_zd_dz += h_rate * beam.sigma_z**2       # RF chirp adds correlation
-    else:
-        dsigma_delta_dz = 0.0
+    if h_rate != 0.0:
+        raise ValueError("Continuous longitudinal RF chirp is not supported; use apply_rf_thin_lens")
 
     # ── Transverse envelope ──
     dnu_x = -damping_coeff * beam.nu_x + Fe_x + Fs_x + F_eps_x + dnx_sol
     dnu_y = -damping_coeff * beam.nu_y + Fe_y + Fs_y + F_eps_y + dny_sol
     dnu_z = -damping_coeff * beam.nu_z + Fe_z + Fs_z + F_eps_z
     dnu_xy = dsxy_sol
-    dnu_delta = 0.0  # ν_δ tracked as independent variable
+    # Eq.(7),(20), paired with Eq.(17). The existing external longitudinal
+    # force is linear in zeta, hence theta*Ge = nu*Fe. Formal gamma'=0.
+    sc_area_rate = longitudinal_sc_area_log_rate(beam, sc_model)
+    theta_G = beam.nu_z * (Fe_z + Fs_z) + 0.5 * sc_area_rate * area / beam.sigma_z**2
+    theta_prime = ((theta_G - damping_coeff * beam.theta_z**2) / beam.theta_z
+                   if beam.theta_z > 0 else abs(Fe_z + Fs_z))
+    dsigma_delta_dz = 2.0 * gamma * gamma_prime * beam.theta_z + gamma**2 * theta_prime
+    dC_zd_dz = (gamma**2 * (beam.nu_z**2 + beam.sigma_z * dnu_z)
+                + 2.0 * gamma * gamma_prime * beam.sigma_z * beam.nu_z)
+    dnu_delta = 0.0  # deprecated output slot; not an independent state
 
     return np.array([beam.nu_x, beam.nu_y, beam.nu_z, beam.nu_xy,
                      dsigma_delta_dz, dC_zd_dz,
@@ -1035,7 +973,7 @@ def propagate(beam0: Beam6D, z_span: Tuple[float, float],
               rf_chirp_func: Optional[Callable] = None,
               **solver_kwargs) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Integrate the 7-variable envelope ODE over [z_start, z_end].
+    Integrate the reduced envelope/longitudinal-moment state over the span.
 
     Parameters
     ----------
@@ -1057,27 +995,83 @@ def propagate(beam0: Beam6D, z_span: Tuple[float, float],
     Returns
     -------
     z_arr : ndarray (n_points,)
-    beam_states : ndarray (n_points, 12)  — [σx,σy,σz,σxy,σδ,C_zd, νx,νy,νz,νxy,νδ, γ]
+    beam_states : ndarray (n_points, 14); original 12 columns then eps_nx,eps_ny [m]
     """
-    y0 = np.append(beam0.state_vector(), beam0.gamma)
+    from AG.longitudinal_state import inspect_longitudinal_state
+    state0 = inspect_longitudinal_state(beam0)
+    if state0['correlation_relative_mismatch'] > state0['rtol']:
+        raise ValueError("AG propagation requires C_zd = gamma^2*sigma_z*nu_z")
+    if not isinstance(n_points, int) or n_points < 2:
+        raise ValueError("n_points must be an integer >= 2")
     z_start, z_end = z_span
+    if not np.isfinite([z_start, z_end]).all() or z_end <= z_start:
+        raise ValueError("AG propagation requires a finite, increasing z_span")
     t_eval = np.linspace(z_start, z_end, n_points)
+    # Evolve three phase areas together with sizes/slopes. Longitudinal C and
+    # sigma_delta are derived. Public history retains the first 12 columns
+    # and appends transverse emittances. M is scaled by (1 um)^2.
+    area_unit_m2 = 1e-12
+    indices = np.array([0, 1, 2, 3, 6, 7, 8, 9, 11])
+    full0 = np.append(beam0.state_vector(), beam0.gamma)
+    area0 = (0.0 if state0['psd_roundoff_limited'] else
+             state0['determinant_m2'] / beam0.gamma**4)
+    initial_areas=np.array([(beam0.eps_nx/beam0.p0)**2,
+                            (beam0.eps_ny/beam0.p0)**2,area0])
+    if not np.isfinite(initial_areas).all() or beam0.eps_nx<0 or beam0.eps_ny<0:
+        raise ValueError('invalid transverse emittance')
+    active0 = np.r_[full0[indices], initial_areas / area_unit_m2]
 
-    def rhs(z, y):
-        return envelope_ode(z, y, beam0.Ne,
-                            beam0.eps_nx, beam0.eps_ny, beam0.eps_nz,
-                            external_force_func=external_force_func,
-                            gamma_prime_func=gamma_prime_func,
-                            rf_chirp_func=rf_chirp_func,
-                            sc_model=sc_model)
+    def unpack(active):
+        full = np.zeros(14)
+        full[indices] = active[:9]
+        sigma, nu, gamma = full[2], full[8], full[11]
+        areas = active[9:12] * area_unit_m2
+        area = areas[2]
+        if not np.isfinite(active).all() or np.any(full[:3] <= 0) or gamma <= 1 or np.any(areas < 0):
+            raise _TrialStateOutsideDomain("AG integrator produced an invalid size/energy/longitudinal phase area")
+        full[4] = gamma**2 * np.sqrt(nu**2 + area / sigma**2)
+        full[5] = gamma**2 * sigma * nu
+        full[12:14] = np.sqrt((gamma-1)*(gamma+1))*np.sqrt(areas[:2])
+        return full, areas
 
-    sol = solve_ivp(rhs, (z_start, z_end), y0, t_eval=t_eval,
-                    method=solver_kwargs.pop('method', 'RK45'),
+    def rhs(z, active):
+        full, areas = unpack(active)
+        dy = envelope_ode(z, full, beam0.Ne,
+                         full[12], full[13], beam0.eps_nz,
+                         external_force_func=external_force_func,
+                         gamma_prime_func=gamma_prime_func,
+                         rf_chirp_func=rf_chirp_func, sc_model=sc_model,
+                         _longitudinal_area=areas[2])
+        b = Beam6D.from_state(full, full[11], beam0.Ne,
+                            full[12], full[13], beam0.eps_nz)
+        damping = dy[11] / (b.gamma**3 * b.beta**2)
+        area_rate = (space_charge_area_log_rates(b, sc_model) - 2.0*damping) * active[9:12]
+        return np.r_[dy[indices], area_rate]
+
+    method = solver_kwargs.pop('method', 'RK45')
+    rejected_stages = []
+    if method == 'RK45':
+        class CheckedRK45(_DomainCheckedRK45):
+            def _step_impl(self):
+                result = super()._step_impl()
+                rejected_stages[:] = [getattr(self, 'domain_rejections', 0)]
+                return result
+        method = CheckedRK45
+    sol = solve_ivp(rhs, (z_start, z_end), active0, t_eval=t_eval,
+                    method=method,
                     rtol=solver_kwargs.pop('rtol', 1e-8),
                     atol=solver_kwargs.pop('atol', 1e-10),
                     **solver_kwargs)
 
-    return sol.t, sol.y.T
+    if not sol.success or sol.t.size != n_points or abs(sol.t[-1]-z_end) > 1e-12:
+        raise RuntimeError(f"AG integration failed before z={z_end}: {sol.message}")
+    if rejected_stages and rejected_stages[0]:
+        warnings.warn(f"AG RK45 rejected {rejected_stages[0]} nonphysical trial stages and reduced the step; "
+                      "accepted-state checks and tolerances remain unchanged.", RuntimeWarning, stacklevel=2)
+    history = np.array([unpack(y)[0] for y in sol.y.T])
+    if not np.isfinite(history).all():
+        raise RuntimeError("AG integration returned nonfinite history")
+    return sol.t, history
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -1204,7 +1198,7 @@ if __name__ == "__main__":
     # ── Step 1: propagate 0 → z_cav (drift) ──
     print(f"\n── Step 1: Drift 0 → {z_cav*1e3:.0f} mm ──")
     z1, st1 = propagate(beam0, (0.0, z_cav), n_points=150, sc_model='ellipsoid')
-    b_before = Beam6D.from_state(st1[-1,:11], st1[-1,11], beam0.Ne,
+    b_before = Beam6D.from_state(st1[-1], st1[-1,11], beam0.Ne,
                                   beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
     print(f"  σ_z={b_before.sigma_z*1e6:.1f}μm  σ_δ={b_before.sigma_delta*1e3:.2f}‰  "
           f"C_zδ={b_before.C_zd*1e6:.2f}μm  σ_x={b_before.sigma_x*1e6:.1f}μm")
@@ -1240,12 +1234,12 @@ if __name__ == "__main__":
                                        beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
 
     z2, st2 = propagate(beam_cav_exit, (z_cav, z_samp), n_points=150, sc_model='ellipsoid')
-    b_sample = Beam6D.from_state(st2[-1,:11], st2[-1,11], beam0.Ne,
+    b_sample = Beam6D.from_state(st2[-1], st2[-1,11], beam0.Ne,
                                   beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
 
     # ── Also propagate without RF for comparison ──
     z_norf, st_norf = propagate(beam0, (0.0, z_samp), n_points=200, sc_model='ellipsoid')
-    b_norf = Beam6D.from_state(st_norf[-1,:11], st_norf[-1,11], beam0.Ne,
+    b_norf = Beam6D.from_state(st_norf[-1], st_norf[-1,11], beam0.Ne,
                                 beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
 
     # ── Results ──

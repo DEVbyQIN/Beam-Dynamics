@@ -102,7 +102,11 @@ def main():
               f"({'PASS' if ok else f'FAIL (exp sol={exp_sol} rf={exp_rf})'})")
     # runtime: no RF kick below step 3 (σ_δ must stay at input), kick at 3/4
     for step, expect_kick in ((1, False), (2, False), (3, True), (4, True)):
-        lat_s, rf_s = gpt.build_lattice_from_shared(cfg, gpt.STEP_ACTIVE[step])
+        # v0.15 task C: an SC-requested run must carry the cathode→sample
+        # anchors, otherwise the runtime state contract HARD FAILS (the
+        # coverage would silently shorten to the last non-zero element).
+        lat_s, rf_s = gpt.build_lattice_from_shared(
+            cfg, gpt.STEP_ACTIVE[step], keep_zero_markers=(step >= 4))
         r = gpt.run_beamline(lat_s, rf_s, sc_enabled=(step >= 4),
                              nparticles=20000)
         sd_end = r["history"]["sigma_delta_e3"][-1]
@@ -121,19 +125,51 @@ def main():
     zq = zs * 1e3
     fields = ["sigma_x_um", "sigma_y_um", "sigma_z_um",
               "sigma_delta_e3", "eps_nx_mm_mrad", "eps_ny_mm_mrad"]
+
+    def sample_checked(z_query, z_arr, y_arr, label):
+        """Interpolate ONLY after proving the trajectory covers the query.
+
+        np.interp CLAMPS outside the data range: an out-of-range sample query
+        silently returns the last tracked value, so a comparison could "pass"
+        while the sample plane was never actually reached (v0.15 repair 4D).
+        """
+        z_arr = np.asarray(z_arr, dtype=float)
+        y_arr = np.asarray(y_arr, dtype=float)
+        if z_arr.size == 0 or not (z_arr[0] - 1e-9 <= z_query <= z_arr[-1] + 1e-9):
+            raise AssertionError(
+                f"{label}: trajectory covers [{z_arr[0]:.9f}, {z_arr[-1]:.9f}] mm "
+                f"but the sample plane is {z_query:.9f} mm — OUTSIDE the tracked "
+                f"range; np.interp would have clamped to the endpoint")
+        return float(np.interp(z_query, z_arr, y_arr))
+
     devs = {}
+    cov_ok = True
+    try:
+        for f in fields:
+            vg = sample_checked(zq, r_gpt["history"]["z_mm"],
+                                r_gpt["history"][f], f"GPT.{f}")
+            vv = sample_checked(zq, r_val.z_mm, getattr(r_val, f),
+                                f"validation.{f}")
+            devs[f] = abs(vg - vv) / abs(vv) * 100
+    except AssertionError as e:
+        cov_ok = False
+        print(f"  SAMPLE COVERAGE ASSERTION FAILED: {e}")
+    history_equal = all(np.array_equal(np.asarray(r_gpt["history"][f]),
+                                      getattr(r_val, f)) for f in ["z_mm"] + fields)
+    ok_c = cov_ok and history_equal and all(devs[f] == 0.0 for f in fields)
+    print(f"  sample-plane coverage asserted before interpolation "
+          f"(GPT z∈[{np.asarray(r_gpt['history']['z_mm'])[0]:.3f}, "
+          f"{np.asarray(r_gpt['history']['z_mm'])[-1]:.3f}] mm, "
+          f"validation z∈[{np.asarray(r_val.z_mm)[0]:.3f}, "
+          f"{np.asarray(r_val.z_mm)[-1]:.3f}] mm, query {zq:.3f} mm)  "
+          f"{'PASS' if cov_ok else 'FAIL'}")
     for f in fields:
-        vg = float(np.interp(zq, np.asarray(r_gpt["history"]["z_mm"]),
-                             np.asarray(r_gpt["history"][f])))
-        vv = float(np.interp(zq, r_val.z_mm, getattr(r_val, f)))
-        devs[f] = abs(vg - vv) / abs(vv) * 100
-    ok_c = all(devs[f] < TOL_SAMPLE for f in fields)
-    for f in fields:
+        if f not in devs:
+            continue
         print(f"  {f:18s} GPT={np.interp(zq, np.asarray(r_gpt['history']['z_mm']), np.asarray(r_gpt['history'][f])):.3f}  "
               f"validation={np.interp(zq, r_val.z_mm, getattr(r_val, f)):.3f}  "
               f"dev={devs[f]:.2f}%  {'PASS' if devs[f] < TOL_SAMPLE else 'FAIL'}")
-    print(f"  (MC noise expected: the first per-process generate_parray is "
-          f"unseeded; threshold {TOL_SAMPLE}%)")
+    print(f"  identical config/seed/N/dz: full histories exactly equal={history_equal}")
     print(f"  sample-plane regression: {'PASS' if ok_c else 'FAIL'}")
 
     ok_all = ok_geo and ok_tot and ok_rf and ok_sample and ok_steps and ok_c

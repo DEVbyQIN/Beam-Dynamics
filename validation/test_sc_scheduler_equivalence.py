@@ -209,10 +209,20 @@ def compare(name, ev_n, p_n, ev_m, p_m, beta, beta_gamma):
             L3_diff = (i, ev_n[i]["zstep"], ev_m[i]["zstep"])
     L["L2_z"] = L2_diff is None
     L["L3_zstep"] = L3_diff is None
-    # L4: final rparticles
+    # L4: final rparticles — full particle numerical path.
+    #   L4_bitwise : strict bit equality (reported for information)
+    #   L4_equiv   : numerical-path equivalence used by the expectation check.
+    #     atol=1e-12 sits ~4 orders above the observed fp-rounding floor
+    #     (~4e-16 for equivalent paths, map-segmentation differences) and
+    #     ~7+ orders below any real scheduling difference (>=1e-5, T5–T7).
+    #     It therefore does NOT loosen a previously-passing criterion: the
+    #     L1–L3 checks are unchanged, this ADDS the particle-path requirement.
     bit = np.array_equal(p_n.rparticles, p_m.rparticles)
     md = float(np.max(np.abs(p_n.rparticles - p_m.rparticles)))
     L["L4_bitwise"] = bit
+    L["L4_equiv"] = bool(np.allclose(p_n.rparticles, p_m.rparticles,
+                                     rtol=0.0, atol=1e-12))
+    L["L4_max_abs_diff"] = md
     # L5: sigma stats
     sn, sm = stats(p_n, beta, beta_gamma), stats(p_m, beta, beta_gamma)
     dev = {k: abs(sn[k] - sm[k]) / abs(sm[k]) if abs(sm[k]) > 1e-12 else 0.0
@@ -311,38 +321,54 @@ def production_acceptance(cfg, beta, beta_gamma):
     D. non-integer tail: no lost tail in the native scheduler
     E. partial coverage: no apply outside [s_start, s_stop)
     F. SC OFF bitwise: production run_ocelot output array hash (baseline)
+
+    Category labels (entrypoint-hardening phase): every check below is tagged
+      [PRODUCTION]        — drives the real production entrypoint
+                            (validation.backend.run_ocelot)
+      [HELPER-CHAR]       — API characterization of the test-local native
+                            helper (run_native); NOT a production acceptance
+    A/B/C/F are production-entrypoint acceptance; D/E are native-helper
+    API characterization.  Requirement NOT covered by a production test:
+    the production lattice is fixed (777 mm, integer step count), so
+    "non-integer total length" and "partial SC coverage" have no production
+    entrypoint acceptance — only the helper characterization D/E.
     """
     import hashlib
+    import json
+    from pathlib import Path
     from validation.backend import run_ocelot
     from shared.params import _lattice_elements
     print("\n" + "=" * 66)
-    print("  PRODUCTION-PATH ACCEPTANCE (run_ocelot, SC ON = native scheduler)")
+    print("  ACCEPTANCE (PRODUCTION entrypoint + native-helper characterization)")
     print("=" * 66)
-    ok = True
+    prod_ok = True
+    helper_ok = True
     N_AC = 3000                   # event-semantics checks do not need 1e4
     # mesh 33³ (not production 63³): scheduler event semantics do not depend
     # on the mesh; production-mesh numerical results are v0.15 (see MESH note).
     MESH_AC = [33, 33, 33]
 
-    # ── A+B+C(step=1): one production run covers coverage / count / events ──
+    # ── A+B: one production run covers coverage / count ──
     sample = [e for e in _lattice_elements(cfg) if e["type"] == "sample"][0]
     z_sample = sample["z_start"]
-    r = run_ocelot(cfg, "full", sc_enabled=True, n_particles=N_AC,
+    r = run_ocelot(cfg, "full", sc_enabled=True, n_particles=N_AC, dz=0.001,
                    sc_mesh=MESH_AC)
     m = r.meta
     a_ok = (m["sc_scheduler"] == "ocelot_native"
             and abs(m["sc_coverage_start_m"]) < 1e-12
             and abs(m["sc_coverage_stop_m"] - z_sample) < 1e-12)
-    print(f"  A. scheduler={m['sc_scheduler']} coverage=[{m['sc_coverage_start_m']:.3f}, "
+    print(f"  A. [PRODUCTION] scheduler={m['sc_scheduler']} "
+          f"coverage=[{m['sc_coverage_start_m']:.3f}, "
           f"{m['sc_coverage_stop_m']:.3f}] sample(z_start)={z_sample:.3f}  "
           f"{'PASS' if a_ok else 'FAIL'}")
-    ok &= a_ok
+    prod_ok &= a_ok
 
     b_ok = m["sc_apply_count"] > 0
-    print(f"  B. sc_apply_count = {m['sc_apply_count']}  "
+    print(f"  B. [PRODUCTION] sc_apply_count = {m['sc_apply_count']}  "
           f"{'PASS' if b_ok else 'FAIL'}")
-    ok &= b_ok
+    prod_ok &= b_ok
 
+    # ── C: production events vs native-helper reference (cross-check) ──
     lat_p, _ = production_lattice(keep_markers=True)
     p_ref = make_beam(cfg, N_AC)
     ev_ref, _ = run_native(lat_p, p_ref, 1, 0.001)
@@ -351,13 +377,13 @@ def production_acceptance(cfg, beta, beta_gamma):
         abs(ev[i][0] - ev_ref[i]["z"]) < 1e-12
         and abs(ev[i][1] - ev_ref[i]["zstep"]) < 1e-12
         for i in range(len(ev)))
-    print(f"  C. step=1: production events={len(ev)} "
-          f"native reference={len(ev_ref)}  "
+    print(f"  C. [PRODUCTION vs HELPER-CHAR] step=1: production events="
+          f"{len(ev)} native reference={len(ev_ref)}  "
           f"{'PASS' if c1_ok else 'FAIL'}")
-    ok &= c1_ok
+    prod_ok &= c1_ok
 
     # ── C(step=5) ──
-    rp5 = run_ocelot(cfg, "full", sc_enabled=True, n_particles=N_AC, sc_step=5,
+    rp5 = run_ocelot(cfg, "full", sc_enabled=True, n_particles=N_AC, dz=0.001, sc_step=5,
                      sc_mesh=MESH_AC)
     p_ref5 = make_beam(cfg, N_AC)
     ev_ref5, _ = run_native(lat_p, p_ref5, 5, 0.001)
@@ -366,77 +392,91 @@ def production_acceptance(cfg, beta, beta_gamma):
         abs(ev5[i][0] - ev_ref5[i]["z"]) < 1e-12
         and abs(ev5[i][1] - ev_ref5[i]["zstep"]) < 1e-12
         for i in range(len(ev5)))
-    print(f"  C. step=5: production events={len(ev5)} "
-          f"native reference={len(ev_ref5)}  "
+    print(f"  C. [PRODUCTION vs HELPER-CHAR] step=5: production events="
+          f"{len(ev5)} native reference={len(ev_ref5)}  "
           f"{'PASS' if c5_ok else 'FAIL'}")
-    ok &= c5_ok
+    prod_ok &= c5_ok
 
-    # ── D: non-integer tail — native scheduler must not lose the tail ──
+    # ── D: non-integer tail — NATIVE-HELPER characterization only ──
     lat5, total5 = build_lattice([("drift", 0.453), ("drift", 0.050)])
     p5 = make_beam(cfg, N_AC)
     ev5t, _ = run_native(lat5, p5, 1, UNIT)
     d_ok = ev5t[-1]["z"] == 0.453 and abs(ev5t[-1]["zstep"] - 0.003) < 1e-9
-    print(f"  D. tail (0.503 m, unit 0.005): last event z={ev5t[-1]['z']:.3f} "
-          f"zstep={ev5t[-1]['zstep']:.4f} (expect 0.453 / 0.003)  "
-          f"{'PASS' if d_ok else 'FAIL'}")
-    ok &= d_ok
+    print(f"  D. [HELPER-CHAR] tail (0.503 m, unit 0.005): last event "
+          f"z={ev5t[-1]['z']:.3f} zstep={ev5t[-1]['zstep']:.4f} "
+          f"(expect 0.453 / 0.003)  {'PASS' if d_ok else 'FAIL'}")
+    helper_ok &= d_ok
 
-    # ── E: partial coverage — no apply outside [s_start, s_stop) ──
+    # ── E: partial coverage — NATIVE-HELPER characterization only ──
     lat6, total6 = build_lattice([("drift", 0.100), ("drift", 0.200),
                                   ("drift", 0.100)])
     p6 = make_beam(cfg, N_AC)
     ev6, _ = run_native(lat6, p6, 1, UNIT, sc_span=(1, 2))
     e_ok = all(0.1 - 1e-9 <= ev["z"] <= 0.3 + 1e-9 for ev in ev6)
-    print(f"  E. partial coverage [0.1, 0.3): events={len(ev6)} all inside "
-          f"({'PASS' if e_ok else 'FAIL'})")
-    ok &= e_ok
+    print(f"  E. [HELPER-CHAR] partial coverage [0.1, 0.3): events={len(ev6)} "
+          f"all inside ({'PASS' if e_ok else 'FAIL'})")
+    helper_ok &= e_ok
 
     # ── F: SC OFF bitwise — production output array hash ──
     # CANONICAL no-SC regression hash definition (v0.14.1):
     #   SHA1( contiguous bytes of
     #         [z_mm, sigma_x_um, sigma_y_um, sigma_z_um,
     #          eps_nx_mm_mrad, eps_ny_mm_mrad, sigma_delta_e3] )[:12]
-    #   canonical value = 7790fd9c2a2b  (run_ocelot SC OFF, config seed 42,
+    #   previous canonical = 7790fd9c2a2b (preserved by 20261021 migration; seed42,
     #   N=5e4, dz=0.001, full beamline).
     # The old e041d6ae9fb7a0d2 is NOT tracked: its input object/algorithm
     # were never recorded, so it is not strictly reproducible.
-    r_off = run_ocelot(cfg, "full")               # SC OFF (default, N=5e4)
+    r_off = run_ocelot(cfg, "full", dz=0.001)               # SC OFF (default, N=5e4)
     arr = np.array([r_off.z_mm, r_off.sigma_x_um, r_off.sigma_y_um,
                     r_off.sigma_z_um, r_off.eps_nx_mm_mrad,
                     r_off.eps_ny_mm_mrad, r_off.sigma_delta_e3])
     h = hashlib.sha1(np.ascontiguousarray(arr).tobytes()).hexdigest()[:12]
-    f_ok = h == "7790fd9c2a2b"
-    print(f"  F. SC OFF array hash = {h} (pre-fix baseline 7790fd9c2a2b)  "
-          f"{'PASS' if f_ok else 'FAIL'}")
+    baseline = json.loads((Path(__file__).parent/'baselines/ocelot-transport-20261025.json').read_text())['routes']['OCELOT']
+    f_ok = h == baseline['new_hash']
+    print(f"  F. [PRODUCTION] SC OFF array hash = {h} "
+          f"(20261025 drift-second/solenoid-linear canonical {baseline['new_hash']})  {'PASS' if f_ok else 'FAIL'}")
     print(f"     sample sigma_x={np.interp(777, r_off.z_mm, r_off.sigma_x_um):.3f} "
           f"sigma_z={np.interp(777, r_off.z_mm, r_off.sigma_z_um):.3f} "
-          f"(ref 1996.205/474.022)")
-    ok &= f_ok
+          f"(dated reference in ocelot-transport-20261025.json)")
+    prod_ok &= f_ok
 
-    print("  production-path acceptance: " + ("ALL PASS" if ok else "FAILURES — see above"))
-    return ok
+    print(f"  production-entrypoint acceptance (A,B,C,F): "
+          f"{'ALL PASS' if prod_ok else 'FAILURES — see above'}")
+    print(f"  native-helper characterization (D,E): "
+          f"{'ALL PASS' if helper_ok else 'FAILURES — see above'}")
+    print("  NOTE: D/E are helper characterizations, NOT production acceptance; "
+          "the production lattice is fixed (777 mm integer steps) so "
+          "non-integer-total-length / partial-coverage have no production test.")
+    return bool(prod_ok and helper_ok)
 
 
 def check_expectation(name, L, expect_equivalent):
     """Check a characterization scenario against its design expectation.
 
-    T1–T4 (expect_equivalent=True) must show event-level equivalence;
-    T5–T7 (expect_equivalent=False) must show a scheduling DIFFERENCE
-    (they exist to demonstrate the manual counter is not generally
-    equivalent).  A T5–T7 scenario that unexpectedly becomes equivalent is
-    reported as FAIL — it may mean the characterization was broken, not
-    that the manual clone got better.
+    T1–T4 (expect_equivalent=True) must show equivalence on BOTH the event
+    sequence (L1–L3) AND the full particle numerical path (L4_equiv, added in
+    the entrypoint-hardening phase — L1–L3 alone were not sufficient).
+    T5–T7 (expect_equivalent=False) must show a scheduling DIFFERENCE on that
+    same combined criterion (they exist to demonstrate the manual counter is
+    not generally equivalent).  A T5–T7 scenario that unexpectedly becomes
+    equivalent is reported as FAIL — it may mean the characterization was
+    broken, not that the manual clone got better.
     """
     events_equiv = bool(L["L1_count"] and L["L2_z"] and L["L3_zstep"])
+    path_equiv = bool(L.get("L4_equiv", False))
+    combined_equiv = bool(events_equiv and path_equiv)
     if expect_equivalent:
-        ok = events_equiv
-        msg = ("PASS (equivalent as expected)" if ok else
-               "FAIL (expected equivalence, found a difference)")
+        ok = combined_equiv
+        msg = ("PASS (events + particle path equivalent as expected)" if ok
+               else "FAIL (expected equivalence; "
+                    f"events_equiv={events_equiv}, path_equiv={path_equiv}, "
+                    f"max_abs_diff={L.get('L4_max_abs_diff', float('nan')):.3e})")
     else:
-        ok = not events_equiv
-        msg = ("PASS (difference as expected)" if ok else
-               "FAIL (expected difference, found equivalence — "
-               "scenario may be broken)")
+        ok = not combined_equiv
+        msg = ("PASS (difference as expected: "
+               f"events_equiv={events_equiv}, path_equiv={path_equiv})" if ok
+               else "FAIL (expected difference, found equivalence on events "
+                    "AND particle path — scenario may be broken)")
     print(f"  expectation[{name}]: {msg}")
     return ok
 
@@ -502,14 +542,17 @@ def main():
 
     # ── summary ──
     print("\n" + "=" * 66)
-    print("  SUMMARY (L1 count / L2 z / L3 zstep / L4 bitwise / expectation)")
+    print("  SUMMARY (L1 count / L2 z / L3 zstep / L4 path-equiv"
+          " [bitwise] / expectation)")
     print("=" * 66)
     for name, (L, diffs, total, exp_ok) in results.items():
         flags = "".join("P" if v else "F" for v in
-                        (L["L1_count"], L["L2_z"], L["L3_zstep"], L["L4_bitwise"]))
-        verdict = ("EQUIV" if flags.startswith("PPP")
+                        (L["L1_count"], L["L2_z"], L["L3_zstep"], L["L4_equiv"]))
+        verdict = ("EQUIV" if flags == "PPPP"
+                   else "EVENTS-EQUIV" if flags.startswith("PPP")
                    else "DIFFER")
-        print(f"  {name:<38s} L={flags}  total={total:.3f}m  {verdict}  "
+        print(f"  {name:<38s} L={flags} [bit={L['L4_bitwise']}]  "
+              f"total={total:.3f}m  {verdict}  "
               f"expect={'PASS' if exp_ok else 'FAIL'}")
     print("\n  characterization expectations: "
           + ("ALL PASS" if exp_ok_all else "FAILURES — see above"))

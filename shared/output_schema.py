@@ -1,5 +1,5 @@
 """
-Unified output schema — identical for both routes.
+Unified output schema v2 — common field definitions for both routes.
 
 Each route writes one JSON file (shared/results/<route>_results.json) with the
 same keys and units so shared/compare.py can produce overlay plots and a
@@ -26,6 +26,10 @@ Probe / history record keys (units fixed):
                              reporting — see R56_convention_resolution.md)
   eps_nx_mm_mrad   [mm·mrad]  normalized emittance
   eps_ny_mm_mrad   [mm·mrad]  normalized emittance
+  C_zdelta_m, chirp_per_m, eps_nz_mm_mrad, eps_z_zprime_m, sigma_t_fs,
+  energy_keV, beta_ref, gamma_ref: see UNITS and beam_result_physics_note.md.
+
+Backward-compatible readers may accept legacy files with only the base fields.
 """
 
 import os
@@ -41,7 +45,19 @@ UNITS = {
     "sigma_delta_e3": "e-3",
     "eps_nx_mm_mrad": "mm.mrad",
     "eps_ny_mm_mrad": "mm.mrad",
+    "C_zdelta_m": "m",
+    "chirp_per_m": "1/m",
+    "eps_nz_mm_mrad": "mm.mrad (zeta,delta_p)",
+    "eps_z_zprime_m": "m (zeta,zeta_prime)",
+    "sigma_t_fs": "fs (bunch RMS duration)",
+    "energy_keV": "keV (fixed reference kinetic energy)",
+    "beta_ref": "1",
+    "gamma_ref": "1",
 }
+
+BASE_FIELDS = ("z_mm", "sigma_x_um", "sigma_y_um", "sigma_z_um",
+               "sigma_delta_e3", "eps_nx_mm_mrad", "eps_ny_mm_mrad")
+DIAGNOSTIC_FIELDS = tuple(k for k in UNITS if k not in BASE_FIELDS)
 
 
 def make_probe(z_mm, sigma_x_um, sigma_y_um, sigma_z_um,
@@ -67,6 +83,7 @@ def write_results(route, probes, history, config_sha, sc_enabled,
     os.makedirs(out_dir, exist_ok=True)
 
     payload = {
+        "schema_version": 2,
         "route": route,
         "config_sha": config_sha,
         "sc_enabled": bool(sc_enabled),

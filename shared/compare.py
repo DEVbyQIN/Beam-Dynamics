@@ -40,6 +40,10 @@ HIST_FIELDS = [
     ("sigma_z_um", "σ_z (μm)", "#d62728"),
     ("eps_nx_mm_mrad", "ε_nx (mm·mrad)", "#2ca02c"),
     ("sigma_delta_e3", "σ_δ (×10⁻³)", "#9467bd"),
+    ("chirp_per_m", "Beam chirp (1/m)", "#b7791f"),
+    ("C_zdelta_m", "C(zeta,delta_p) (m)", "#047857"),
+    ("eps_nz_mm_mrad", "ε_n,p (mm·mrad)", "#6b46c1"),
+    ("sigma_t_fs", "RMS bunch duration (fs)", "#4a5568"),
 ]
 
 
@@ -52,25 +56,36 @@ def _interp_history(hist, field, z_query_mm):
     """Linear interpolation of a history field at query z positions."""
     z = np.asarray(hist["z_mm"])
     v = np.asarray(hist[field])
+    q=np.asarray(z_query_mm)
+    if np.any(q < z[0]-1e-9) or np.any(q > z[-1]+1e-9) or not np.isfinite(q).all():
+        raise ValueError("comparison query outside tracked range")
     return np.interp(z_query_mm, z, v)
 
 
 def print_probe_table(routes):
     route_names = list(routes.keys())
-    zs = sorted({round(p["z_mm"]) for r in routes.values() for p in r["probes"]})
+    zs = []
+    for z in sorted({p["z_mm"] for r in routes.values() for p in r["probes"]}):
+        if not zs or abs(z-zs[-1]) > 1e-9:
+            zs.append(z)  # merge floating-point duplicates, retain fractional planes
     hdr = "z(mm)"
     for name in route_names:
         hdr += f"   σ_x({name})   ε_nx({name})"
     print("Probe comparison (AG = envelope, GPT = tracking):")
     print(f"  {'z(mm)':>6s}" + "".join(f"   {'σ_x(um)':>9s}   {'εnx(mm.mrad)':>12s}" for _ in route_names))
     for z in zs:
-        row = f"  {z:6.0f}"
+        row = f"  {z:8g}"
+        actual=[]
         for r in routes.values():
-            p = next((p for p in r["probes"] if abs(round(p["z_mm"]) - z) < 1e-9), None)
+            p = next((p for p in r["probes"] if abs(p["z_mm"] - z) < 1e-9), None)
             if p is None:
                 row += f"   {'—':>9s}   {'—':>12s}"
             else:
                 row += f"   {p['sigma_x_um']:9.1f}   {p['eps_nx_mm_mrad']:12.4f}"
+                actual.append(p.get('z_actual_mm',p['z_mm']))
+                row += f" [actual={actual[-1]:g}mm; {p.get('sampling','legacy unknown')}; exact={p.get('z_exact','unknown')}]"
+        if len(actual)>1 and max(actual)-min(actual)>1e-9:
+            row += "  DIFFERENT ACTUAL PLANES: no pointwise deviation is valid"
         print(row)
 
 
@@ -85,10 +100,11 @@ def print_full_history_stats(routes):
 
 
 def plot_overlay(routes, out_png):
-    n = len(HIST_FIELDS)
-    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+    available=[f for f in HIST_FIELDS if all(f[0] in r['history'] for r in routes.values())]
+    n = len(available)
+    fig, axes = plt.subplots((n+1)//2, 2, figsize=(12, 3.4*((n+1)//2)),squeeze=False)
     axes = axes.ravel()
-    for ax, (field, label, color) in zip(axes, HIST_FIELDS):
+    for ax, (field, label, color) in zip(axes, available):
         for name, r in routes.items():
             h = r["history"]
             ax.plot(h["z_mm"], h[field], label=f"{name}", lw=1.6)
@@ -96,6 +112,8 @@ def plot_overlay(routes, out_png):
         ax.set_ylabel(label)
         ax.legend(fontsize=8)
         ax.grid(alpha=0.3)
+    for ax in axes[n:]:
+        ax.set_visible(False)
     fig.suptitle("UED Beamline — AG vs GPT  (shared config)",
                  fontsize=13, fontweight="bold")
     plt.tight_layout()
@@ -123,16 +141,21 @@ def main():
 
     shas = {r["config_sha"] for r in routes.values()}
     scs = {r["sc_enabled"] for r in routes.values()}
-    print("routes:", {k: v for k, v in routes.items()})
+    print("routes:", list(routes))
     print(f"  config_sha  = {shas}   {'(MATCH ✓)' if len(shas)==1 else '(MISMATCH!)'}")
     print(f"  sc_enabled  = {scs}")
+    if len(shas)!=1 or len(scs)!=1:
+        raise ValueError("comparison requires the same configuration and SC state")
+    switches=[r.get('meta',{}).get('switches') for r in routes.values()]
+    if all(v is not None for v in switches) and any(v != switches[0] for v in switches):
+        raise ValueError("comparison requires matching effective RF switches")
 
     print_full_history_stats(routes)
     print()
     print_probe_table(routes)
 
-    out_png = args.out or os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "results", "compare_overlay.png")
+    out_png = args.out or os.path.join(results_dir or os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "results"), "compare_overlay.png")
     plot_overlay(routes, out_png)
 
 

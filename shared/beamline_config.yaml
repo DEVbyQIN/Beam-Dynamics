@@ -14,15 +14,14 @@
 beam:
   energy_keV: 100.0          # beam kinetic energy
   charge_fC: 100.0           # bunch charge [fC]
-  n_particles: 50000         # number of macroparticles (GPT) / Ne (AG)
+  n_particles: 50000         # OCELOT numerical macroparticles; AG uses Ne=|Q|/e
 
 initial_distribution:
   spot_rms_um: 85.0          # RMS transverse spot size [μm]
   bunch_length_um: 300.0     # RMS bunch length [μm]
   epsilon_n_mm_mrad: 0.08    # normalized transverse emittance [mm·mrad]
-  # normalized LONGITUDINAL emittance [mm·mrad] (AG only)
-  # consistent value: βγ·σ_z·σ_δ = 0.6556·300e-6·1e-4 = 0.02 µm
-  epsilon_nz_mm_mrad: 0.02
+  # Initial longitudinal emittance is DERIVED from sigma_z, sigma_delta and
+  # zero initial correlation, not an independent input.
   # MOMENTUM deviation δ_p = Δp/p0 (project standard, see R56 audit;
   # historically labeled ΔE/E — semantic clarified 2026-08-08, value unchanged)
   sigma_delta: 1.0e-4
@@ -43,7 +42,7 @@ space_charge:
 
 physics_switches:
   # RF thin-lens model switches — read identically by BOTH backends.
-  # Longitudinal: standardized thin-lens kick (δ += K·sin(φ+kz), H = eV·k·cosφ/(β²E₀))
+  # Longitudinal: time-phase modulation minus reference gain; H=eV*k*cosφ/(β³E₀).
   # Transverse  : Panofsky-Wenzel RF transverse kick (x' += K_trans·x).
   rf_longitudinal_kick: true
   rf_transverse_kick: false
@@ -85,7 +84,7 @@ lattice:
       length: 0.022
       parameters:
         frequency_GHz: 2.856 # S-band
-        voltage_kV: 30.0     # cavity voltage [kV]
+        voltage_kV: 30.0     # effective integrated voltage [kV], includes transit-time effect
         phase_rad: 3.1416    # RF phase [rad] (π for max chirp)
     - name: drift3
       type: drift

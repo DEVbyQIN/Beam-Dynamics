@@ -42,12 +42,12 @@ def compute_emittance(
     """
     Compute geometric and 4D emittances from state history.
 
-    State array st has shape (n_points, 12):
-      [σx, σy, σz, σxy, σδ, C_zd, νx, νy, νz, νxy, νδ, γ]
+    State array st has shape (n_points, 14); legacy 12-column input is accepted:
+      [σx, σy, σz, σxy, σδ, C_zd, νx, νy, νz, νxy, νδ, γ, εnx, εny]
 
     Returns dict with:
       eps_geo_x, eps_geo_y — geometric RMS emittance [m·rad]
-      eps_n_x, eps_n_y       — normalized emittance (should equal input)
+      eps_n_x, eps_n_y       — evolved normalized emittance (constant only in linear limits)
       eps_4d                 — 4D transverse emittance
     """
     sx, sy, sz = st[:, 0], st[:, 1], st[:, 2]
@@ -59,11 +59,16 @@ def compute_emittance(
 
     # Geometric emittance from moments:
     #   ε_geo = σ · √(θ² − ν²) = σ · √(ε_n²/(p₀²σ²) + ν² − ν²) = ε_n/p₀
-    eps_geo_x = np.full_like(sx, eps_nx0) / np.maximum(p0, 1e-12)
-    eps_geo_y = np.full_like(sy, eps_ny0) / np.maximum(p0, 1e-12)
-    eps_geo_z = np.full_like(sz, eps_nz0) / np.maximum(p0, 1e-12)
+    eps_nx_history=st[:,12] if st.shape[1]>=14 else np.full_like(sx,eps_nx0)
+    eps_ny_history=st[:,13] if st.shape[1]>=14 else np.full_like(sy,eps_ny0)
+    eps_geo_x = eps_nx_history / np.maximum(p0, 1e-12)
+    eps_geo_y = eps_ny_history / np.maximum(p0, 1e-12)
+    # Longitudinal slope-space emittance is now an output of Gz evolution.
+    # It differs from sqrt(det Sigma[z,delta]) by gamma².
+    from AG.longitudinal_state import history_diagnostics
+    eps_geo_z = np.asarray(history_diagnostics(st)['epsilon_geometric_z_zprime_m'])
 
-    # Normalized emittance: should equal input constants
+    # Normalized emittance from evolved phase areas
     eps_n_x = p0 * eps_geo_x
     eps_n_y = p0 * eps_geo_y
 
@@ -78,8 +83,8 @@ def compute_emittance(
     #   ⟨xx'⟩=σ_x·ν_x,  ⟨yy'⟩=σ_y·ν_y
     #   ⟨x'²⟩=θ_x² = ε_nx²/(p₀²σ_x²)+ν_x²,  ⟨y'²⟩=θ_y²
     # Cross: ⟨x'y⟩ ≈ ⟨xy'⟩ ≈ ν_xy/2  (symmetric approx)
-    theta_x2 = eps_nx0**2 / (p0**2 * np.maximum(sx, 1e-20)**2) + nx**2
-    theta_y2 = eps_ny0**2 / (p0**2 * np.maximum(sy, 1e-20)**2) + ny**2
+    theta_x2 = eps_geo_x**2 / np.maximum(sx,1e-20)**2 + nx**2
+    theta_y2 = eps_geo_y**2 / np.maximum(sy,1e-20)**2 + ny**2
     xy_cross = nxy / 2.0
 
     eps_4d = np.zeros(len(sx))
@@ -135,6 +140,8 @@ class BeamlineSim:
     def run(self, n_points: int = 500, sc_on: bool = True,
             **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """Propagate beam through beamline. Returns (z_arr, state_array)."""
+        if not sc_on:
+            return self.run_no_sc(n_points=n_points,**kwargs)
         ef, gp, ch = build_all_external(self.regions)
         return propagate(
             self.beam0, (0, self.z_total), n_points=n_points,
@@ -226,7 +233,7 @@ if __name__ == "__main__":
     ax.set_xlabel('z (mm)')
     ax.set_ylabel(r'$\varepsilon_{nx}$ (μm)')
     ax.legend(fontsize=8); ax.grid(alpha=0.3)
-    ax.set_title('(c) Norm. emittance — conserved ✓', fontweight='bold')
+    ax.set_title('(c) Norm. emittance — Gx evolution', fontweight='bold')
 
     # (d) Beam divergence Λ_x
     ax = axes1[1, 1]
@@ -247,7 +254,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig("beamline_fig1_drift.png", dpi=150)
     print("  Saved: beamline_fig1_drift.png")
-    print(f"  ε_nx conserved: {em_d_sc['eps_n_x'][0]*1e6:.4f}→{em_d_sc['eps_n_x'][-1]*1e6:.4f} μm")
+    print(f"  ε_nx evolved: {em_d_sc['eps_n_x'][0]*1e6:.4f}→{em_d_sc['eps_n_x'][-1]*1e6:.4f} μm")
     print(f"  Analytical match (no SC): max|Δσ_x| = {np.max(np.abs(st_d_nsc[:,0] - sigma_x_drift_analytic))*1e6:.2e} μm")
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -393,9 +400,9 @@ if __name__ == "__main__":
     print("  Saved: beamline_fig3_rf.png")
 
     # Final time spread
-    b_end = Beam6D.from_state(st_rf_sc[-1, :11], st_rf_sc[-1, 11],
+    b_end = Beam6D.from_state(st_rf_sc[-1], st_rf_sc[-1, 11],
                                beam0.Ne, beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
-    b_end_d = Beam6D.from_state(st_d0[-1, :11], st_d0[-1, 11],
+    b_end_d = Beam6D.from_state(st_d0[-1], st_d0[-1, 11],
                                  beam0.Ne, beam0.eps_nx, beam0.eps_ny, beam0.eps_nz)
     print(f"  RF ON:  γ={b_end.gamma:.2f}  σ_z={b_end.sigma_z*1e6:.0f}μm  "
           f"Δt={b_end.time_spread_ps:.1f}ps  σ_δ={b_end.sigma_delta*1e3:.1f}‰")
@@ -433,7 +440,7 @@ if __name__ == "__main__":
     ax.set_xlabel('z (mm)')
     ax.set_ylabel(r'$\varepsilon_n$ (μm)')
     ax.legend(fontsize=8); ax.grid(alpha=0.3)
-    ax.set_title('(b) Norm. emittance conserved (SC ON) ✓', fontweight='bold')
+    ax.set_title('(b) Norm. emittance with SC Gx/Gy', fontweight='bold')
 
     # (c) Solenoid: emittance evolution during focusing
     Bz_test = 0.2

@@ -128,7 +128,7 @@ def main():
     iz_ag = int(np.argmin(ag.sigma_z_um)); iz_oc = int(np.argmin(oc.sigma_z_um))
     z_waist_ag = float(ag.z_mm[iz_ag]); z_waist_oc = float(oc.z_mm[iz_oc])
     waist_dz = abs(z_waist_ag - z_waist_oc)
-    waist_tol = 5.0   # mm (one OCELOT output step is 1 mm)
+    waist_tol = 5.0   # mm (preserved threshold; default OCELOT output grid is 5 mm)
     ok_waist = waist_dz <= waist_tol
     print(f"\n  compression waist: AG z={z_waist_ag:.0f}mm σ_z={ag.sigma_z_um[iz_ag]:.1f}um | "
           f"OCELOT z={z_waist_oc:.0f}mm σ_z={oc.sigma_z_um[iz_oc]:.1f}um | "

@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-25",
+  "status": "versioned no-SC numerical regression; not full SC or hardware physical certification",
+  "array_fields": [
+    "z_mm",
+    "sigma_x_um",
+    "sigma_y_um",
+    "sigma_z_um",
+    "eps_nx_mm_mrad",
+    "eps_ny_mm_mrad",
+    "sigma_delta_e3"
+  ],
+  "parameters": {
+    "section": "full",
+    "SC": false,
+    "seed": 42,
+    "N_ocelot": 50000,
+    "dz_ocelot_m": 0.001
+  },
+  "migration_reason": [
+    "Correct silent fallback from string SecondTM to first order",
+    "Use verified drift SecondTM; keep solenoid explicitly linear because installed solenoid T omits magnetic chromatic terms",
+    "Record actual active methods rather than a fixed model label"
+  ],
+  "prior_baseline": "shared-rf-gxyz-20261021.json",
+  "routes": {
+    "OCELOT": {
+      "old_hash": "12c087cf62be",
+      "new_hash": "b34afef25641",
+      "endpoint_before": {
+        "z_mm": 777.0,
+        "sigma_x_um": 1996.2051333373147,
+        "sigma_y_um": 1991.4150732715254,
+        "sigma_z_um": 1113.296110994674,
+        "sigma_delta_e3": 5.364514709187363,
+        "eps_nx_mm_mrad": 0.08042910634706907,
+        "eps_ny_mm_mrad": 0.08020340054123438,
+        "C_zdelta_m": 5.972217841964414e-06,
+        "chirp_per_m": 4.818526554234007,
+        "eps_nz_mm_mrad": 0.019687655883289416,
+        "eps_z_zprime_m": 2.1007668771743853e-08,
+        "sigma_t_fs": 6773.837450778269,
+        "energy_keV": 100.0,
+        "beta_ref": 0.548220432878698,
+        "gamma_ref": 1.1956947162426614
+      },
+      "endpoint": {
+        "z_mm": 777.0,
+        "sigma_x_um": 1996.1090496573756,
+        "sigma_y_um": 1991.1810199043684,
+        "sigma_z_um": 1113.251070479419,
+        "sigma_delta_e3": 5.364932500760036,
+        "eps_nx_mm_mrad": 0.08191229070939546,
+        "eps_ny_mm_mrad": 0.08157165678264129,
+        "C_zdelta_m": 5.971757517495715e-06,
+        "chirp_per_m": 4.818545032521993,
+        "eps_nz_mm_mrad": 0.062426828550155314,
+        "eps_z_zprime_m": 6.661240649605409e-08,
+        "sigma_t_fs": 6773.563402278482,
+        "energy_keV": 100.0,
+        "beta_ref": 0.548220432878698,
+        "gamma_ref": 1.1956947162426614
+      },
+      "config_sha": "093a3c496ddb",
+      "history_points": 778,
+      "transport_policy": "drift_second_order_solenoid_linear_v1",
+      "actual_methods": [
+        {
+          "name": "drift1",
+          "type": "Drift",
+          "methods": [
+            "SecondTM"
+          ]
+        },
+        {
+          "name": "solenoid1",
+          "type": "Solenoid",
+          "methods": [
+            "TransferMap"
+          ]
+        },
+        {
+          "name": "drift2",
+          "type": "Drift",
+          "methods": [
+            "SecondTM"
+          ]
+        },
+        {
+          "name": "rf1_BODY",
+          "type": "Drift",
+          "methods": [
+            "SecondTM"
+          ]
+        },
+        {
+          "name": "drift3",
+          "type": "Drift",
+          "methods": [
+            "SecondTM"
+          ]
+        }
+      ],
+      "source_sha256": {
+        "AG/alpha_coefficients.py": "789140ec8fd18021e9d7623f5a049b3cbfa80d35ef791541199733c9c7259c1b",
+        "AG/beam_dynamics_6d.py": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c",
+        "AG/external_forces.py": "9482bb4f70ef3794119a0cf8b1a54d2dd50596fed446252e42ecca3666e2fffb",
+        "AG/runner.py": "4066b8ad22dafd7f90443ffacc467faadbe03a5887cd18e726e91ad563ebb866",
+        "AG/longitudinal_state.py": "d90b51d77f47a0bd484f9859b81918dbd5e98bfcda916b891f5f335ef7c278d3",
+        "AG/beamline_sim.py": "8adbf7b00ee5491144cba61a402f848017909909be2672c5cf67d2a3d74df4dd",
+        "GPT模拟/ued_beamline_v2.py": "a5dcd535711e1d012fde12f97a25db7b618a8552ba1307266ae28564b643475a",
+        "shared/params.py": "84a4ff8e1c2578fd67444398a868b088d302135047f627b9ba41586fd56fcc5a",
+        "shared/constants.py": "4a8cd1a11df8e2d1b7766b69b0ebb0c46dac1b2b9992ec0651b041f160e934e6",
+        "shared/beam_physics.py": "0829709d5ddf5ad815b99b51c0377f9ea81c01fb0d55d50cf23e684f03422ffe",
+        "shared/diagnostics.py": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50",
+        "shared/rf_model.py": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e",
+        "shared/beam_result.py": "101223e23f06589fc1002c8ac529b9df130d53fd5c343a0a4d4dbd9450c48944"
+      },
+      "library_sha256": {
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/elements/element.py": "743c11fcb804633f840dbffb4632c1d67ecd8118f5f0b50e3448bf81ed240409",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/elements/solenoid_atom.py": "220fcf2f170cf1e1506f52bd1221ea0fabca31fcbd92bfd42371eb6d26c75777",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/elements/solenoid.py": "8b5314bd750d57600deb8f68e547fd62d011ee126108bf828b758f66fbe8bae2",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/elements/drift_atom.py": "97dcfcab8671dfe3873a2940c87934d2cafb0916b2bdf6d011006726d3d54eb8",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/elements/optic_element.py": "6d06a5665ad50fa656a35aad6e5fc3fdf990c67eabd55c29bf0b9471c7a9fcd5",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/magnetic_lattice.py": "c611c5e8ba545c09732cabbe93d22a12fe5982bdd553cd657811d200b02b64bf",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/high_order.py": "758c08338f6d2e9a9ce97357236fb29ad8bb24bc9389e85fad83ed0bb7f82c84",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/r_matrix.py": "e45262799cbedb546b6bfdf3879b8334c7b4ede004cb49776648a8becb5e4d89",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/sc.py": "0902827a02d27bdc4a9e4daea001706f6df562af1b733edc6762e12947f500b5",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/navi.py": "7d8ebece45a028257d0dfdf42f33ee1b68ba3b8d27dd93e3758e5d3ee861b8f9",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/track.py": "666d93c65c4a399071559661e2f986f179465acd65501181b55423d38962199d",
+        "/opt/anaconda3/lib/python3.12/site-packages/ocelot/cpbd/transformations/second_order.py": "170127ea252ecb8fc5053aa1f83ba0a4b441ed54beced83dda26e566120e3f96"
+      }
+    }
+  }
+}

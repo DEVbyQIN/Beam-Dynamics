@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-16",
+  "model": "AG longitudinal Gz; fixed transverse emittances",
+  "status": "numerical regression, not proof of complete SC validity",
+  "config_sha": "23e97edb733b",
+  "parameters": {
+    "section": "full",
+    "n_points": 2000,
+    "sc_enabled": false,
+    "solenoid_coupling": false
+  },
+  "input_authority": "shared sigma_z and sigma_delta; eps_nz derived",
+  "previous_reference": {
+    "array_sha1_12": "41f69f8ace7d",
+    "sigma_x_um": 1984.1914373219488,
+    "sigma_z_um": 474.01760709165364
+  },
+  "migration_reason": "Derive eps_nz from shared momentum covariance; evolve paper Gz; use one independent longitudinal state; RF preserves the same covariance. Internal ODE dimension/scaling also changes adaptive sampling.",
+  "array_fields": [
+    "z_mm",
+    "sigma_x_um",
+    "sigma_y_um",
+    "sigma_z_um",
+    "eps_nx_mm_mrad",
+    "eps_ny_mm_mrad",
+    "sigma_delta_e3"
+  ],
+  "array_sha1_12": "02012b2143f5",
+  "sample": {
+    "z_mm": 776.9999999999999,
+    "sigma_x_um": 1984.1890240620137,
+    "sigma_y_um": 1984.1890240620137,
+    "sigma_z_um": 473.9222151261726,
+    "sigma_delta_e3": 2.9387883873146556,
+    "eps_nx_mm_mrad": 0.08,
+    "eps_ny_mm_mrad": 0.08
+  }
+}

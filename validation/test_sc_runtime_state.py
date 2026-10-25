@@ -21,6 +21,8 @@ import sys
 import copy
 import tempfile
 import hashlib
+import json
+from pathlib import Path
 
 import numpy as np
 
@@ -33,7 +35,10 @@ from shared.params import load_config, _lattice_elements  # noqa: E402
 from shared.output_schema import write_results, load_results  # noqa: E402
 from validation.backend import run_ocelot  # noqa: E402
 
-CANONICAL_HASH = "7790fd9c2a2b"
+# Earlier first-order/RF baselines remain archived; current drift methods
+# are covered by the independently justified 20261025 migration.
+_BASELINE = json.loads((Path(_THIS_DIR)/'baselines/ocelot-transport-20261025.json').read_text())
+CANONICAL_HASH = _BASELINE['routes']['OCELOT']['new_hash']
 MESH_AC = [33, 33, 33]          # scheduler/state tests: mesh-independent
 N_AC = 3000
 
@@ -53,7 +58,7 @@ def cfg_with(cfg, **kw):
 
 def test_a_requested_false(cfg):
     print("== A. requested=False → effective=False + canonical hash ==")
-    r = run_ocelot(cfg, "full")                    # SC OFF (default)
+    r = run_ocelot(cfg, "full", dz=0.001)          # frozen 1-mm SC-OFF profile
     ok = (r.meta["sc_requested"] is False
           and r.meta["sc_effective"] is False)
     h = sc_off_hash(r)
@@ -113,16 +118,30 @@ def test_c_import_unavailable(cfg):
 
 def test_d_apply_count_zero(cfg):
     print("\n== D. requested=True + apply_count==0 → HARD FAIL ==")
-    # zero-total-length lattice (only the zero-length cathode/sample markers
-    # kept) → no tracking steps → no SC apply possible; parse() stays valid.
+    # Keep geometry valid so the intended SC failure is actually reached.
+    # Suppress PhysProc delivery from the real Navigator while preserving
+    # its transfer maps and positive-length tracking to the sample.
+    from unittest.mock import patch
+    from GPT模拟 import ued_beamline_v2 as gpt
     c = copy.deepcopy(cfg)
-    c["lattice"]["elements"] = [e for e in c["lattice"]["elements"]
-                                if e["type"] in ("cathode", "sample")]
+    c["lattice"]["elements"] = [
+        dict(name="cathode", type="cathode", z_start=0., length=0.),
+        dict(name="drift1", type="drift", z_start=0., length=.05),
+        dict(name="sample", type="sample", z_start=.05, length=0.),
+    ]
+    c["output"]["z_diagnostics_mm"] = [0, 50]
+    real_steps = gpt.Navigator.get_next_step
+
+    def steps_without_processes(navigator):
+        for maps, distance, processes, process_steps in real_steps(navigator):
+            yield maps, distance, [], []
+
     failed = False
     msg = ""
     try:
-        run_ocelot(c, "full", sc_enabled=True, n_particles=N_AC,
-                   sc_mesh=MESH_AC)
+        with patch.object(gpt.Navigator, "get_next_step", steps_without_processes):
+            run_ocelot(c, "full", sc_enabled=True, n_particles=N_AC,
+                       sc_mesh=MESH_AC)
     except RuntimeError as e:
         failed = True
         msg = str(e)

@@ -2,8 +2,8 @@
 """
 Level-1 test: shared config schema & consistency (v0.12, Phase 7/10).
 
-Read-only — never modifies config values.  Runs every check in
-validation/config_check.py and gates the suite on them.
+Never modifies config values. Runs config_check.py plus the geometry
+failure/production-entrypoint tests (temporary outputs only).
 
 Usage:  python3 validation/test_config_consistency.py
 """
@@ -27,6 +27,8 @@ def main():
         print(f"  [{'PASS' if ok else 'FAIL'}] {name}")
         ok_all &= ok
     print(f"  config consistency: {'PASS' if ok_all else 'FAIL'}")
+    from validation.test_geometry_contract import main as geometry_checks
+    ok_all = (geometry_checks() == 0) and ok_all
     return 0 if ok_all else 1
 
 
