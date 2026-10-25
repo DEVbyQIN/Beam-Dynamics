@@ -1,0 +1,5 @@
+# Windows batch launchers must be checked out with CRLF; the macOS launcher
+# stays LF.  Keeping this explicit prevents a Windows clone from receiving a
+# LF-only .bat, which cmd.exe mis-parses around labels and parenthesised blocks.
+*.bat text eol=crlf
+*.command text eol=lf

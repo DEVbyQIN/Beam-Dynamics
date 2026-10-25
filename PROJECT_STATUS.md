@@ -340,3 +340,12 @@ F17 数值修复、F07 几何子项以 10 月 22 日后续证据更新；F07 的
 - 启动：双击根目录 `启动界面.command`；或 `/opt/anaconda3/bin/python3 run_gui.py --open`。使用说明在 `gui/README.md`；默认仅监听127.0.0.1:8765，数据保存在 `gui_runs/`。
 - 当前边界：第一版为数值编辑与绘图界面，元件通过表格编辑，几何须显式连续；没有拖拽自动重排、自动优化或真实装置控制。AG和OCELOT的科学边界沿用前述记录。
 - 下一步以实际使用反馈调整界面和工作流；新增物理模型/精度研究按目标另列。
+
+## GUI Windows 兼容（2026-10-25）：已实现，未实机验证
+
+- 新增 Windows 入口 `启动界面.bat` / `安装环境.bat` / `运行GUI测试.bat` 与 `requirements-gui.txt`（pin 到 macOS 验证版本，11 个包均有 cp312 win_amd64 轮子）。
+- 进程管理集中到 `gui/platform_compat.py`：POSIX 保持进程组与 `killpg`；Windows 用进程句柄停止、`taskkill /T /F` 强杀整树、`OpenProcess`+`WaitForSingleObject` 探测父进程（不用 `os.kill(pid,0)`）。取消/超时/关闭清理状态语义不变：不发布未完成结果，重启标中断不重跑。
+- 编码与路径：所有 GUI 读写显式 UTF-8，worker 注入 `PYTHONUTF8`/`PYTHONIOENCODING`，日志二进制句柄，原子写带占用重试；中文/空格目录经测试覆盖。
+- 验证（macOS）：test_gui 6/6、test_platform_compat 29/29、test_gui_e2e 3/3（真实服务进程含取消与关闭清理）；test_windows_native 6 项 skip。
+- 边界：没有 Windows 实机执行；Windows 原生测试、OCELOT 路线、长路径与杀毒/控制台关闭等未实测；未改物理核心、默认配置与基线，未提交/推送。
+- 说明见 `gui/WINDOWS.md`、`gui/README.md`；变更记录 `CHANGELOG_windows_gui_20261025.md`。

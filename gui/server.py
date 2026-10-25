@@ -1,13 +1,17 @@
 """Loopback-only GUI, immutable run snapshots, and a serial worker queue."""
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import argparse, hashlib, io, json, math, mimetypes, os, re, secrets, signal
+import argparse, hashlib, io, json, math, mimetypes, os, re, secrets
 import subprocess, sys, threading, time, uuid, webbrowser, zipfile
 from copy import deepcopy
 from urllib.parse import urlsplit
 import yaml
 from shared.params import load_config, config_sha
 from shared.geometry import validate_geometry
+try:                          # normal entry: run_gui.py / python -m gui.server
+    from . import platform_compat as compat
+except ImportError:           # direct execution: python gui/server.py
+    import platform_compat as compat
 
 ROOT=Path(__file__).resolve().parents[1]
 WEB=Path(__file__).parent/'web'
@@ -15,7 +19,8 @@ TERMINAL={'complete','failed','cancelled','timeout','interrupted'}
 def fingerprint(cfg):
     return hashlib.sha256(json.dumps(cfg,sort_keys=True,allow_nan=False,separators=(',',':')).encode()).hexdigest()
 def write_json(path,value):
-    tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2,allow_nan=False));tmp.replace(path)
+    """Atomic UTF-8 JSON (see gui.platform_compat for the Windows retry)."""
+    compat.write_json(path,value)
 def validate_config(cfg):
     """UI input checks plus the unchanged shared geometry validator."""
     def number(value,name,minimum=None,positive=False,integer=False):
@@ -64,7 +69,7 @@ class Jobs:
         self.jobs={};self.process=None;self.active=None
         for p in sorted(self.data.glob('*/job.json')):
             try:
-                job=json.loads(p.read_text())
+                job=compat.read_json(p)
                 if job['status'] not in TERMINAL:
                     job.update(status='interrupted',error='上次界面关闭，运行未完成；未自动重跑。',finished=time.time());write_json(p,job)
                 self.jobs[job['id']]=job
@@ -82,14 +87,14 @@ class Jobs:
                 job=dict(id=uuid.uuid4().hex,batch=batch,route=route,status='queued',created=time.time(),
                     config_fingerprint=fingerprint(cfg),config_sha=config_sha(cfg),sample_m=geometry['sample_m'],timeout_s=self.timeout)
                 d=self.data/job['id'];d.mkdir();write_json(d/'config.json',cfg)
-                (d/'config.yaml').write_text(yaml.safe_dump(cfg,allow_unicode=True,sort_keys=False))
+                compat.write_text(d/'config.yaml',yaml.safe_dump(cfg,allow_unicode=True,sort_keys=False))
                 self.jobs[job['id']]=job;self.save(job);created.append(deepcopy(job))
             self.wake.set();return created
     def snapshot(self):
         with self.lock:
             values=deepcopy(list(self.jobs.values()))
         for j in values:
-            try:j['progress']=json.loads((self.data/j['id']/'progress.json').read_text())
+            try:j['progress']=compat.read_json(self.data/j['id']/'progress.json')
             except (OSError,ValueError):j['progress']={}
             j['elapsed_s']=max(0,j.get('finished',time.time())-j.get('started',time.time()))
         return sorted(values,key=lambda j:j['created'],reverse=True)
@@ -102,8 +107,7 @@ class Jobs:
                 j['cancel_requested']=True
                 if j['status']=='queued':j.update(status='cancelled',finished=time.time())
                 elif self.active==jid and self.process is not None:
-                    try:os.killpg(self.process.pid,signal.SIGTERM)
-                    except ProcessLookupError:pass
+                    compat.request_stop(self.process)
                 self.save(j)
         self.wake.set()
     def loop(self):
@@ -113,21 +117,23 @@ class Jobs:
                 queued=sorted((j for j in self.jobs.values() if j['status']=='queued'),key=lambda j:j['created'])
                 if not queued:continue
                 j=queued[0];d=self.data/j['id'];j.update(status='running',started=time.time());self.save(j);self.active=j['id']
-                env=os.environ.copy();env.update(PYTHONDONTWRITEBYTECODE='1',MPLBACKEND='Agg',OCELOT_NUM_THREADS='2',NUMBA_NUM_THREADS='2',
-                    MPLCONFIGDIR=str(self.data/'cache/mpl'),NUMBA_CACHE_DIR=str(self.data/'cache/numba'))
-                log=(d/'run.log').open('w')
+                env=compat.worker_env(self.data/'cache')
+                log=compat.open_log(d/'run.log')
                 try:
                     self.process=subprocess.Popen([sys.executable,'-m','gui.worker',str(d),j['route'],str(os.getpid())],
-                        cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,env=env,start_new_session=True)
+                        cwd=ROOT,stdout=log,stderr=subprocess.STDOUT,env=env,**compat.spawn_kwargs())
                 except OSError as e:
                     log.close();j.update(status='failed',error=str(e),finished=time.time());self.save(j);self.active=None;continue
                 proc=self.process
+                # Diagnostics only: a leftover worker clears itself through its
+                # parent-liveness check; a PID from an older session is never
+                # killed because Windows reuses PIDs.
+                j['worker_pid']=proc.pid;self.save(j)
             timedout=False
             try:code=proc.wait(timeout=self.timeout)
             except subprocess.TimeoutExpired:
                 timedout=True
-                try:os.killpg(proc.pid,signal.SIGKILL)
-                except ProcessLookupError:pass
+                compat.force_stop(proc)
                 code=proc.wait()
             finally:log.close()
             with self.lock:
@@ -137,18 +143,15 @@ class Jobs:
                 elif code==0 and (d/'result.json').exists():j['status']='complete'
                 else:
                     error='计算未成功完成，请查看日志。'
-                    try:error=json.loads((d/'error.json').read_text())['error']
+                    try:error=compat.read_json(d/'error.json')['error']
                     except (OSError,ValueError,KeyError):pass
                     j.update(status='failed',error=error)
                 self.save(j);self.process=None;self.active=None;self.wake.set()
     def shutdown(self):
         self.closed=True;self.cancel([j['id'] for j in self.snapshot() if j['status'] not in TERMINAL]);self.wake.set()
         proc=self.process
-        if proc:
-            try:proc.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                try:os.killpg(proc.pid,signal.SIGKILL)
-                except ProcessLookupError:pass
+        if proc is not None:
+            compat.terminate_tree(proc,grace=3.0)
         self.thread.join(timeout=4)
 
 class Handler(BaseHTTPRequestHandler):
@@ -174,7 +177,7 @@ class Handler(BaseHTTPRequestHandler):
                     if jid not in jobs.jobs:raise ValueError('任务不存在')
                     job=deepcopy(jobs.jobs[jid])
                 d=jobs.data/jid
-                if kind=='config':return self.send(json.loads((d/'config.json').read_text()))
+                if kind=='config':return self.send(compat.read_json(d/'config.json'))
                 if kind=='result':
                     if job['status']!='complete':return self.send({'error':'任务尚未成功，暂无完整结果'},409)
                     return self.send((d/'result.json').read_bytes(),ctype='application/json',filename=job['route']+'_results.json')
@@ -214,7 +217,9 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError,TypeError,KeyError,yaml.YAMLError) as e:self.send({'error':str(e)},400)
 
 def serve(port=8765,data=None,timeout=1800,open_browser=False):
-    server=ThreadingHTTPServer(('127.0.0.1',port),Handler)
+    try:server=ThreadingHTTPServer(('127.0.0.1',port),Handler)
+    except OSError as e:
+        raise SystemExit(f'无法监听 127.0.0.1:{port}（{e}）。端口可能被占用，可改用 --port 8766。') from e
     server.token=secrets.token_urlsafe(24);server.jobs=Jobs(data or ROOT/'gui_runs',timeout)
     url=f'http://127.0.0.1:{server.server_port}'
     print('UED GUI '+url,flush=True);print('Runs: '+str(server.jobs.data),flush=True)
@@ -223,6 +228,7 @@ def serve(port=8765,data=None,timeout=1800,open_browser=False):
     except KeyboardInterrupt:pass
     finally:server.jobs.shutdown();server.server_close()
 def main():
+    compat.configure_stdio()
     p=argparse.ArgumentParser(description='UED local GUI (existing AG/OCELOT drivers)')
     p.add_argument('--port',type=int,default=8765);p.add_argument('--data-dir',type=Path);p.add_argument('--timeout',type=float,default=1800);p.add_argument('--open',action='store_true')
     a=p.parse_args()

@@ -32,3 +32,6 @@ shared/results/*.json
 
 # Local GUI per-run configuration, logs and regenerable data
 /gui_runs/
+
+# Windows GUI test/execution caches (plotting and numba)
+/.gui_test_cache/

@@ -1,12 +1,14 @@
 # UED 本地工作台 v0.1
 
-在项目根目录双击 `启动界面.command`，或运行：
+macOS：在项目根目录双击 `启动界面.command`，或运行：
 
 ```bash
 /opt/anaconda3/bin/python3 run_gui.py --open
 ```
 
-浏览器访问 `http://127.0.0.1:8765`。终端保持运行，Ctrl+C 关闭服务并停止未完成任务。端口被占用时可传 `--port 8766`。
+Windows：先双击 `安装环境.bat` 安装一次依赖（创建 `.venv`），之后双击 `启动界面.bat`。详见 [Windows 使用与验证说明](WINDOWS.md)。
+
+浏览器访问 `http://127.0.0.1:8765`。终端保持运行，Ctrl+C 关闭服务并停止未完成任务。端口被占用时可传 `--port 8766`（Windows 上为 `启动界面.bat --port 8766`）。
 
 ## 使用流程
 
@@ -24,7 +26,17 @@
 - AG → `AG.runner.run_from_config`；OCELOT → `GPT模拟.ued_beamline_v2.run_from_config`。保存复用 `shared.output_schema.write_results`。GUI 只编辑、调度和显示，不复制力公式、粒子初态或束线积分循环。
 - AG 进度按已完成积分段更新，段内不估算虚假百分比；OCELOT 进度来自实际诊断位置。
 - 单任务默认上限 1800 秒，`--timeout` 可调整。两路线顺序执行；工作配置相同的结果才合并展示。
-- 依赖沿用项目 Python 环境（NumPy/SciPy/PyYAML/Matplotlib/OCELOT）；界面自身没有额外前端安装或网络依赖。当前运行管理针对 macOS/Linux。
+- 依赖沿用项目 Python 环境（NumPy/SciPy/PyYAML/Matplotlib/OCELOT）；界面自身没有额外前端安装或网络依赖。Windows 可用 `requirements-gui.txt` + `安装环境.bat` 复现 macOS 已验证的版本。
+- 运行管理跨平台：macOS/Linux 保留进程组（`start_new_session` + `killpg`）；Windows 用进程句柄停止、`taskkill /T /F` 强杀整树、可等待句柄探测父进程，集中在 `gui/platform_compat.py`。关闭服务后 worker 会在 ≤2 秒内自行退出；重启仍把未完成任务标为中断，不自动重跑。
+
+## 测试
+
+```bash
+# macOS / Linux
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest gui.test_gui gui.test_platform_compat gui.test_windows_native gui.test_gui_e2e -v
+```
+
+Windows 用 `运行GUI测试.bat`。`gui/test_windows_native.py` 只在 Windows 实机运行，其他平台自动 skip；端到端测试会启动真实服务进程与 worker（`UED_GUI_E2E=0` 可跳过）。本轮结果、未验证项与依赖证据见 [WINDOWS.md](WINDOWS.md) 和 `CHANGELOG_windows_gui_20261025.md`。
 
 ## 科学边界
 

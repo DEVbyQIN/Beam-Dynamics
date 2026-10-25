@@ -5,10 +5,14 @@ import hashlib, importlib, json, os, sys, threading, time, traceback
 from unittest.mock import patch
 sys.dont_write_bytecode=True
 ROOT=Path(__file__).resolve().parents[1]
+try:                          # normal entry: python -m gui.worker
+    from . import platform_compat as compat
+except ImportError:           # direct execution: python gui/worker.py
+    import platform_compat as compat
 def save(path,value):
-    p=Path(path);tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2));tmp.replace(p)
+    compat.write_json(path,value)
 def run(directory,route,parent):
-    d=Path(directory);cfg=json.loads((d/'config.json').read_text());started=time.monotonic()
+    d=Path(directory);cfg=compat.read_json(d/'config.json');started=time.monotonic()
     from shared.geometry import validate_geometry
     from shared.params import config_sha
     from shared.output_schema import write_results
@@ -18,9 +22,10 @@ def run(directory,route,parent):
         if force or now-last[0]>.5:
             save(d/'progress.json',dict(s_m=float(s),sample_m=sample,fraction=max(0,min(1,float(s)/sample)),phase=phase,elapsed_s=now-started));last[0]=now
     def watch_parent():
+        """Abort if the GUI service disappears (macOS getppid / Windows handle)."""
         while True:
             time.sleep(2)
-            if os.getppid()!=parent:
+            if not compat.parent_alive(parent):
                 save(d/'error.json',{'error':'界面服务已关闭，计算中止。'});os._exit(2)
     threading.Thread(target=watch_parent,daemon=True).start();progress(0,'准备计算依赖',True)
     if route=='AG':
@@ -44,7 +49,7 @@ def run(directory,route,parent):
     if not history['z_mm'] or abs(history['z_mm'][-1]-sample*1e3)>1e-8:raise RuntimeError('正式结果未到样品面，未标为成功')
     path=Path(write_results(label,probes,history,config_sha(cfg),meta['sc_effective'],out_dir=str(d),meta=meta))
     # The download name stays common for the GUI; original route field is preserved.
-    payload=json.loads(path.read_text());encoded=json.dumps(payload,ensure_ascii=False,allow_nan=False).encode()
+    payload=compat.read_json(path);encoded=json.dumps(payload,ensure_ascii=False,allow_nan=False).encode()
     temp=d/'result.tmp';temp.write_bytes(encoded);temp.replace(d/'result.json')
     progress(sample,'已完成',True)
     print(route+' complete: '+str(d/'result.json'),flush=True)

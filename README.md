@@ -129,6 +129,8 @@ pip install numpy scipy matplotlib pyyaml ocelot-collab
 
 在项目根目录双击 `启动界面.command`，或执行 `/opt/anaconda3/bin/python3 run_gui.py --open`，浏览器访问 `http://127.0.0.1:8765`。
 
+Windows：先双击 `安装环境.bat`（创建 `.venv` 并按 `requirements-gui.txt` 安装依赖），之后双击 `启动界面.bat`。进程停止、超时、关闭清理、UTF-8 与中文/空格路径已按平台分开处理；**本轮未做 Windows 实机验证**，详见 [gui/WINDOWS.md](gui/WINDOWS.md)。
+
 支持参数与元件编辑、共享几何校验、两路线顺序运行、进度/停止、对比曲线及配置/结果/图像导出。运行数据放在 `gui_runs/`，不覆盖共享默认或既有结果。详见 [GUI 使用说明](gui/README.md)。工程验收采用两条10mm短束线、实际SC推进后的停止及失败/超时等检查；没有新增物理模型或物理精度认证。
 
 ## 快速开始

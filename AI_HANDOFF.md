@@ -495,3 +495,13 @@ git diff --check                                                       # rc=0（
 - 工作配置按任务冻结，数据位于gui_runs/；不覆盖shared默认或旧结果。几何复用shared.geometry；mm界面与m配置在明确边界换算。
 - 真正完成两条10mm无SC/带磁透镜和RF的工程短例；启动期取消之外另验证SC实际推进至1mm后停止。6项专项和桌面/手机浏览器交互检查通过；无新增完整SC轨迹、物理模型或阈值，未跑run_all。
 - 使用范围和启动方式见gui/README.md；工程验收材料位于 /Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/gui_mvp_20261025/。未提交/推送/上传。
+
+## 43. GUI Windows 兼容改造（2026-10-25）
+
+- 起因：续接 outputs/windows_support_20261025（已定位未改代码）。本轮补齐启动器、进程创建/停止/超时/关闭清理、UTF-8 与中文空格路径、专项测试与文档；未重做物理审计、未跑长 SC 扫描。
+- 实现：新增 gui/platform_compat.py（平台唯一分支点：spawn_kwargs/request_stop/force_stop/terminate_tree/process_alive/parent_alive/UTF-8 IO/worker_env）；server.py 取消/超时/关闭清理改走兼容层，worker 环境注入 PYTHONUTF8/PYTHONIOENCODING，run.log 二进制，JSON/YAML 显式 UTF-8，job.json 记录 worker_pid 仅作诊断；worker.py 父进程检测改 compat.parent_alive。
+- Windows 入口：启动界面.bat（chcp 65001、%~dp0、优先 .venv、参数透传）、安装环境.bat（强制 CPython 3.12、venv、requirements-gui.txt）、运行GUI测试.bat；三个 .bat 为 CRLF 且内容纯 ASCII（避免 cmd 代码页解析问题）；新增 .gitattributes 固定换行。
+- 依赖：requirements-gui.txt 精确 pin 到 macOS 验证版本；11 个包均有 cp312 win_amd64 轮子，ocelot-collab 26.6.1 为 py3-none-any；pyfftw 在 ocelot 中是 try/except 可选加速。证据见 gui/WINDOWS.md §5（元数据级，非实机）。
+- 验证（macOS 3.12.2）：test_gui 6/6（基线亦 6/6）；test_platform_compat 29/29；test_gui_e2e 3/3（27.0 s，真实服务进程：短例完成 / 运行中取消→cancelled 且无 result.json / SIGINT 关闭后无遗留 worker）；test_windows_native 6 项 skip（无 Windows 主机）。
+- 限制：没有 Windows 实机执行，Windows 原生测试与 .bat 双击流程未运行；OCELOT 路线未在 Windows 跑过；>260 字符长路径、杀毒/受控文件夹、关闭控制台窗口清理、端口 SO_REUSEADDR 差异均未实测。不宣称 Windows 全部通过。
+- 未改物理核心、shared 参数与单位、默认束线 YAML、基线和旧结果；本轮未 commit/推送/上传。变更记录：CHANGELOG_windows_gui_20261025.md。
