@@ -1,0 +1,17 @@
+[
+  "AI_HANDOFF.md",
+  "PROJECT_STATUS.md",
+  "README.md",
+  "gui/README.md",
+  "gui/WINDOWS.md",
+  "gui/platform_compat.py",
+  "gui/server.py",
+  "gui/test_gui_e2e.py",
+  "gui/test_platform_compat.py",
+  "gui/worker.py",
+  "启动界面.bat",
+  "安装环境.bat",
+  "运行GUI测试.bat",
+  "gui/test_review_regressions.py",
+  "CHANGELOG_review_20261026.md"
+]

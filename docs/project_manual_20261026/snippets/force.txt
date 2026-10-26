@@ -1,0 +1,23 @@
+    A_y = ((ty**2 + 2*ny**2) * ay - ny**2 * ayy) / (2*sy*sz) \
+        + (8*tx**2 * ay - nx**2 * axy) / (16*sy*sz) \
+        + (1 - p0**2) * (2*tz**2 * ay - nz**2 * ayz) / (4*sy*sz)
+
+    B_y = ((ty**2 + 2*ny**2) * ay - ny**2 * ayy) / (sy*sz) \
+        + ny*nx * (8*ax - axy) / (8*sz*sx) \
+        + (1 - p0**2) * ny*nz * (2*gamma**2*sz**2*az - sy*sx*ayz) / (2*sy*sx*gamma**2*sz**2)
+
+    Fs_y = term_y0 - fb/gamma * (A_y + B_y)
+
+    # ── F_z^s  (Eq.17) ──
+    term_z0 = fb * az / denom_z
+
+    A_z = 3*(1 - p0**2) * (2*(tz**2 + 2*nz**2)*az - nz**2*azz) / (4*sx*sy) \
+        + (2*gamma**2*sz**2*tx**2*az - nx**2*sx*sy*axz) / (4*sx*sy*gamma**2*sz**2) \
+        + (2*gamma**2*sz**2*ty**2*az - ny**2*sx*sy*ayz) / (4*sx*sy*gamma**2*sz**2)
+
+    B_z = nx*nz*(2*ax - axz) / (2*sx*sz) \
+        + ny*nz*(2*ay - ayz) / (2*sy*sz)
+
+    Fs_z = term_z0 - fb/gamma * (A_z + B_z)
+
+    return Fs_x, Fs_y, Fs_z

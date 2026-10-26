@@ -1,0 +1,31 @@
+{
+  "status": "timeout",
+  "timeout_kind": "total_budget_remaining",
+  "worker_wall_seconds": 1565.925323009491,
+  "original_worker_record_status": "reserved",
+  "formal_API_repeated": false,
+  "last_saved_progress": {
+    "label": "combined",
+    "s_m": 0.28550000000000003,
+    "elapsed_seconds": 1552.0901053850248
+  },
+  "last_progress_is_not_exact_termination_position": true,
+  "retained_snapshots": {
+    "start": {
+      "s_m": 0.0,
+      "checks": {
+        "shape": true,
+        "finite": true,
+        "raw_hash": true,
+        "charge_hash": true
+      },
+      "file_sha256": "53afc51ec4f9f6141ea3fa6f92dc8bc02c6e9ce28b31422504b0f2bfefd5997e"
+    }
+  },
+  "matching_initial_cloud_with": [
+    "N100k"
+  ],
+  "full_result_saved": false,
+  "included_in_full_trajectory_statistics": false,
+  "meaning": "retained prefix only; no sample-plane prediction or full-coverage qualification"
+}

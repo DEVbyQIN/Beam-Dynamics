@@ -1,0 +1,49 @@
+class ParentMonitor:
+    """Hold one Windows process object, so later PID reuse cannot fool a worker.
+
+    A signaled handle means exited. Access/wait errors are explicit failures,
+    never interpreted as proof that the parent is alive or dead.
+    """
+    def __init__(self, pid, windows=None):
+        self.pid = int(pid)
+        self.windows = _windows(windows)
+        self.api = None
+        self.handle = None
+        self.closed = False
+        if self.pid <= 0:
+            raise ValueError('parent PID must be positive')
+        if self.windows:
+            self.api = _windows_api()
+            self.handle = self.api.OpenProcess(_SYNCHRONIZE, False, self.pid)
+            if not self.handle:
+                error = ctypes.get_last_error()
+                if error != _ERROR_INVALID_PARAMETER:
+                    raise OSError(error, f'Cannot monitor parent {self.pid}: OpenProcess failed')
+
+    def alive(self):
+        if self.closed:
+            raise RuntimeError('process monitor is closed')
+        if not self.windows:
+            return os.getppid() == self.pid
+        if self.handle is None or self.handle == 0:
+            return False
+        result = self.api.WaitForSingleObject(self.handle, 0)
+        if result == _WAIT_TIMEOUT:
+            return True
+        if result == _WAIT_OBJECT_0:
+            return False
+        raise OSError(ctypes.get_last_error(),
+                      f'Cannot monitor parent {self.pid}: WaitForSingleObject returned {result:#x}')
+
+    def close(self):
+        if not self.closed:
+            self.closed = True
+            if self.handle:
+                self.api.CloseHandle(self.handle)
+                self.handle = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        self.close()

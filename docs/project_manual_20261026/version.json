@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-26",
+  "root": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu",
+  "head": "f9810dab40037ef8bfb5c1cb4cf99baefa9bf9d2",
+  "branch": "main",
+  "status_at_capture": "M .gitignore\n M AI_HANDOFF.md\n M PROJECT_STATUS.md\n M README.md\n M gui/README.md\n M gui/server.py\n M gui/worker.py\n?? .gitattributes\n?? .scratch/\n?? CHANGELOG_review_20261026.md\n?? CHANGELOG_windows_gui_20261025.md\n?? docs/\n?? gui/WINDOWS.md\n?? gui/platform_compat.py\n?? gui/test_gui_e2e.py\n?? gui/test_platform_compat.py\n?? gui/test_review_regressions.py\n?? gui/test_windows_native.py\n?? requirements-gui.txt\n?? \"\\345\\220\\257\\345\\212\\250\\347\\225\\214\\351\\235\\242.bat\"\n?? \"\\345\\256\\211\\350\\243\\205\\347\\216\\257\\345\\242\\203.bat\"\n?? \"\\350\\277\\220\\350\\241\\214GUI\\346\\265\\213\\350\\257\\225.bat\"",
+  "python": "3.12.2",
+  "platform": "macOS-13.7.1-x86_64-i386-64bit",
+  "packages": {
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "matplotlib": "3.9.2",
+    "PyYAML": "6.0.1",
+    "ocelot-collab": "26.6.1"
+  },
+  "document_version": "1.1",
+  "github_reviewed_head": "b4aa241fc8e3ca8e3aad98ecdf6c1e058a56c51f",
+  "engineering_complete_10mm_runs": 4,
+  "engineering_interrupted_sc_calls": 4,
+  "new_complete_sc_studies": 0,
+  "physical_source_edits_this_document": 0
+}

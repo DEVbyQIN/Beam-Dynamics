@@ -1,0 +1,21 @@
+def covariance_area(a, b, c):
+    a, b, c = np.broadcast_arrays(np.asarray(a,float),np.asarray(b,float),np.asarray(c,float))
+    product, det = a*b, a*b-c*c
+    if (not np.isfinite([a,b,c]).all() or np.any(a < 0) or np.any(b < 0)
+            or np.any(det < -64*np.finfo(float).eps*np.maximum(product,c*c))):
+        raise ValueError("beam covariance is nonfinite or not positive semidefinite")
+    return np.sqrt(np.maximum(det,0.))  # only the checked 64-epsilon PSD boundary
+
+
+def longitudinal_diagnostics(sigma_z_m, sigma_delta, C_zdelta_m, gamma):
+    s, d, c, g = np.broadcast_arrays(*[np.asarray(v,float) for v in
+        (sigma_z_m,sigma_delta,C_zdelta_m,gamma)])
+    if not np.isfinite([s,d,c,g]).all() or np.any(d < 0) or np.any(s <= 0) or np.any(g <= 1):
+        raise ValueError("diagnostics require positive size and gamma>1")
+    beta = np.sqrt(1.-1./g**2)
+    area = covariance_area(s*s,d*d,c)
+    return {"C_zdelta_m":c, "chirp_per_m":c/(s*s),
+            "eps_nz_mm_mrad":beta*g*area*1e6,
+            "eps_z_zprime_m":area/g**2,
+            "sigma_t_fs":s/(beta*C_SI)*1e15,
+            "beta_ref":beta, "gamma_ref":g}

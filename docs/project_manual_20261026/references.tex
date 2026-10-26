@@ -1,0 +1,42 @@
+\begin{thebibliography}{99}
+\bibitem{kelisani} M. D. Kelisani, S. Barzegar, P. Craievich, S. Doebert.
+Six-Dimensional Beam-Envelope Equations: An Ultrafast Computational Approach for Interactive Modeling of Accelerator Structures.
+\emph{Physical Review Applied}, 19, 054011 (2023).
+\href{https://doi.org/10.1103/PhysRevApplied.19.054011}{doi:10.1103/PhysRevApplied.19.054011}。
+重点对应式 (3)、(6)--(7)、(15)--(29)。
+\bibitem{luiten} O. J. Luiten, S. B. van der Geer, M. J. de Loos, F. B. Kiewiet, M. J. van der Wiel.
+How to Realize Uniform Three-Dimensional Ellipsoidal Electron Bunches.
+\emph{Physical Review Letters}, 93, 094802 (2004).
+\href{https://doi.org/10.1103/PhysRevLett.93.094802}{doi:10.1103/PhysRevLett.93.094802}。
+仅作为椭球内部线性场的理论来源，不表示本项目实现了完整发射过程。
+\bibitem{franssen} J. G. H. Franssen, O. J. Luiten.
+Improving temporal resolution of ultrafast electron diffraction by eliminating arrival time jitter induced by radiofrequency bunch compression cavities.
+\emph{Structural Dynamics}, 4, 044026 (2017).
+\href{https://doi.org/10.1063/1.4984104}{doi:10.1063/1.4984104}；
+\href{https://arxiv.org/abs/1703.05258}{arXiv:1703.05258}。
+用于有效场积分、时间相位与 $\omega/v$；项目相位和作用面以共同 RF Note 为准。
+\bibitem{occoord} OCELOT Project. Ocelot Coordinate System.
+\url{https://www.ocelot-collab.com/docs/docu/OCELOT%20fundamentals/coordinate_system/}。
+在线文档，核对日期 2026-10-26；原生过面坐标定义。
+\bibitem{ocelements} OCELOT Project. Element Architecture.
+\url{https://www.ocelot-collab.com/docs/docu/elements/architecture/}。
+在线文档，核对日期 2026-10-26；实际方法还须核对安装源码及活动 tms。
+\bibitem{ocsc} OCELOT Project. Space Charge 3D.
+\url{https://www.ocelot-collab.com/docs/docu/physics-processes/sc/}。
+在线文档，核对日期 2026-10-26；束团系自由空间 Poisson/FFT 与实验室系 kick。
+在线源码入口：\url{https://github.com/ocelot-collab/ocelot/blob/master/ocelot/cpbd/sc.py}。
+分支可变，实际核对版本由 E07/E08 的库摘要确定。
+\bibitem{scipyrd} SciPy Developers. \texttt{scipy.special.elliprd}: Carlson symmetric elliptic integral of the second kind.
+\url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.elliprd.html}。
+定义于 2026-10-26 核对；本地研究为 SciPy 1.13.1，不将当前网页版本当成安装版本。
+\bibitem{nist} D. Yeo. A Summary of Industrial Verification, Validation, and Uncertainty Quantification Procedures in Computational Fluid Dynamics.
+NISTIR 8298 (2020).
+\href{https://doi.org/10.6028/NIST.IR.8298}{doi:10.6028/NIST.IR.8298}。
+仅采用一般 V\&V/UQ 分层思路，不把 CFD 文献当 UED 专用精度规范。
+\bibitem{pyctypes} Python Software Foundation. \texttt{ctypes}---A foreign function library for Python.
+\url{https://docs.python.org/3/library/ctypes.html}。函数签名与返回类型，核对日期2026-10-26。
+\bibitem{winprocess} Microsoft. OpenProcess function.
+\url{https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openprocess}。进程句柄、权限及失败返回，核对日期2026-10-26。
+\bibitem{winwait} Microsoft. WaitForSingleObject function.
+\url{https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject}。等待成功、超时和失败分类，核对日期2026-10-26。
+\end{thebibliography}

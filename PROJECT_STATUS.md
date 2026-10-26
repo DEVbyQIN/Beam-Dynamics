@@ -349,3 +349,10 @@ F17 数值修复、F07 几何子项以 10 月 22 日后续证据更新；F07 的
 - 验证（macOS）：test_gui 6/6、test_platform_compat 29/29、test_gui_e2e 3/3（真实服务进程含取消与关闭清理）；test_windows_native 6 项 skip。
 - 边界：没有 Windows 实机执行；Windows 原生测试、OCELOT 路线、长路径与杀毒/控制台关闭等未实测；未改物理核心、默认配置与基线，未提交/推送。
 - 说明见 `gui/WINDOWS.md`、`gui/README.md`；变更记录 `CHANGELOG_windows_gui_20261025.md`。
+
+## 2026-10-26 文档与 Windows 复核修订
+
+- 核对实际 GitHub main b4aa241；起始 README/平台文件与本地相同。发现 taskkill 非零误判成功、无界等待、Win32 HANDLE 签名/错误分类、watchdog 写失败退出和测试平台兼容问题，已本地修复。停止无法确认时暂停队列；安装器检查新旧环境 CPython 3.12 x64。
+- 当前验证：单元/契约 46 通过、6 Windows 原生 skip；真实 GUI E2E 4 通过（两路线 10mm 正式短例、积分中取消和关服务）。两轮共 4 完整短轨迹 + 4 中断 SC 调用；无完整 SC 研究，无全套 run_all。Windows 实机尚未验证。
+- 修订 README 旧 RF 公式、已修复电荷问题、配置示例和历史测试范围；项目文档升至 v1.1，附当前源码/证据。原 v1 ZIP 保留。物理核心、默认配置、数值阈值和旧基线未改。
+- 报告：`docs/review_20261026/REVIEW.md`；测试日志/账本同目录。当前修改未 commit/push。

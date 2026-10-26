@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "errors": [],
+  "overflow": false,
+  "production_jobs": 0,
+  "shared_step_m": 0.005,
+  "exported_step_m": 0.001,
+  "port": 8765
+}

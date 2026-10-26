@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-26",
+  "pdf_sha256": "86bc8e40e9a65fc9da59d551654ea8d30195d32af954286a2e1213d6485b9f1a",
+  "pages": 29,
+  "review": "Body pages 1-21 inspected in contact sheets; Windows page 13 at full size. Final appendix pagination pages 22-29 rendered again and inspected. No clipped content, missing Chinese text or overlapping equations/tables observed. Source index moved to one complete page.",
+  "render_evidence": [
+    "qa/v11-contact-1.jpg",
+    "qa/v11-contact-2.jpg",
+    "qa/v11-contact-3.jpg",
+    "qa/final-contact-4.jpg",
+    "qa/final-v11-13.png",
+    "qa/delivery-contact-1.jpg",
+    "qa/delivery-contact-2.jpg"
+  ],
+  "latex_diagnostics": "zero overfull / missing glyph / undefined reference diagnostics"
+}

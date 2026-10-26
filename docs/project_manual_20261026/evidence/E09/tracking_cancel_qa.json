@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "running_observed": {
+    "id": "97fe1012c14a4f16a9520b120c5260eb",
+    "batch": "073787dce14d4533ac61dee9ffbc60ac",
+    "route": "OCELOT",
+    "status": "running",
+    "created": 1792938168.141927,
+    "config_fingerprint": "abc1e870e1d241b1ebadebed9eb9b1bae3ed9f9d03ee4c5c6ba36a90e21ac9a8",
+    "config_sha": "447942f21d6d",
+    "sample_m": 0.777,
+    "timeout_s": 90,
+    "started": 1792938168.1569338,
+    "progress": {
+      "s_m": 0.001,
+      "sample_m": 0.777,
+      "fraction": 0.001287001287001287,
+      "phase": "OCELOT 正在推进",
+      "elapsed_s": 5.438194062000093
+    },
+    "elapsed_s": 5.88455605506897
+  },
+  "cancelled": {
+    "id": "97fe1012c14a4f16a9520b120c5260eb",
+    "batch": "073787dce14d4533ac61dee9ffbc60ac",
+    "route": "OCELOT",
+    "status": "cancelled",
+    "created": 1792938168.141927,
+    "config_fingerprint": "abc1e870e1d241b1ebadebed9eb9b1bae3ed9f9d03ee4c5c6ba36a90e21ac9a8",
+    "config_sha": "447942f21d6d",
+    "sample_m": 0.777,
+    "timeout_s": 90,
+    "started": 1792938168.1569338,
+    "cancel_requested": true,
+    "exit_code": -15,
+    "finished": 1792938174.15414,
+    "progress": {
+      "s_m": 0.001,
+      "sample_m": 0.777,
+      "fraction": 0.001287001287001287,
+      "phase": "OCELOT 正在推进",
+      "elapsed_s": 5.438194062000093
+    },
+    "elapsed_s": 5.997206211090088
+  },
+  "conflict_status": 409,
+  "cancelled_result_status": 409,
+  "errors": [],
+  "overflow": false
+}

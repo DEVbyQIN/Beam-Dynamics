@@ -1,0 +1,54 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C3 · 八条基础整线验收收口</title><style>body{margin:0;background:#f2f6f8;color:#223641;font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}main{max-width:1160px;margin:auto;padding:30px 24px 65px}h1{font-size:32px;line-height:1.4}h2{font-size:23px;margin-top:0}h3{font-size:18px}section{background:white;border:1px solid #dbe5ea;border-radius:12px;padding:24px;margin:20px 0}.tag{color:#246454;font-weight:600}.lead{font-size:19px}.muted{font-size:14px;color:#5e7480}.notice{padding:12px 16px;background:#fff7e7;border-left:4px solid #bf832b}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:11px;border-bottom:1px solid #e1e8ed;text-align:left;vertical-align:top}th{background:#eff5f7;white-space:nowrap}a{color:#176b83}img{max-width:100%;display:block;margin:18px auto}pre{padding:17px;background:#edf4f6;line-height:1.85;overflow:auto}li{margin:9px 0}summary{cursor:pointer;color:#176b83}@media(max-width:700px){main{padding:18px 12px}section{padding:16px}h1{font-size:26px}}</style></head><body><main>
+<p class="tag">基础验收阶段收口 · 2026-10-24 · 8/8条齐全（新增6、复用2）</p>
+<h1>主要分歧在 SC 已开启、RF 尚未作用时就出现；<br>本轮没有发现需要再改 RF 的实现错误</h1>
+<p class="lead">四组合已经补齐。<strong>尺寸和总动量展宽可以接近，发射度仍有大差。</strong>当前最需要限制的是AG在本类SC工况中的发射度预测用途；本轮不继续调参、升级模型或追加扫描。</p>
+<p>这是一组固定初态、几何和数值设置的基础交叉验收。SC的完整数值误差尚未定量，因此“差异与SC有关”已定位；“全部差异究竟有多少来自AG闭合、多少来自粒子数值设置”仍不能由这八条单独确定。当前粒子结果没有被当成绝对真值。</p>
+<section><h2>1 · 六条已执行，四组合现在完整</h2>
+<div class="scroll"><table><thead><tr><th>SC</th><th>纵向RF</th><th>AG/OCELOT</th><th>状态</th></tr></thead><tbody><tr><td>关</td><td>关</td><td>各1条</td><td>本轮新增</td></tr><tr><td>关</td><td>开</td><td>各1条</td><td>复用C3-A，源/库/输入/文件哈希核对</td></tr><tr><td>开</td><td>关</td><td>各1条</td><td>本轮新增</td></tr><tr><td>开</td><td>开</td><td>各1条</td><td>本轮新增</td></tr></tbody></table></div>
+<p>完整束线、100keV、100fC、初始85/300μm、σδ=1e−4、εnx/y=0.08mm·mrad；N50000、seed42、PIC63³、SC step1、dz1mm。横向RF关闭，AG用既有正式采样与容差。RF400mm、样品777mm。</p>
+<p>每条直接调用与CLI相同的正式driver和结果保存函数，不另写追踪循环。绕开OCELOT CLI会自动追加无SC对照的打印验证分支，实际新增轨迹严格为6条。</p>
+<div class="scroll"><table><thead><tr><th>组合</th><th>路线</th><th>σx / μm</th><th>σζ / μm</th><th>σδ / ×10⁻³</th><th>εnx / mm·mrad</th><th>εnz / mm·mrad</th><th>证据</th></tr></thead><tbody><tr><td>SC关 / RF关</td><td>AG</td><td>1984.19</td><td>304.883</td><td>0.1</td><td>0.08</td><td>0.0196652</td><td><a href="runs/sc0_rf0/AG/AG_results.json">正式JSON</a></td></tr><tr><td>SC关 / RF关</td><td>OCELOT</td><td>1996.21</td><td>304.747</td><td>0.100022</td><td>0.0804291</td><td>0.0196841</td><td><a href="runs/sc0_rf0/OCELOT/GPT_results.json">正式JSON</a></td></tr><tr><td>SC关 / RF开</td><td>AG</td><td>1984.19</td><td>1113.77</td><td>5.36609</td><td>0.08</td><td>0.0196652</td><td><a href="reused/sc0_rf1/AG/AG_results.json">正式JSON</a></td></tr><tr><td>SC关 / RF开</td><td>OCELOT</td><td>1996.21</td><td>1113.3</td><td>5.36451</td><td>0.0804291</td><td>0.0196877</td><td><a href="reused/sc0_rf1/OCELOT/GPT_results.json">正式JSON</a></td></tr><tr><td>SC开 / RF关</td><td>AG</td><td>2544.04</td><td>1320.89</td><td>2.3253</td><td>0.0799997</td><td>0.0196651</td><td><a href="runs/sc1_rf0/AG/AG_results.json">正式JSON</a></td></tr><tr><td>SC开 / RF关</td><td>OCELOT</td><td>2551.28</td><td>1327.6</td><td>2.36019</td><td>0.116186</td><td>0.141495</td><td><a href="runs/sc1_rf0/OCELOT/GPT_results.json">正式JSON</a></td></tr><tr><td>SC开 / RF开</td><td>AG</td><td>2551.32</td><td>2058.71</td><td>10.5478</td><td>0.0799996</td><td>0.0196651</td><td><a href="runs/sc1_rf1/AG/AG_results.json">正式JSON</a></td></tr><tr><td>SC开 / RF开</td><td>OCELOT</td><td>2558.43</td><td>2049</td><td>10.5095</td><td>0.124304</td><td>0.141836</td><td><a href="runs/sc1_rf1/OCELOT/GPT_results.json">正式JSON</a></td></tr></tbody></table></div>
+<p class="muted">文件名GPT_results.json是OCELOT路线的历史命名，并非第三个模型。全部共同量、四处状态与采样方式见<a href="analysis.json">完整分析JSON</a>。</p>
+<img src="sample_overview.png" alt="四种开关组合下两路线在样品面的束长、动量展宽及横向纵向发射度">
+</section>
+<section><h2>2 · 先看差异大小，再说哪些能使用</h2>
+<div class="scroll"><table><thead><tr><th>组合</th><th>σx差</th><th>σζ差</th><th>σδ差</th><th>εnx差</th><th>εnz差</th></tr></thead><tbody><tr><td>SC关 / RF关</td><td>-0.602%</td><td>+0.044%</td><td>-0.022%</td><td>-0.534%</td><td>-0.096%</td></tr><tr><td>SC关 / RF开</td><td>-0.602%</td><td>+0.043%</td><td>+0.029%</td><td>-0.534%</td><td>-0.114%</td></tr><tr><td>SC开 / RF关</td><td>-0.283%</td><td>-0.506%</td><td>-1.478%</td><td>-31.145%</td><td>-86.102%</td></tr><tr><td>SC开 / RF开</td><td>-0.278%</td><td>+0.474%</td><td>+0.364%</td><td>-35.642%</td><td>-86.135%</td></tr></tbody></table></div>
+<p class="muted">差=AG/OCELOT−1。这里是模型间差异，不是对已知真值的误差。尺寸5%、展宽2%、横向发射度5%只保留原筛查用途；单网格/步长/种子没有给出本整线完整误差余量，所以不凭“在线内”宣称绝对物理精度通过。h/纵向ε没有新造PASS阈值。</p>
+<p>SC+RF样品处，束长差+0.474%、总动量展宽差+0.364%；横向x发射度差-35.642%、纵向发射度差-86.135%。单看前两项会遗漏后两项的明显分歧。</p>
+<div class="scroll"><table><thead><tr><th>项目</th><th>本轮可作的判断</th><th>现阶段使用方式</th></tr></thead><tbody><tr><td>正式配置/几何/开关/保存</td><td>八条路径与实际端面、事件、SC执行可查；源/输入/结果冻结</td><td>可以依此复现本轮记录与做后续对照。</td></tr><tr><td>无SC基准与RF</td><td>基准传播和RF局部实现符合既有参考；线性化差异已单列</td><td>本规定工况可继续使用现有RF近似进行参数探索；真实腔体标定另计。</td></tr><tr><td>SC下尺寸/束长/时宽/总展宽</td><td>固定设置下有明确的两模型对照数字</td><td>可作本例趋势与工作点比较；科研中的指定绝对精度需相应数值/实验资格。</td></tr><tr><td>SC下发射度及增长</td><td>本例AG没有重现粒子路线明显增长，RF前已差开</td><td>不要把当前AG发射度当此类工况的定量可靠值；若它决定研究结论，需用粒子路线并先补该工况的数值资格。</td></tr><tr><td>chirp、剩余展宽与联合形状</td><td>共同定义/四处状态可核对；SC后存在模型分歧</td><td>逐量读结果与限制；没有统一目标就不作一刀切物理PASS。</td></tr></tbody></table></div>
+</section>
+<section><h2>3 · 大的发射度差在RF之前已经存在</h2>
+<div class="scroll"><table><thead><tr><th>组合</th><th>路线</th><th>RF前σζ / μm</th><th>RF前σδ / ×10⁻³</th><th>RF前εnx / mm·mrad</th><th>RF前εnz / mm·mrad</th><th>400mm采样</th></tr></thead><tbody><tr><td>SC开 RF关</td><td>AG</td><td>716.466</td><td>2.23159</td><td>0.0799997</td><td>0.0196663</td><td>协方差插值，非节点</td></tr><tr><td>SC开 RF关</td><td>OCELOT</td><td>716.516</td><td>2.26862</td><td>0.1019</td><td>0.13866</td><td>实际粒子面，RF关闭</td></tr><tr><td>SC开 RF开</td><td>AG</td><td>716.466</td><td>2.23159</td><td>0.0799997</td><td>0.0196651</td><td>真实RF前后快照</td></tr><tr><td>SC开 RF开</td><td>OCELOT</td><td>716.516</td><td>2.26862</td><td>0.1019</td><td>0.13866</td><td>真实RF前后快照</td></tr></tbody></table></div>
+<p>以SC+RF组合为例，RF前纵向εnz：AG约0.0196651、粒子约0.13866mm·mrad；瞬时RF后粒子约0.136671。主要差距已经在腔体之前形成，不能把样品处的全部差异归给RF。</p>
+<img src="sc_evolution.png" alt="SC开启时束长和纵向发射度沿束线变化，显示RF前已经有发射度差异">
+<p>这定位了发生区段和开关关联。它没有单独排尽PIC网格/有限粒子/步长误差，也没有证明所有剩余差异都由某条AG论文公式写错造成。已有短SC控制只能作为其自身条件下的证据。</p>
+</section>
+<section><h2>4 · SC改变入射后，RF本身又贡献多少</h2>
+<div class="scroll"><table><thead><tr><th>入射条件</th><th>同云线性/正弦σδ差</th><th>同云线性/正弦εnz差</th><th>逐点δ实现残差</th><th>实际云/匹配高斯εnz差</th></tr></thead><tbody><tr><td>SC关</td><td>+0.055%</td><td>-0.018%</td><td>4.16e-17</td><td>-0.010%</td></tr><tr><td>SC开</td><td>+0.236%</td><td>+1.456%</td><td>5.2e-17</td><td>-2.003%</td></tr></tbody></table></div>
+<p>上表把同一真实云、同一参考参数分别交给线性更新与独立时间正弦公式，所以没有把AG/OCELOT不同入射状态混入纯RF近似差。AG自身也对照实际A/B/C的独立线性矩。</p>
+<p>RF开时，两组粒子更新逐点最大绝对残差为5.2e-17，目标1e−14；AG线性矩最大相对残差为1.02e-11，目标1e−10。既有参考常量ppm差异不靠调参抹去，生产公式未修改。</p>
+<p>“实际云—匹配高斯”差同时含有限样本和高阶形状；不称纯非高斯误差。SC开启的入口不因边缘图像像高斯就获得联合高斯资格，也不把某个微小发射度点差当多种子统计结论。</p>
+</section>
+<section><h2>5 · 为什么最终结果接近，内部仍可能差很大</h2>
+<pre>X00：无SC、无RF          X01：无SC、有RF
+X10：有SC、无RF          X11：有SC、有RF
+
+X11 = X00 + (X01−X00) + (X10−X00) + (X11−X10−X01+X00)
+        基准      RF单独       SC单独             交互</pre>
+<img src="difference_decomposition.png" alt="按相同分母分解AG与OCELOT样品面差异中的基准、RF单独、SC单独和交互项">
+<p>两路线分别作上述原单位分解，再比较各项。图中所有百分比共用OCELOT的SC+RF值作分母，因此各项可以相加。交互表示开关效应依赖另一个开关，它不是新力或唯一微观原因。正负项抵消会让总值显得接近，所以不能只凭最终一张图认定整个内部过程一致。</p>
+<details><summary>RF开关在腔体前是否改变了入射</summary><p>两组SC状态各自比较RF开/关在400mm前的记录，见analysis.json的upstream_RF_toggle。粒子新轨迹的初态六维指纹相同，复用轨迹的初态统计也核对。RF OFF的AG400mm是正式协方差插值，传播分段/采样网格与RF ON不同。SC开启时，AG此处εnz约有0.00612%的插值/分段差；粒子τ与p_oc入射数组仅有舍入量级差异。该项已记录，不把它装作严格同节点对照或混入约86%的模型差。</p></details>
+</section>
+<section><h2>6 · 本阶段收口：哪些要改，哪些只记录边界</h2>
+<div class="scroll"><table><thead><tr><th>类别</th><th>处理结论</th><th>必要性</th></tr></thead><tbody><tr><td>RF/事件/SC执行/共享保存</td><td>本轮相关检查通过，未发现需立刻修补的新实现缺陷</td><td>保留当前生产代码和冻结证据。</td></tr><tr><td>AG在SC下的发射度用途</td><td>把明显增长预测列为当前适用限制；不能用G项已齐全代替物理适用证明</td><td>这项直接影响如何解释研究结果，应现在明确。</td></tr><tr><td>某一指定SC科研工况的数值资格</td><td>只有需要定量展宽/发射度等精度时，才对该工况补N/mesh/dz/统计误差控制</td><td>按目标另立有限任务，本轮不自动追加。</td></tr><tr><td>AG闭合/高阶/非高斯升级</td><td>若研究目标确实需要AG也精确预测该量，再裁定是否升级</td><td>不是为了消除两模型差值立即加模型。</td></tr><tr><td>常量ppm统一、输出事件侧、旧入口/环境锁</td><td>作为工程维护与可复现性待办，分别有范围与验收</td><td>不与本轮SC大分歧混为一件事。</td></tr><tr><td>真实腔体/完整加速/衍射探测器</td><td>按设备资料与实际用途另行处理</td><td>不纳入这八条的收尾条件。</td></tr></tbody></table></div>
+<div class="notice"><strong>八条基础验收到这里结束。</strong>后续不再自动开下一批扫描或“再修一个模型”。先使用这份结果选择研究目标和所需精度；只有明确影响目标的缺口才另立任务。</div>
+</section>
+<section><h2>7 · 实际验证、精度边界与复现</h2>
+<p>全部8条基础记录完成，6条新运行各只有一次正式API调用，2条按源/库/输入/文件哈希复用。独立冻结分析共45项数学/工程检查满足本卡目标。真实SC执行与覆盖：</p>
+<div class="scroll"><table><thead><tr><th>组合</th><th>PIC实际apply次数</th><th>覆盖起点 / m</th><th>覆盖终点 / m</th><th>调度</th></tr></thead><tbody><tr><td>sc1_rf0</td><td>777</td><td>0.0</td><td>0.777</td><td>ocelot_native</td></tr><tr><td>sc1_rf1</td><td>777</td><td>0.0</td><td>0.777</td><td>ocelot_native</td></tr></tbody></table></div>
+<p>SC网格、步长、N和种子均只一组，不能给出完整整线的数值误差上界或实验精度。RF OFF的AG400mm用正式协方差插值，RF ON采用真实函数前后快照；没有伪称所有面都是exact。起点/样品均来自真实保存记录。</p>
+<ul><li><a href="calculation_card.md">运行前卡片/预算/完成条件</a> · <a href="execution.json">6条实际记录</a> · <a href="reuse_receipt.json">2条复用依据</a> · <a href="analysis.json">全部数字与检查</a></li>
+<li><a href="capture.log">实际运行日志</a> · <a href="analysis.log">独立分析日志</a> · <a href="capture_remaining.py">正式执行复现脚本</a> · <a href="analyze_eight.py">冻结分析脚本</a></li>
+<li><a href="method.md">方法、坐标、单位与范围</a> · <a href="protection.json">源和旧结果保护</a> · <a href="phase.patch">本轮状态文档改动</a> · <a href="qa.json">结构/链接/图像核对</a></li></ul>
+<p class="muted">图PNG目视核对；HTML结构/本地链接核对，未宣称浏览器渲染已验收。生产代码、默认YAML、旧结果、阈值和基线不改，只更新当前状态文档。未commit/push/上传或同步。</p>
+</section></main></body></html>

@@ -2,9 +2,10 @@
 rem UED local GUI launcher for Windows.
 rem ASCII-only on purpose: cmd.exe parses batch text with the console code page,
 rem so non-ASCII bytes here can corrupt labels and quoted paths.
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
 chcp 65001 >nul 2>nul
 cd /d "%~dp0"
+if errorlevel 1 goto :path_failed
 
 rem 1) Prefer the project virtual environment created by the installer.
 set "UED_PY="
@@ -65,5 +66,10 @@ exit /b 1
 :no_deps
 echo [ERROR] Missing packages: numpy, scipy, PyYAML or matplotlib.
 echo Run the environment installer in this folder first (gui\WINDOWS.md).
+pause
+exit /b 1
+
+:path_failed
+echo [ERROR] Cannot enter the project folder. Use a local writable path.
 pause
 exit /b 1

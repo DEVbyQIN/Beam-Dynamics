@@ -1,9 +1,10 @@
 @echo off
 rem Run the GUI regression suite on Windows (GUI contracts, platform layer,
 rem Windows-native checks and the end-to-end GUI test).
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
 chcp 65001 >nul 2>nul
 cd /d "%~dp0"
+if errorlevel 1 goto :path_failed
 set "PYTHONUTF8=1"
 set "PYTHONIOENCODING=utf-8"
 set "PYTHONDONTWRITEBYTECODE=1"
@@ -27,10 +28,10 @@ if not defined UED_PY (
 )
 if not defined UED_PY goto :no_python
 
-%UED_PY% -m unittest gui.test_gui gui.test_platform_compat gui.test_windows_native gui.test_gui_e2e -v
+%UED_PY% -m unittest gui.test_gui gui.test_platform_compat gui.test_windows_native gui.test_review_regressions gui.test_gui_e2e -v
 set "RC=%ERRORLEVEL%"
 echo.
-if "%RC%"=="0" (echo ALL GUI TESTS PASSED) else (echo GUI TESTS FAILED with code %RC%)
+if "%RC%"=="0" (echo GUI TEST COMMAND SUCCEEDED - check skip lines above) else (echo GUI TESTS FAILED with code %RC%)
 pause
 exit /b %RC%
 
@@ -38,3 +39,8 @@ exit /b %RC%
 echo [ERROR] No working Python was found. See gui\WINDOWS.md.
 pause
 exit /b 9009
+
+:path_failed
+echo [ERROR] Cannot enter the project folder. Use a local writable path.
+pause
+exit /b 1

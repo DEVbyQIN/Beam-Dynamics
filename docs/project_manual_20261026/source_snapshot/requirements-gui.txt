@@ -1,0 +1,19 @@
+# GUI / formal-driver dependencies, pinned to the macOS-verified environment
+# (CPython 3.12.2, 2026-10-25).  Every pin below has a CPython 3.12 win_amd64
+# wheel on PyPI (metadata checked 2026-10-25; no Windows host was available for
+# an actual install - see gui/WINDOWS.md).
+#
+# The PyPI distribution is "ocelot-collab"; the import name is "ocelot".
+numpy==1.26.4
+scipy==1.13.1
+matplotlib==3.9.2
+PyYAML==6.0.1
+ocelot-collab==26.6.1
+# ocelot-collab runtime dependencies (installed explicitly so the Windows
+# resolver cannot drift away from the verified set).
+pandas==2.2.2
+h5py==3.11.0
+numexpr==2.8.7
+pyFFTW==0.15.1
+numba==0.59.1
+llvmlite==0.42.0

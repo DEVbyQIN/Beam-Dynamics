@@ -1,0 +1,14 @@
+def space_charge_area_log_rates(beam: Beam6D, model: str = 'gaussian'):
+    """SC M'/M for all axes, pairing Eqs.(15)-(20); see transverse G Note."""
+    if model not in ('gaussian', 'ellipsoid'):
+        raise ValueError("sc_model must be 'gaussian' or 'ellipsoid'")
+    if beam.Ne == 0 or model == 'ellipsoid':
+        return np.zeros(3)
+    sx, sy, sz = beam.sigma_x, beam.sigma_y, beam.sigma_z
+    alpha = alpha_at(sx / (beam.gamma * sz), sy / (beam.gamma * sz))
+    fb = (E_CHARGE / (M_E * C_LIGHT**2)) * beam.Ne * E_CHARGE / (
+        8.0 * np.pi * np.sqrt(np.pi) * EPSILON_0)
+    X=beam.nu_x*alpha['x']/(sx*sz)
+    Y=beam.nu_y*alpha['y']/(sy*sz)
+    Z=beam.nu_z*(1.-beam.p0**2)*alpha['z']/(sx*sy)
+    return -2.*fb/beam.gamma*np.array([3*X+Y+Z,X+3*Y+Z,X+Y+3*Z])

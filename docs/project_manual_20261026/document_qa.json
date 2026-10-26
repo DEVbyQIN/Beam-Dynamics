@@ -1,0 +1,22 @@
+{
+  "pages": 29,
+  "pdf_sha256": "86bc8e40e9a65fc9da59d551654ea8d30195d32af954286a2e1213d6485b9f1a",
+  "source_files": 109,
+  "source_snapshot_hashes_match": true,
+  "original_project_files_checked": 198,
+  "original_project_files_changed": [],
+  "code_excerpts": 13,
+  "evidence_files": 25,
+  "evidence_copy_hashes_match": true,
+  "links": 147,
+  "out_of_page_annotations": [],
+  "bibliography_items": 11,
+  "chinese_search_and_copy_checked": true,
+  "errors": [],
+  "engineering_complete_10mm_runs_this_review": 4,
+  "engineering_interrupted_sc_calls_this_review": 4,
+  "physical_source_edits": 0,
+  "production_gui_edits": "See E11 review; protection hashes were captured after authorized repairs.",
+  "visual_review": "See visual_review.json for actual rendered-page inspection; this script does not perform visual review.",
+  "meaning": "Checks compare against the v1.1 source capture after authorized engineering repairs; review/tracked_before.json separately preserves pre-review hashes. Not new physics or Windows acceptance."
+}

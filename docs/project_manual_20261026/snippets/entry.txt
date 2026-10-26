@@ -1,0 +1,10 @@
+def run_ag(cfg, section, n_points=2000, sc_enabled=None,
+           solenoid_coupling=False, switches=None, sc_model=None,
+           longitudinal_check="warn"):
+    """Delegate to the same AG driver used by AG/run_shared.py."""
+    from AG.runner import run_from_config
+    return run_from_config(cfg, section=section, n_points=n_points,
+                           sc_enabled=sc_enabled,
+                           solenoid_coupling=solenoid_coupling,
+                           switches=switches, sc_model=sc_model,
+                           longitudinal_check=longitudinal_check)

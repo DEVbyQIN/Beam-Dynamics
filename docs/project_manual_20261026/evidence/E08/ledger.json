@@ -1,0 +1,53 @@
+{
+  "status": "stopped_failure",
+  "started_unix": 1792915334.024158,
+  "max_attempts": 6,
+  "per_case_timeout_s": 1800,
+  "total_timeout_s": 5400,
+  "attempts": [
+    {
+      "label": "baseline",
+      "status": "complete",
+      "started_unix": 1792915334.02606,
+      "exit_code": 1,
+      "finished_unix": 1792915656.281058,
+      "record_recovered_offline": true
+    },
+    {
+      "label": "N100k",
+      "status": "complete",
+      "started_unix": 1792915721.846465,
+      "exit_code": 0,
+      "finished_unix": 1792916176.540405
+    },
+    {
+      "label": "mesh95",
+      "status": "complete",
+      "started_unix": 1792928871.5311658,
+      "exit_code": 0,
+      "finished_unix": 1792930412.6472929
+    },
+    {
+      "label": "dz_half",
+      "status": "complete",
+      "started_unix": 1792930412.801428,
+      "exit_code": 0,
+      "finished_unix": 1792931406.8632379
+    },
+    {
+      "label": "seed43",
+      "status": "complete",
+      "started_unix": 1792931407.0972228,
+      "exit_code": 0,
+      "finished_unix": 1792931928.177085
+    },
+    {
+      "label": "combined",
+      "status": "timeout",
+      "started_unix": 1792931928.793791,
+      "exit_code": null,
+      "finished_unix": 1792933494.719114
+    }
+  ],
+  "finished_unix": 1792933495.055008
+}

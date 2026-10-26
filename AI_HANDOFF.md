@@ -505,3 +505,10 @@ git diff --check                                                       # rc=0（
 - 验证（macOS 3.12.2）：test_gui 6/6（基线亦 6/6）；test_platform_compat 29/29；test_gui_e2e 3/3（27.0 s，真实服务进程：短例完成 / 运行中取消→cancelled 且无 result.json / SIGINT 关闭后无遗留 worker）；test_windows_native 6 项 skip（无 Windows 主机）。
 - 限制：没有 Windows 实机执行，Windows 原生测试与 .bat 双击流程未运行；OCELOT 路线未在 Windows 跑过；>260 字符长路径、杀毒/受控文件夹、关闭控制台窗口清理、端口 SO_REUSEADDR 差异均未实测。不宣称 Windows 全部通过。
 - 未改物理核心、shared 参数与单位、默认束线 YAML、基线和旧结果；本轮未 commit/推送/上传。变更记录：CHANGELOG_windows_gui_20261025.md。
+
+## 2026-10-26 文档与 Windows 复核修订
+
+- 核对实际 GitHub main b4aa241；起始 README/平台文件与本地相同。发现 taskkill 非零误判成功、无界等待、Win32 HANDLE 签名/错误分类、watchdog 写失败退出和测试平台兼容问题，已本地修复。停止无法确认时暂停队列；安装器检查新旧环境 CPython 3.12 x64。
+- 当前验证：单元/契约 46 通过、6 Windows 原生 skip；真实 GUI E2E 4 通过（两路线 10mm 正式短例、积分中取消和关服务）。两轮共 4 完整短轨迹 + 4 中断 SC 调用；无完整 SC 研究，无全套 run_all。Windows 实机尚未验证。
+- 修订 README 旧 RF 公式、已修复电荷问题、配置示例和历史测试范围；项目文档升至 v1.1，附当前源码/证据。原 v1 ZIP 保留。物理核心、默认配置、数值阈值和旧基线未改。
+- 报告：`docs/review_20261026/REVIEW.md`；测试日志/账本同目录。当前修改未 commit/push。

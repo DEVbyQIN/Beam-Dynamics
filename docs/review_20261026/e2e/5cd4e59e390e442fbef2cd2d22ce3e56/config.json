@@ -1,0 +1,99 @@
+{
+  "beam": {
+    "energy_keV": 100.0,
+    "charge_fC": 100.0,
+    "n_particles": 2000
+  },
+  "initial_distribution": {
+    "spot_rms_um": 85.0,
+    "bunch_length_um": 300.0,
+    "epsilon_n_mm_mrad": 0.08,
+    "sigma_delta": 0.0001
+  },
+  "space_charge": {
+    "enabled": false,
+    "mesh": [
+      63,
+      63,
+      63
+    ],
+    "step": 1
+  },
+  "physics_switches": {
+    "rf_longitudinal_kick": true,
+    "rf_transverse_kick": false
+  },
+  "random": {
+    "seed": 42
+  },
+  "lattice": {
+    "elements": [
+      {
+        "name": "cathode",
+        "type": "cathode",
+        "z_start": 0,
+        "length": 0,
+        "parameters": {}
+      },
+      {
+        "name": "drift1",
+        "type": "drift",
+        "z_start": 0.0,
+        "length": 0.002,
+        "parameters": {}
+      },
+      {
+        "name": "solenoid1",
+        "type": "solenoid",
+        "z_start": 0.002,
+        "length": 0.002,
+        "parameters": {
+          "B_field_T": 0.05
+        }
+      },
+      {
+        "name": "drift2",
+        "type": "drift",
+        "z_start": 0.004,
+        "length": 0.002,
+        "parameters": {}
+      },
+      {
+        "name": "rf1",
+        "type": "rf_cavity",
+        "z_start": 0.006,
+        "length": 0.001,
+        "parameters": {
+          "frequency_GHz": 2.856,
+          "voltage_kV": 30.0,
+          "phase_rad": 3.1416
+        }
+      },
+      {
+        "name": "drift3",
+        "type": "drift",
+        "z_start": 0.007,
+        "length": 0.003,
+        "parameters": {}
+      },
+      {
+        "name": "sample",
+        "type": "sample",
+        "z_start": 0.01,
+        "length": 0,
+        "parameters": {}
+      }
+    ]
+  },
+  "output": {
+    "z_diagnostics_mm": [
+      0,
+      2,
+      4,
+      6,
+      7,
+      10
+    ],
+    "step_size_m": 0.001
+  }
+}

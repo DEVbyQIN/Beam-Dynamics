@@ -1,0 +1,14 @@
+{
+  "tracked_before_count": 185,
+  "tracked_changed_this_review": [
+    "AI_HANDOFF.md",
+    "PROJECT_STATUS.md",
+    "README.md",
+    "gui/README.md",
+    "gui/server.py",
+    "gui/worker.py"
+  ],
+  "scientific_tree_files_checked": 153,
+  "scientific_tree_changed": [],
+  "scope": "Physical models, defaults, scientific tests and tracked baselines unchanged vs before this review. Existing dirty work preserved."
+}

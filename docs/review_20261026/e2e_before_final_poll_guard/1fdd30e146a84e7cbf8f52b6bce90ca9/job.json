@@ -1,0 +1,15 @@
+{
+  "id": "1fdd30e146a84e7cbf8f52b6bce90ca9",
+  "batch": "d782eea1527e4fcea92063e4418c0e3f",
+  "route": "OCELOT",
+  "status": "complete",
+  "created": 1792981665.321999,
+  "config_fingerprint": "49fd33cb664425046a8df6b9b92bc2ab53f54555d016316f9967f81df7013e3b",
+  "config_sha": "592e2f35aedc",
+  "sample_m": 0.01,
+  "timeout_s": 180.0,
+  "started": 1792981665.326485,
+  "worker_pid": 21536,
+  "exit_code": 0,
+  "finished": 1792981673.945878
+}

@@ -1,0 +1,117 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AG发射度：实现错误还是模型边界</title><style>body{margin:0;background:#f2f5f7;color:#21343e;font:16px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}main{max-width:1100px;margin:auto;padding:28px 22px 60px}section{background:white;border:1px solid #dce5ea;border-radius:12px;padding:23px;margin:20px 0}h1{font-size:30px;line-height:1.4}h2{font-size:22px}.lead{font-size:19px}.notice{background:#fff6e5;border-left:4px solid #bb8624;padding:14px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:10px;border-bottom:1px solid #ddd;text-align:left}th{background:#edf3f6}.scroll{overflow:auto}img{max-width:100%}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:15px/1.8 monospace;background:#f5f8fa;padding:16px}a{color:#176b83}li{margin:8px 0}summary{cursor:pointer;color:#176b83}@media(max-width:700px){main{padding:15px 10px}section{padding:15px}h1{font-size:25px}}</style></head><body><main>
+<h1>为什么 AG 的发射度几乎不变？</h1><p>2026-10-25 · 原论文、代码与冻结数据核对 · 新增正式轨迹 0</p>
+<section><p class="lead"><strong>本轮识别到明确的高斯闭合边界；没有发现所核对 SC F/G 与面积方程的实现缺陷。</strong></p><p>AG能记录束宽、展宽和规定的线性相关；计算SC平均力时，仍使用规定的高斯条件关系。粒子云后来形成的许多非线性位置—动量关联，没有独立状态被保留下来。补齐Gx/Gy/Gz并不能自动补齐这类结构。</p><p class="notice">保留AG整体；当前这类低能SC工况下，发射度增长继续作为受限输出。若研究需要精确发射度，优先采用具备相应数值资格的粒子结果。升级AG需要选择新的闭合方案，不能靠调参或补一个经验增长项。</p><p>这不是证明全部6.87倍差距都由同一机制造成，也不是证明PIC已无数值误差。本轮没有修改生产公式、配置或旧结果。</p></section>
+<section><h2>1 · 三条证据</h2><ol><li><strong>原论文的主导SC项在面积增长式里确实抵消。</strong>直接核对PDF第4–6页，独立转写Eq.(15)–(20)，三方向符号配对残差严格为0。当前代码保留了论文的小修正项，并非人为把发射度固定。</li><li><strong>代码的微小变化符合这个方程。</strong>18个冻结或代数状态中，F与面积变化率相对50位参考的最大残差分别为7.53e-16、6.28e-16。已有AG轨迹到399.966mm的纵向发射度变化约−0.000258847%；对保存状态后验积分面积方程得到一致量级和数值，未见面积被数值求解简单冻住。</li><li><strong>粒子云确实形成了非线性条件关联。</strong>对五种已存设置，三次位置函数相对线性模型，可使RF前动量预测的留出残差方差降低约50%–52%；初态没有这种改善。当前联合高斯条件均值只能是线性的，无法表达这部分结构。</li></ol><p>依据：<a href="symbolic_audit.txt">符号核对</a> · <a href="analysis.json">全部数字、输入SHA和状态检查</a> · <a href="derivation.md">详细推导</a></p></section>
+<section><h2>2 · 发射度增长，取决于哪一种关联</h2><p>把线性chirp扣掉后，剩余动量记为r；把推力中随位置线性变化的部分扣掉，剩余记为k⊥。在固定参考、近轴与当前一阶坐标范围内：</p><pre>A = Var(ζ)，D = Var(ζ)Var(δ) − Cov(ζ,δ)²
+εn,p = βγ√D
+D′ = 2A ⟨r k⊥⟩</pre><p>所以，束长和平均推力算得接近，并不保证发射度增长算得接近。还必须知道：处在同一位置附近的电子，其剩余动量与剩余推力怎样关联。</p><p>原论文按方向分开的联合高斯假设，使位置型主导SC力的这项关联消失。真实粒子分布经过非线性力会产生新的弯曲和关联；当前闭合没有独立演化这些信息。</p><details><summary>为什么最初增长率为零，后来仍能增长？</summary><pre>固定位置的数学kick：δ⁺ = δ + ℓk
+D⁺ − D = 2ℓA⟨r k⊥⟩ + ℓ²A Var(k⊥)</pre><p>起初的第一项可以为零，但非线性力使第二项非零，并建立后续关联。零初始导数不代表永远不增长。这条有限kick恒等式不应被直接写成一个依赖任意数值步长的AG经验补丁。</p></details></section>
+<section><h2>3 · 已保存粒子云里的结构</h2><img src="conditional_structure.png" alt="同一联合设置的初态及RF前，去线性chirp后的动量残差与束内位置关系"><p>图中只分析已存数据，没有改变粒子。每个面分别按自身RMS归一化；橙线是分箱均值，表示残余动量的位置依赖，不是新的传输模型。</p><div class="scroll"><table><tr><th>设置</th><th>位置</th><th>加入线性x/y后的改善</th><th>加入三次项后的增量改善</th></tr><tr><td>baseline</td><td>start</td><td>-0.0091%</td><td>-0.04%</td></tr><tr><td>baseline</td><td>RF_entry</td><td>-0.0154%</td><td>50.57%</td></tr><tr><td>N100k</td><td>start</td><td>0.0138%</td><td>-0.09%</td></tr><tr><td>N100k</td><td>RF_entry</td><td>-0.0008%</td><td>51.73%</td></tr><tr><td>mesh95</td><td>start</td><td>-0.0091%</td><td>-0.04%</td></tr><tr><td>mesh95</td><td>RF_entry</td><td>-0.0153%</td><td>50.04%</td></tr><tr><td>dz_half</td><td>start</td><td>-0.0091%</td><td>-0.04%</td></tr><tr><td>dz_half</td><td>RF_entry</td><td>-0.0154%</td><td>50.42%</td></tr><tr><td>combined</td><td>start</td><td>0.0138%</td><td>-0.09%</td></tr><tr><td>combined</td><td>RF_entry</td><td>-0.0006%</td><td>51.09%</td></tr></table></div><p>拟合使用两折留出评价，标准化参数只来自训练折。微小负改善表示这次拟合没有带来留出预测收益。约50%–52%的分母是残余动量预测方差，<strong>不是发射度增长或AG/PIC差距</strong>；不报告“50%差距已经解释”。单个种子下相互作用的粒子也不是独立实验重复，不能由此生成物理置信区间。</p></section>
+<section><h2>4 · 现有单步证据与剩余边界</h2><p>复用10月20日50mm纯漂移的SC事件记录：固定ζ辅助分解中，剩余动量方差增量约97.88%来自已建立的残余动量—推力关联项，约2.12%来自有限步平方项。当前AG对同一瞬时矩的关联预测仍小得多。该数据只支持原短漂移条件下的机制，不能把百分比搬到400mm整线。</p><p>本轮所核对的是SC F/G、面积配对、归一化和实际状态演化。一般耦合、加速、全部高阶动力学、PIC完整数值收敛和实验标定未因此通过。两个模型间的全部差值还不能唯一分配给某一原因。</p><p>论文第7页基准是其规定的5MeV/1nC案例，不是本项目100keV/100fC的直接认证；第8页也列出明显偏离高斯和未解析耦合的限制。</p></section>
+<section><h2>5 · 这次怎样收口</h2><ul><li>没有发现本次SC公式核对范围内需要立即修补的实现缺陷，保留当前公式。</li><li>把当前低能SC工况的定量发射度增长标为AG的使用限制；已有验证范围内的包络和趋势用途继续保留。</li><li>若确有快速、精确发射度预测的研究需求，再明确选择更高阶矩或更丰富分布的闭合，并另设预算；本轮不自动升级。</li><li>本轮正式轨迹、SC.apply与ODE求解均新增0；所有计算仅为符号代数、冻结状态公式评估和已有云统计。</li></ul><p><a href="calculation_card.md">运行前计算卡</a> · <a href="analyze.py">可复核分析代码</a> · <a href="derivation.md">完整推导</a> · <a href="qa.json">保护和交付检查</a> · <a href="../sc_entry_stability_20261025/report.html">上一轮数值敏感性报告</a></p></section>
+<section><h2>原始依据</h2><p>M. D. Kelisani, S. Barzegar, P. Craievich, S. Doebert，Phys. Rev. Applied 19,054011 (2023)，<a href="https://doi.org/10.1103/PhysRevApplied.19.054011">DOI与正式论文</a>；原文以CC BY 4.0发布。本文矩恒等式、F/G相减及数据诊断为本次独立分析。</p><p><a href="paper_page_4.png">原论文第4页</a> · <a href="paper_page_5.png">第5页</a> · <a href="paper_page_6.png">第6页</a> · <a href="paper_page_8.png">第8页限制</a> · <a href="file:///Users/qin/Desktop/%E6%9A%91%E7%A0%94/Beam_dynamics_simu/AG/%E6%96%87%E7%8C%AE/Kelisani_2023_Six-Dimensional_Beam-Envelope_Equations.pdf">本地原文</a></p><details><summary>展开完整推导文本</summary><pre># AG 发射度增长：原论文、代码与冻结数据的核对
+
+2026-10-25。正式轨迹、SC.apply和ODE求解新增均为0。本文是诊断推导，没有新增生产模型。
+
+## 1. 不先假定高斯分布，发射度怎样变化
+
+在固定参考能量、近轴与当前一阶动量适配范围内，束线位置为s，束内位置为ζ=−βτ，δ=Δp/p₀≈p_oc/β。下式的随机变量均已去中心，场引起的平均动量变化也去中心。
+
+令A=⟨ζ²⟩、B=⟨δ²⟩、C=⟨ζδ⟩、D=AB−C²，εn,p=βγ√D。采用ζ′=δ/γ²及δ′=k，有
+
+```
+A′ = 2C/γ²
+C′ = B/γ² + ⟨ζk⟩
+B′ = 2⟨δk⟩
+D′ = 2[A⟨δk⟩ − C⟨ζk⟩]
+```
+
+漂移项在D′中抵消。令r=δ−(C/A)ζ，k⊥=k−[⟨ζk⟩/A]ζ，则
+
+```
+U = Var(r) = B−C²/A
+D′ = 2A⟨r k⊥⟩
+```
+
+这里⟨rζ⟩=0，所以也可用⟨rk⟩。只知道束长、总展宽及线性chirp，并不知道剩余动量与非线性推力之间的关联。前者的平均推力⟨ζk⟩接近，不能证明发射度的增长率也接近。
+
+横向在u′=v、v′=f及相同固定参考/无额外耦合项条件下有同形恒等式。一般磁场、加速、非线性运动学与投影耦合需要保留相应附加项，不能把本式无条件用于全6D任意运动。
+
+## 2. 起初增长率为零，为何后来仍会增长
+
+对位置保持不变的一个数学kick，δ⁺=δ+ℓk。此处k可以取该事件的等效增量/ℓ；不要求它在线性位置范围内。直接展开二阶矩得精确恒等式：
+
+```
+D⁺−D = 2ℓ A⟨r k⊥⟩ + ℓ² A Var(k⊥)
+```
+
+对于初始联合高斯且r与位置独立的状态，位置型推力满足⟨rk⊥⟩=0。但非线性k⊥不必为零，有限kick可以弯曲分布，产生面积和新的残余关联。下一时刻⟨rk⊥⟩便可能非零。
+
+因此“初始D′=0”不推出“以后D不变”。若在每一时刻又用同类高斯分布计算平均量，这种新产生的条件关联不会被独立保存。
+
+ℓ²项不能作为固定数值步长下额外添加到AG ODE的经验增长项：这样会把模型预测与任意步长绑定。需要的是适当的分布/高阶矩演化，或采用能保留这些结构的已有粒子路线。
+
+## 3. 原论文具体保留了什么
+
+来源：M. D. Kelisani等，*Six-Dimensional Beam-Envelope Equations: An Ultrafast Computational Approach for Interactive Modeling of Accelerator Structures*，Phys. Rev. Applied 19,054011 (2023)，DOI 10.1103/PhysRevApplied.19.054011。本轮直接核对PDF第4–6页Eq.(7),(10),(11),(14)–(20)，第7–8页的基准和限制。
+
+Eq.(14)采用F=FxFyFz形式，每个(u,u′)方向内允许线性相关；这不是任意非高斯6D分布。对其位置型主导SC力，E[u′|x,y,ζ]=(νu/σu)u，从条件期望可得⟨u′f⟩=(νu/σu)⟨uf⟩。这会使主导F、G对相空间面积的贡献抵消。
+
+这不要求SC场本身是线性的：即使空间高斯电荷的场是非线性的，联合高斯条件关系仍约束平均量。原论文Eq.(11)还对速度/能量相关因子作扰动展开，故保留的F/G修正允许面积微变；不能笼统说“AG把所有发射度固定”。
+
+论文第7页漂移基准使用5MeV、1nC及其规定初态，不能直接当作本项目100keV、100fC工况的发射度资格。第8页也指出偏离高斯和未解析方向耦合的适用限制。
+
+## 4. 将论文F/G独立相减，再核对代码
+
+设Mu=σu²(θu²−νu²)，其中θ为粒子RMS斜率、ν=σ′。由Eq.(3),(7),(10)，恒定γ时
+
+```
+Mu′ = 2σu²(θu Gu − νu Fu)
+```
+
+令X=νxαx/(σxσζ)，Y=νyαy/(σyσζ)，Z=(1−p₀²)νζαζ/(σxσy)，fb=ηqb/(8π√π ε₀)，p₀=βγ。
+
+按PDF原式独立转写Eq.(15)–(20)，将九个α保留为独立符号。精确代数得到：
+
+```
+λx = Mx′/Mx = −2fb(3X+Y+Z)/γ
+λy = My′/My = −2fb(X+3Y+Z)/γ
+λζ = Mζ′/Mζ = −2fb(X+Y+3Z)/γ
+```
+
+三方向配对残差严格为0，结果不是通过数值拟合得到。对应现有`space_charge_area_log_rates`。随后以50位算术计算未化简的F/G，在已保存粒子矩状态、历史SC事件矩状态及非圆束/正负ν/100keV和5MeV的静态状态上，对照当前实现；没有调用轨迹求解器。具体残差在analysis.json。
+
+当前`propagate`内部将面积以10⁻¹²m²缩放，并实际使用(λ−2×damping)M推进，随后从面积和同一σ、ν重建状态。固定γ时damping=0。这是齐次面积方程，没有额外删去原论文保留的源项；M=0在λ有限时为不变解。论文约化式自身不会从零面积产生上述位置非线性kick的正面积。
+
+纵向当前使用D=γ⁴Mζ，因此项目εn,p=βγ³√Mζ；横向εn,x/y=βγ√Mx/y。固定参考下均有(ln εn)′=λ/2，不能混淆论文斜率面积与项目动量面积的绝对归一化。
+
+## 5. 为什么AG这次几乎不变
+
+使用C3既有SC开/RF关AG历史，到最后一个RF前输出点399.966483mm。记录中的纵向发射度相对初态改变约−0.000258847%。
+
+对保存的σ轨迹估计νx/y，νζ则由保存的C/(γ²σζ)得到，评估当前λ后作后验积分。最细输出网格给出Δln εn,z≈−2.58846851×10⁻⁶；存档实际值≈−2.58847453×10⁻⁶。保存网格的2倍/4倍抽稀也列在analysis.json。
+
+这项是对已有历史的数值微分和求积，不是新ODE轨迹，也不构成新的求解器误差上界。它说明本例的“几乎不变”与模型实际保留的小面积变化率相符，没有发现面积被积分器简单冻住的证据。
+
+## 6. 已有粒子数据是否真的超出了该条件关系
+
+对C2五种有效设置的初态与400mm端面，使用已有完整六维云，比较三个条件均值诊断：δ对ζ线性；δ对(x,y,ζ)线性；δ对(x,y,ζ)三次多项式。每个方向的统计先中心化；拟合在一半粒子上完成，在另一半评价，再交换。标准化参数只从训练折获取。
+
+结果：初态加入三次项没有稳定的预测改善；SC后端面加入简单线性跨方向项也没有改善，而三次项能使相对三维线性模型的留出均方残差降低约50%–52%。完整结果在analysis.json。
+
+这说明当前粒子结果包含可由位置非线性预测的动量关联，不能由当前联合高斯的线性条件均值表达。它不是“解释了50%的发射度增长”：分母是条件预测残差方差，不是发射度或AG/PIC差值；也未区分全部非线性动力学、未表示的更高阶结构与数值误差。
+
+粒子共享自洽场，并非独立实验重复；留出验证只是避免直接拿训练拟合自证，不给多种子置信区间。没有移动粒子或重新计算“修正后的物理发射度”。
+
+另复用10月20日50mm纯漂移的已存SC事件：固定ζ辅助分解的剩余动量方差增量中，约97.88%来自2ℓ⟨rk⊥⟩项；约2.12%来自ℓ²Var(k⊥)项。当前AG对相同瞬时矩的残余关联预测仍很小。该历史证据支持关联建立的机制，但其数字不外推为当前400mm整线的误差归因。
+
+## 7. 判定和实施边界
+
+本次核对的SC F/G转写、面积配对、实际调用与归一化没有发现需要修补的实现缺陷；不能推广为所有物理代码无缺陷。
+
+已识别一个明确的模型能力边界：当前方向约化高斯闭合没有独立演化空间非线性力建立的额外条件动量关联。保留Gx/Gy/Gz不等于保留了这类非高斯演化。现有粒子云确实出现该类结构，因而不能继续以“只差一个G项”或微小数值参数修补为主要解释。
+
+保留AG用于已有验证范围内的包络/趋势计算；当前低能SC工况的定量发射度增长采用受限标记。若研究必须预测它，应优先采用具有相应数值资格的粒子结果。升级AG需要明确新分布或更高阶矩的闭合方案，是新的物理选择，而非本轮直接补丁。
+
+完整PIC数值收敛、独立种子统计、一般耦合/加速及真实装置资格仍保留。没有把全部6.87倍差距唯一归于某一机制，没有调参追求两模型吻合。
+</pre></details></section></main></body></html>

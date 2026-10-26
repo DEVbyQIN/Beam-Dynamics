@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-26",
+  "platform": "macOS CPython 3.12.2",
+  "unit": {
+    "discovered": 52,
+    "passed": 46,
+    "skipped_windows_native": 6,
+    "exit_code": 0,
+    "seconds": 2.172
+  },
+  "e2e_final": {
+    "passed": 4,
+    "exit_code": 0,
+    "seconds": 20.581
+  },
+  "all_e2e_passes": 2,
+  "complete_10mm_trajectories": 4,
+  "interrupted_sc_driver_calls": 4,
+  "new_complete_sc_studies": 0,
+  "run_all_executed": false,
+  "windows_native_executed": false,
+  "records": [
+    {
+      "id": "158b2706343c4b9e905adf4b3976a53e",
+      "route": "AG",
+      "status": "cancelled",
+      "exit_code": -15,
+      "sample_m": 0.777,
+      "pass": "e2e_before_final_poll_guard",
+      "result_saved": false
+    },
+    {
+      "id": "1fdd30e146a84e7cbf8f52b6bce90ca9",
+      "route": "OCELOT",
+      "status": "complete",
+      "exit_code": 0,
+      "sample_m": 0.01,
+      "pass": "e2e_before_final_poll_guard",
+      "result_saved": true,
+      "last_s_mm": 10.0,
+      "rf_kicks": 1
+    },
+    {
+      "id": "9d8c5cc10aed4e5594c5e98018614d75",
+      "route": "AG",
+      "status": "complete",
+      "exit_code": 0,
+      "sample_m": 0.01,
+      "pass": "e2e_before_final_poll_guard",
+      "result_saved": true,
+      "last_s_mm": 10.0,
+      "rf_kicks": 1
+    },
+    {
+      "id": "b75f6884647a456e89f74b2ecf9ff6ce",
+      "route": "AG",
+      "status": "cancelled",
+      "exit_code": -15,
+      "sample_m": 0.777,
+      "pass": "e2e_before_final_poll_guard",
+      "result_saved": false
+    },
+    {
+      "id": "4d13dc7de5a341c592999393bb27e97c",
+      "route": "AG",
+      "status": "cancelled",
+      "exit_code": -15,
+      "sample_m": 0.777,
+      "pass": "e2e",
+      "result_saved": false
+    },
+    {
+      "id": "5cd4e59e390e442fbef2cd2d22ce3e56",
+      "route": "AG",
+      "status": "complete",
+      "exit_code": 0,
+      "sample_m": 0.01,
+      "pass": "e2e",
+      "result_saved": true,
+      "last_s_mm": 10.0,
+      "rf_kicks": 1
+    },
+    {
+      "id": "710358521f454829baa0213aa3c90e62",
+      "route": "AG",
+      "status": "cancelled",
+      "exit_code": -15,
+      "sample_m": 0.777,
+      "pass": "e2e",
+      "result_saved": false
+    },
+    {
+      "id": "7b465672359b43e2b1a343598701c87d",
+      "route": "OCELOT",
+      "status": "complete",
+      "exit_code": 0,
+      "sample_m": 0.01,
+      "pass": "e2e",
+      "result_saved": true,
+      "last_s_mm": 10.0,
+      "rf_kicks": 1
+    }
+  ],
+  "scope": "Final unit tests include the stop-failure queue guard. E2E second pass covers normal paths; the final failure-only guard was unit-tested without repeating physical driver calls."
+}

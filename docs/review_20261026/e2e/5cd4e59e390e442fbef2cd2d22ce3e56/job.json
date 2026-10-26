@@ -1,0 +1,15 @@
+{
+  "id": "5cd4e59e390e442fbef2cd2d22ce3e56",
+  "batch": "9aeb9792649d4ba49638ded4e0089b14",
+  "route": "AG",
+  "status": "complete",
+  "created": 1792982260.179502,
+  "config_fingerprint": "49fd33cb664425046a8df6b9b92bc2ab53f54555d016316f9967f81df7013e3b",
+  "config_sha": "592e2f35aedc",
+  "sample_m": 0.01,
+  "timeout_s": 180.0,
+  "started": 1792982260.184651,
+  "worker_pid": 22003,
+  "exit_code": 0,
+  "finished": 1792982271.909699
+}

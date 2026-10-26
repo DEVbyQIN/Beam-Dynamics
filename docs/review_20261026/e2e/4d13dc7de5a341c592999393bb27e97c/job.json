@@ -1,0 +1,16 @@
+{
+  "id": "4d13dc7de5a341c592999393bb27e97c",
+  "batch": "bfc66c27d04c498d978559e971c43433",
+  "route": "AG",
+  "status": "cancelled",
+  "created": 1792982278.436076,
+  "config_fingerprint": "50ce64436da0a0cd3d19b248c04c2b1039163b389daf572400f12e7c2d5368a5",
+  "config_sha": "7f9a106ba520",
+  "sample_m": 0.777,
+  "timeout_s": 180.0,
+  "started": 1792982278.443007,
+  "worker_pid": 22022,
+  "cancel_requested": true,
+  "exit_code": -15,
+  "finished": 1792982279.233254
+}

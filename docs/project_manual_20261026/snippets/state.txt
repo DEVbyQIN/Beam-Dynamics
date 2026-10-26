@@ -1,0 +1,28 @@
+    def unpack(active):
+        full = np.zeros(14)
+        full[indices] = active[:9]
+        sigma, nu, gamma = full[2], full[8], full[11]
+        areas = active[9:12] * area_unit_m2
+        area = areas[2]
+        if not np.isfinite(active).all() or np.any(full[:3] <= 0) or gamma <= 1 or np.any(areas < 0):
+            raise _TrialStateOutsideDomain("AG integrator produced an invalid size/energy/longitudinal phase area")
+        full[4] = gamma**2 * np.sqrt(nu**2 + area / sigma**2)
+        full[5] = gamma**2 * sigma * nu
+        full[12:14] = np.sqrt((gamma-1)*(gamma+1))*np.sqrt(areas[:2])
+        return full, areas
+
+    def rhs(z, active):
+        full, areas = unpack(active)
+        dy = envelope_ode(z, full, beam0.Ne,
+                         full[12], full[13], beam0.eps_nz,
+                         external_force_func=external_force_func,
+                         gamma_prime_func=gamma_prime_func,
+                         rf_chirp_func=rf_chirp_func, sc_model=sc_model,
+                         _longitudinal_area=areas[2])
+        b = Beam6D.from_state(full, full[11], beam0.Ne,
+                            full[12], full[13], beam0.eps_nz)
+        damping = dy[11] / (b.gamma**3 * b.beta**2)
+        area_rate = (space_charge_area_log_rates(b, sc_model) - 2.0*damping) * active[9:12]
+        return np.r_[dy[indices], area_rate]
+
+    method = solver_kwargs.pop('method', 'RK45')

@@ -1,0 +1,66 @@
+\section{参考文献与本地实现的对应}\label{app:references}
+科学文献支持模型来源；具体实现和数值另由源码/证据编号支持。论文方法的能力不自动等于本项目的当前验证范围。官方网页可变，本文访问日期为2026-10-26；安装发行版为 \texttt{ocelot-collab 26.6.1}，库内部也常写作26.06.1。
+
+\noindent\begin{tabularx}{\linewidth}{P{28mm}YY}\toprule
+主题 & 文献依据 & 对应代码/证据 \\ \midrule
+AG统计矩与高斯SC & Kelisani\cite{kelisani} & 核心F/G、状态Note；\ev{E01}、\ev{E05} \\
+椭球线性场 & Luiten\cite{luiten} & 核心椭球分支；不改变当前Gaussian默认 \\
+RF时间与有效积分 & Franssen/Luiten\cite{franssen} & 共同RF模块/Note；\ev{E03} \\
+坐标/活动方法/SC & OCELOT\cite{occoord,ocelements,ocsc} & 正式driver、安装库；\ev{E06}、\ev{E07} \\
+$\alpha$独立参考 & Carlson $R_D$\cite{scipyrd} & \path{validation/alpha_reference.py}；\ev{E02} \\
+证据与不确定度 & NIST\cite{nist} & 当前状态、计算卡；非UED专用精度标准 \\
+\bottomrule\end{tabularx}
+\input{references.tex}
+
+\section{证据档案与版本清单}\label{app:evidence}
+\begin{longtable}{P{13mm}P{37mm}P{100mm}}\toprule
+编号 & 日期/内容 & 附件和解释 \\ \midrule\endhead
+\label{ev:E01}E01 & 2026-10-21 G/诊断/RF & \path{evidence/E01/report.html}；原研究\texttt{implementation\_20261021}。针对性修复，非全域认证。\\
+\label{ev:E02}E02 & 2026-10-22 $\alpha$ & \path{evidence/E02/report.html}；\texttt{alpha\_accuracy\_20261022}。数值积分与默认轨迹请求。\\
+\label{ev:E03}E03 & 2026-10-24 RF参考 & \path{evidence/E03/report.html}；\texttt{rf\_reference\_20261024}。规定高斯入口。\\
+\label{ev:E04}E04 & 2026-10-24 八条整线 & \path{evidence/E04/report.html}；\texttt{beamline\_acceptance\_20261024}。旧传输方法。\\
+\label{ev:E05}E05 & 2026-10-25 AG闭合 & \path{evidence/E05/analysis.json}及报告；\texttt{ag\_emittance\_closure\_20261025}。推导、复用旧云，新增轨迹零。\\
+\label{ev:E06}E06 & 2026-10-25 传输 & \path{evidence/E06/report.html}；\texttt{ocelot\_method\_acceptance\_20261025}。漂移二阶/磁透镜一阶。\\
+\label{ev:E07}E07 & 2026-10-25 SC局部 & \path{evidence/E07/analysis.json}及报告；\texttt{ocelot\_sc\_local\_20261025}。45项局部检查。\\
+\label{ev:E08}E08 & 2026-10-25 O3整线 & \path{evidence/E08/analysis.json}、specs、ledger、saved\_verification、termination；\texttt{ocelot\_stability\_20261025}。5完整/6尝试。\\
+\label{ev:E09}E09 & 2026-10-25 GUI & \path{evidence/E09/acceptance.json}、tracking\_cancel\_qa、installed\_browser\_qa；\texttt{gui\_mvp\_20261025}。工程范围。\\
+\label{ev:E10}E10 & 2026-10-25 Windows记录 & \path{evidence/E10/windows_test_log.txt}，原\path{.scratch/test_evidence_20261025.log}；配合Windows changelog。没有实机证明。\\
+\label{ev:E11}E11 & 2026-10-26 复核修订 & \path{evidence/E11/REVIEW.md}、test\_summary、math\_review、unit\_tests、e2e\_tests；本轮工程修复及数学核对，非 Windows 实机。\\
+\bottomrule\end{longtable}
+E01--E09原研究统一位于本机目录：
+\begin{quote}\small\path{/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/}\end{quote}
+HTML副本保留文字摘要，部分图和大云仍在原目录。清单给出原绝对路径、附件位置与SHA256；几何专项还可查原\texttt{geometry\_contract\_20261022}报告及快照Note/测试。本文没有把历史HTML重写成新的验收。
+
+Git基点不足以重现当前GUI：本地基点为f9810dab，GitHub审核版本为b4aa241，本次修复尚未提交；需同时保存\path{version.json}和源码快照。本文不commit/push、不改旧报告。档案复制有哈希校验，但未在本轮重新执行这些历史测试。
+
+\section{九项\texorpdfstring{$\alpha$}{alpha}系数与极限}\label{app:alpha}
+式~\eqref{eq:alpha}的参数如下：
+\begin{center}\begin{tabular}{lrrr}\toprule
+系数 & $C_\alpha$ & $(p_x,p_y,p_z)$ & 球极限 $k_x=k_y=1$ \\ \midrule
+$\alpha_x$ & $k_x^2$ & $(3,1,1)$ & $1/3$ \\
+$\alpha_y$ & $k_y^2$ & $(1,3,1)$ & $1/3$ \\
+$\alpha_z$ & $k_xk_y$ & $(1,1,3)$ & $1/3$ \\
+$\alpha_{xx}$ & $3k_x^4/2$ & $(5,1,1)$ & $0.3$ \\
+$\alpha_{yy}$ & $3k_y^4/2$ & $(1,5,1)$ & $0.3$ \\
+$\alpha_{zz}$ & $3k_xk_y$ & $(1,1,5)$ & $0.6$ \\
+$\alpha_{xy}$ & $4k_x^2k_y^2$ & $(3,3,1)$ & $0.8$ \\
+$\alpha_{xz}$ & $k_x^2$ & $(3,1,3)$ & $0.2$ \\
+$\alpha_{yz}$ & $k_y^2$ & $(1,3,3)$ & $0.2$ \\
+\bottomrule\end{tabular}\end{center}
+同时检查x/y交换及$(k_y/k_x)\alpha_x+(k_x/k_y)\alpha_y+\alpha_z=1$。独立参考为
+\begin{equation}
+ \alpha_x=\frac{k_x^2}{3}R_D(k_y^2,1,k_x^2),\quad
+ \alpha_y=\frac{k_y^2}{3}R_D(k_x^2,1,k_y^2),\quad
+ \alpha_z=\frac{k_xk_y}{3}R_D(k_x^2,k_y^2,1).
+\end{equation}
+这些核对系数，不证明高斯闭合对所有真实分布准确。
+\source{Kelisani第6页式(21)--(29)\cite{kelisani}；$R_D$定义\cite{scipyrd}；$\alpha$ Note与\ev{E02}。}
+
+\section{关键代码摘录：保留原行号}\label{app:code}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+以下从本轮源码快照自动截取，\textbf{不是重新写的示意算法}。完整进口、类和力表达式在\path{source_snapshot/}。摘录范围和文件哈希另见\path{code_excerpts.json}。
+\input{appendix_code.tex}
+
+\clearpage\section{源码附件索引}\label{app:source}
+共\SourceCount{}个显式选择的源码、测试、配置和Note文件，未附私密会话、凭据、缓存或大粒子云。以下列主链，完整逐文件SHA256在\path{source_manifest.json}。
+\begingroup\small\renewcommand{\arraystretch}{1.08}\input{source_index.tex}\endgroup

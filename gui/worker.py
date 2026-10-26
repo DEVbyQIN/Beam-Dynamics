@@ -11,7 +11,29 @@ except ImportError:           # direct execution: python gui/worker.py
     import platform_compat as compat
 def save(path,value):
     compat.write_json(path,value)
+
+def abort_parent(directory,message):
+    """Failure to write an error file must not disable orphan cleanup."""
+    try:save(Path(directory)/'error.json',{'error':message})
+    except OSError:pass
+    finally:os._exit(2)
+
 def run(directory,route,parent):
+    # Open before numerical imports and retain the Windows process object.
+    with compat.ParentMonitor(parent) as monitor:
+        stopped=threading.Event()
+        def watch_parent():
+            while not stopped.wait(2):
+                try:
+                    if not monitor.alive():abort_parent(directory,'界面服务已关闭，计算中止。')
+                except OSError as e:abort_parent(directory,'父进程监控失败，计算中止：'+str(e))
+        if not monitor.alive():raise RuntimeError('界面服务已关闭，计算未启动。')
+        watcher=threading.Thread(target=watch_parent,daemon=True);watcher.start()
+        try:return run_job(directory,route)
+        finally:
+            stopped.set();watcher.join()
+
+def run_job(directory,route):
     d=Path(directory);cfg=compat.read_json(d/'config.json');started=time.monotonic()
     from shared.geometry import validate_geometry
     from shared.params import config_sha
@@ -21,13 +43,7 @@ def run(directory,route,parent):
         now=time.monotonic()
         if force or now-last[0]>.5:
             save(d/'progress.json',dict(s_m=float(s),sample_m=sample,fraction=max(0,min(1,float(s)/sample)),phase=phase,elapsed_s=now-started));last[0]=now
-    def watch_parent():
-        """Abort if the GUI service disappears (macOS getppid / Windows handle)."""
-        while True:
-            time.sleep(2)
-            if not compat.parent_alive(parent):
-                save(d/'error.json',{'error':'界面服务已关闭，计算中止。'});os._exit(2)
-    threading.Thread(target=watch_parent,daemon=True).start();progress(0,'准备计算依赖',True)
+    progress(0,'准备计算依赖',True)
     if route=='AG':
         from AG.runner import run_from_config
         import beam_dynamics_6d as core
@@ -49,8 +65,7 @@ def run(directory,route,parent):
     if not history['z_mm'] or abs(history['z_mm'][-1]-sample*1e3)>1e-8:raise RuntimeError('正式结果未到样品面，未标为成功')
     path=Path(write_results(label,probes,history,config_sha(cfg),meta['sc_effective'],out_dir=str(d),meta=meta))
     # The download name stays common for the GUI; original route field is preserved.
-    payload=compat.read_json(path);encoded=json.dumps(payload,ensure_ascii=False,allow_nan=False).encode()
-    temp=d/'result.tmp';temp.write_bytes(encoded);temp.replace(d/'result.json')
+    payload=compat.read_json(path);compat.write_json(d/'result.json',payload)
     progress(sample,'已完成',True)
     print(route+' complete: '+str(d/'result.json'),flush=True)
 if __name__=='__main__':

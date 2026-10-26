@@ -1,0 +1,9 @@
+test_a_short_ag_run_completes (gui.test_gui_e2e.GuiEndToEnd.test_a_short_ag_run_completes) ... ok
+test_a_short_ocelot_run_completes (gui.test_gui_e2e.GuiEndToEnd.test_a_short_ocelot_run_completes) ... ok
+test_b_cancel_stops_the_real_worker (gui.test_gui_e2e.GuiEndToEnd.test_b_cancel_stops_the_real_worker) ... ok
+test_c_service_shutdown_leaves_no_worker (gui.test_gui_e2e.GuiEndToEnd.test_c_service_shutdown_leaves_no_worker) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 20.581s
+
+OK

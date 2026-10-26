@@ -26,6 +26,7 @@ Windows rules encoded here
 from __future__ import annotations
 
 import ctypes
+from ctypes import wintypes
 import json
 import os
 import signal
@@ -42,6 +43,8 @@ _CREATE_NEW_PROCESS_GROUP = 0x00000200
 _CREATE_NO_WINDOW = 0x08000000
 _SYNCHRONIZE = 0x00100000
 _WAIT_TIMEOUT = 0x00000102
+_WAIT_OBJECT_0 = 0
+_ERROR_INVALID_PARAMETER = 87
 
 _TASKKILL_TIMEOUT_S = 15.0
 _REPLACE_RETRIES = 5
@@ -81,10 +84,10 @@ def _taskkill(pid, force=True):
     if force:
         args.append("/F")
     try:
-        subprocess.run(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        result = subprocess.run(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                        timeout=_TASKKILL_TIMEOUT_S, check=False,
                        creationflags=_CREATE_NO_WINDOW)
-        return True
+        return result.returncode == 0
     except (OSError, subprocess.SubprocessError):
         return False
 
@@ -98,6 +101,8 @@ def request_stop(proc, windows=None):
     """
     if proc is None:
         return False
+    if proc.poll() is not None:
+        return True
     if _windows(windows):
         try:
             proc.terminate()
@@ -111,6 +116,8 @@ def force_stop(proc, windows=None):
     """Unconditional stop: SIGKILL to the group, or taskkill /T /F on Windows."""
     if proc is None:
         return False
+    if proc.poll() is not None:
+        return True
     if _windows(windows):
         if _taskkill(proc.pid, force=True):
             return True
@@ -148,24 +155,73 @@ def terminate_tree(proc, grace=3.0, windows=None):
 # ── Liveness ──────────────────────────────────────────────────────────────
 
 
-def _windows_process_alive(pid):
-    """Windows: a process that opened a SYNCHRONIZE handle is not yet signaled.
+def _windows_api():
+    """Declare pointer-width HANDLE arguments/results before any Win32 call."""
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+    kernel32.WaitForSingleObject.restype = wintypes.DWORD
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.CloseHandle.restype = wintypes.BOOL
+    return kernel32
 
-    Any failure to probe is reported as alive: an orphaned worker keeps
-    computing (and stays stoppable by the server) rather than aborting a job
-    because of an introspection error.
+
+class ParentMonitor:
+    """Hold one Windows process object, so later PID reuse cannot fool a worker.
+
+    A signaled handle means exited. Access/wait errors are explicit failures,
+    never interpreted as proof that the parent is alive or dead.
     """
-    try:
-        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-    except (AttributeError, OSError):
-        return True
-    handle = kernel32.OpenProcess(_SYNCHRONIZE, False, int(pid))
-    if not handle:
-        return False
-    try:
-        return kernel32.WaitForSingleObject(handle, 0) == _WAIT_TIMEOUT
-    finally:
-        kernel32.CloseHandle(handle)
+    def __init__(self, pid, windows=None):
+        self.pid = int(pid)
+        self.windows = _windows(windows)
+        self.api = None
+        self.handle = None
+        self.closed = False
+        if self.pid <= 0:
+            raise ValueError('parent PID must be positive')
+        if self.windows:
+            self.api = _windows_api()
+            self.handle = self.api.OpenProcess(_SYNCHRONIZE, False, self.pid)
+            if not self.handle:
+                error = ctypes.get_last_error()
+                if error != _ERROR_INVALID_PARAMETER:
+                    raise OSError(error, f'Cannot monitor parent {self.pid}: OpenProcess failed')
+
+    def alive(self):
+        if self.closed:
+            raise RuntimeError('process monitor is closed')
+        if not self.windows:
+            return os.getppid() == self.pid
+        if self.handle is None or self.handle == 0:
+            return False
+        result = self.api.WaitForSingleObject(self.handle, 0)
+        if result == _WAIT_TIMEOUT:
+            return True
+        if result == _WAIT_OBJECT_0:
+            return False
+        raise OSError(ctypes.get_last_error(),
+                      f'Cannot monitor parent {self.pid}: WaitForSingleObject returned {result:#x}')
+
+    def close(self):
+        if not self.closed:
+            self.closed = True
+            if self.handle:
+                self.api.CloseHandle(self.handle)
+                self.handle = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        self.close()
+
+
+def _windows_process_alive(pid):
+    """One-time probe; sustained worker monitoring uses a retained handle."""
+    with ParentMonitor(pid, windows=True) as monitor:
+        return monitor.alive()
 
 
 def process_alive(pid, windows=None):
@@ -273,3 +329,11 @@ def configure_stdio():
             stream.reconfigure(errors="replace")
         except (AttributeError, ValueError):
             pass
+
+
+def configure_shutdown_signals():
+    """Let a targeted Windows CTRL_BREAK_EVENT enter the server's finally path."""
+    if IS_WINDOWS:
+        def interrupt(_signum, _frame):
+            raise KeyboardInterrupt
+        signal.signal(signal.SIGBREAK, interrupt)

@@ -1,0 +1,52 @@
+=== baseline (before change) ===
+gui.test_gui: 6 tests OK (0.316s) - run at start of session
+=== after change ===
+test_geometry_error_identifies_affected_element (gui.test_gui.GuiContracts.test_geometry_error_identifies_affected_element) ... ok
+test_invalid_numerical_inputs_rejected (gui.test_gui.GuiContracts.test_invalid_numerical_inputs_rejected) ... ok
+test_normalization_is_not_input_mutation (gui.test_gui.GuiContracts.test_normalization_is_not_input_mutation) ... ok
+test_real_child_failure_and_snapshot (gui.test_gui.GuiContracts.test_real_child_failure_and_snapshot) ... ok
+test_real_child_timeout (gui.test_gui.GuiContracts.test_real_child_timeout) ... ok
+test_restart_does_not_rerun_interrupted_job (gui.test_gui.GuiContracts.test_restart_does_not_rerun_interrupted_job) ... ok
+test_runs_data_dir_with_chinese_and_spaces (gui.test_platform_compat.ChineseSpacePaths.test_runs_data_dir_with_chinese_and_spaces) ... ok
+test_yaml_snapshot_roundtrips_chinese_names (gui.test_platform_compat.ChineseSpacePaths.test_yaml_snapshot_roundtrips_chinese_names) ... ok
+test_batch_files_are_crlf_ascii (gui.test_platform_compat.LaunchScripts.test_batch_files_are_crlf_ascii) ... ok
+test_installer_pins_and_venv (gui.test_platform_compat.LaunchScripts.test_installer_pins_and_venv) ... ok
+test_launcher_guards (gui.test_platform_compat.LaunchScripts.test_launcher_guards) ... ok
+test_macos_launcher_unchanged (gui.test_platform_compat.LaunchScripts.test_macos_launcher_unchanged) ... ok
+test_posix_only_calls_are_isolated (gui.test_platform_compat.LaunchScripts.test_posix_only_calls_are_isolated) ... ok
+test_invalid_pids_are_not_alive (gui.test_platform_compat.Liveness.test_invalid_pids_are_not_alive) ... ok
+test_posix_parent_alive_uses_real_parent (gui.test_platform_compat.Liveness.test_posix_parent_alive_uses_real_parent) ... ok
+test_posix_process_alive_tracks_a_real_child (gui.test_platform_compat.Liveness.test_posix_process_alive_tracks_a_real_child) ... ok
+test_windows_parent_probe_uses_handle_and_not_getppid (gui.test_platform_compat.Liveness.test_windows_parent_probe_uses_handle_and_not_getppid) ... ok
+test_posix_uses_session_leader (gui.test_platform_compat.SpawnKwargs.test_posix_uses_session_leader) ... ok
+test_windows_uses_process_group_only (gui.test_platform_compat.SpawnKwargs.test_windows_uses_process_group_only) ... ok
+test_posix_force_stop_signals_the_group_with_sigkill (gui.test_platform_compat.StopPaths.test_posix_force_stop_signals_the_group_with_sigkill) ... ok
+test_posix_real_child_is_stopped (gui.test_platform_compat.StopPaths.test_posix_real_child_is_stopped) ... ok
+test_posix_request_stop_signals_the_group_with_sigterm (gui.test_platform_compat.StopPaths.test_posix_request_stop_signals_the_group_with_sigterm) ... ok
+test_taskkill_argv_is_a_list_not_a_shell_string (gui.test_platform_compat.StopPaths.test_taskkill_argv_is_a_list_not_a_shell_string) ... ok
+test_windows_force_stop_falls_back_to_process_handle (gui.test_platform_compat.StopPaths.test_windows_force_stop_falls_back_to_process_handle) ... ok
+test_windows_force_stop_prefers_taskkill_tree (gui.test_platform_compat.StopPaths.test_windows_force_stop_prefers_taskkill_tree) ... ok
+test_windows_request_stop_uses_handle_never_killpg_or_os_kill (gui.test_platform_compat.StopPaths.test_windows_request_stop_uses_handle_never_killpg_or_os_kill) ... ok
+test_windows_terminate_tree_escalates_after_grace (gui.test_platform_compat.StopPaths.test_windows_terminate_tree_escalates_after_grace) ... ok
+test_atomic_write_retries_while_target_is_busy (gui.test_platform_compat.Utf8Io.test_atomic_write_retries_while_target_is_busy) ... ok
+test_json_roundtrip_keeps_chinese_as_utf8_bytes (gui.test_platform_compat.Utf8Io.test_json_roundtrip_keeps_chinese_as_utf8_bytes) ... ok
+test_log_sink_is_binary_utf8 (gui.test_platform_compat.Utf8Io.test_log_sink_is_binary_utf8) ... ok
+test_read_text_ignores_a_non_utf8_locale (gui.test_platform_compat.Utf8Io.test_read_text_ignores_a_non_utf8_locale) ... ok
+test_worker_env_does_not_mutate_the_parent_environment (gui.test_platform_compat.Utf8Io.test_worker_env_does_not_mutate_the_parent_environment) ... ok
+test_worker_env_forces_utf8_and_headless_backends (gui.test_platform_compat.Utf8Io.test_worker_env_forces_utf8_and_headless_backends) ... ok
+test_cancel_uses_windows_handle_and_skips_killpg (gui.test_platform_compat.WindowsServerPath.test_cancel_uses_windows_handle_and_skips_killpg) ... ok
+test_timeout_uses_forced_windows_stop (gui.test_platform_compat.WindowsServerPath.test_timeout_uses_forced_windows_stop) ... ok
+test_cancel_and_shutdown_in_chinese_space_path (gui.test_windows_native.WindowsNative.test_cancel_and_shutdown_in_chinese_space_path) ... skipped 'requires a real Windows host'
+test_killpg_does_not_exist (gui.test_windows_native.WindowsNative.test_killpg_does_not_exist) ... skipped 'requires a real Windows host'
+test_parent_liveness_detects_an_exited_process (gui.test_windows_native.WindowsNative.test_parent_liveness_detects_an_exited_process) ... skipped 'requires a real Windows host'
+test_real_child_stop_uses_handles (gui.test_windows_native.WindowsNative.test_real_child_stop_uses_handles) ... skipped 'requires a real Windows host'
+test_spawn_kwargs_use_process_group (gui.test_windows_native.WindowsNative.test_spawn_kwargs_use_process_group) ... skipped 'requires a real Windows host'
+test_utf8_json_roundtrip_in_console_codepage (gui.test_windows_native.WindowsNative.test_utf8_json_roundtrip_in_console_codepage) ... skipped 'requires a real Windows host'
+test_a_short_ag_run_completes (gui.test_gui_e2e.GuiEndToEnd.test_a_short_ag_run_completes) ... ok
+test_b_cancel_stops_the_real_worker (gui.test_gui_e2e.GuiEndToEnd.test_b_cancel_stops_the_real_worker) ... ok
+test_c_service_shutdown_leaves_no_worker (gui.test_gui_e2e.GuiEndToEnd.test_c_service_shutdown_leaves_no_worker) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 25.273s
+
+OK (skipped=6)

@@ -1,0 +1,50 @@
+def _ratios(kx, ky):
+    try:
+        if np.ndim(kx) or np.ndim(ky):
+            raise ValueError
+        x, y = float(kx), float(ky)
+    except (ValueError, TypeError, OverflowError):
+        raise ValueError('alpha kx/ky must be scalar ratios') from None
+    if (not np.isfinite([x,y]).all() or min(x,y)<RATIO_RANGE[0]
+            or max(x,y)>RATIO_RANGE[1]):
+        raise ValueError(f'alpha kx/ky outside validated numerical range {RATIO_RANGE}: '
+                         f'kx={x}, ky={y}; no clipping or extrapolation')
+    return x, y
+
+
+@lru_cache(maxsize=4)
+def _rule(order):
+    nodes, weights = np.polynomial.legendre.leggauss(order)
+    nodes.setflags(write=False); weights.setflags(write=False)
+    return nodes, weights
+
+
+def _integral(log_axes, log_coefficients, order):
+    lo, hi = log_axes.min()-18., log_axes.max()+18.
+    edges = np.linspace(lo, hi, int(np.ceil((hi-lo)/2.))+1)
+    nodes, weights = _rule(order)
+    half = np.diff(edges)/2.
+    u = ((edges[:-1,None]+edges[1:,None])/2.+half[:,None]*nodes).ravel()
+    w = (half[:,None]*np.broadcast_to(weights, (half.size,order))).ravel()
+    denominator = np.logaddexp(2*u[None,:], 2*log_axes[:,None])
+    log_f = log_coefficients[:,None]+2*u[None,:]-.5*_POWERS@denominator
+    return np.exp(log_f)@w
+
+
+@lru_cache(maxsize=256)
+def _evaluate(x, y):
+    a = np.log([x,y,1.]); lx, ly = a[:2]
+    c = np.array([2*lx,2*ly,lx+ly,np.log(1.5)+4*lx,
+                  np.log(1.5)+4*ly,np.log(3.)+lx+ly,
+                  np.log(4.)+2*lx+2*ly,2*lx,2*ly])
+    previous = _integral(a,c,16)
+    for order in (32,64,128):
+        current = _integral(a,c,order)
+        if not np.isfinite(current).all() or np.any(current<=0):
+            raise RuntimeError('alpha quadrature produced a nonpositive/nonfinite coefficient')
+        difference = float(np.max(np.abs(current-previous)/current))
+        if difference <= RELATIVE_CHECK:
+            return tuple(current), difference, order
+        previous = current
+    raise RuntimeError(f'alpha quadrature failed refinement check at kx={x}, ky={y}: {difference}')
+

@@ -1,0 +1,64 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C1 · RF 独立数学参考</title><style>body{margin:0;background:#f3f6f8;color:#20313b;font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}main{max-width:1120px;margin:auto;padding:36px 26px 60px}h1{font-size:32px;line-height:1.35;margin:10px 0 18px}h2{font-size:23px;margin:36px 0 14px}h3{font-size:18px}p{margin:12px 0}a{color:#146a83;text-underline-offset:3px}section,.card{background:white;border:1px solid #dbe4e9;border-radius:12px;padding:22px 25px;margin:18px 0}.lead{font-size:19px}.muted{color:#61717c;font-size:14px}.tag{display:inline-block;padding:3px 11px;border-radius:20px;background:#dbeee9;color:#215e4e;font-size:13px}.notice{border-left:4px solid #bc791f;background:#fff8eb;padding:12px 16px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid #e0e7ec;text-align:left;padding:11px 10px;vertical-align:top}th{background:#f3f7f9;color:#254f60;white-space:nowrap}img{display:block;max-width:100%;height:auto;margin:15px auto}pre{background:#f1f5f7;padding:17px;overflow:auto;font:14px/1.8 ui-monospace,monospace}code{font-size:.9em;background:#f1f5f7;padding:1px 4px}summary{cursor:pointer;color:#146a83;font-weight:600}ol,ul{padding-left:24px}li{margin:8px 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.two .card{margin:0}@media(max-width:740px){main{padding:20px 12px}section,.card{padding:16px}.two{grid-template-columns:1fr}h1{font-size:26px}}</style></head><body><main>
+<div class="tag">C1 已完成 · 2026-10-24 · 限定数学问题</div>
+<h1>两条路线的 RF 差异，<br>哪些来自近似，哪些来自程序？</h1>
+<p class="lead">本轮回答清楚了一件事：<strong>AG 的直线更新、OCELOT 的正弦更新，都符合各自的独立数学参考；正弦弯曲增大后，两者会出现明确的近似差异。</strong></p>
+<p>生产公式、默认配置、旧阈值和基线没有修改。实际运行了约定的六条短轨迹；Astra high 完成独立推导与结果复核。本次关闭 SC，所以这里的粒子路线应称为 OCELOT，而不是把 PIC 求场当参考。</p>
+<nav><a href="#onepage">一页结论</a> · <a href="#layers">差异归因</a> · <a href="#proof">验收证据</a> · <a href="#next">下一步</a></nav>
+<section id="onepage"><h2>1 · 先看结论</h2>
+<p>把 RF 想成给束团的头尾加上不同动量。AG 用零点附近的一条直线；OCELOT 保留正弦曲线。束团覆盖的相位越宽，曲线越难用直线代替。</p>
+<div class="scroll"><table><thead><tr><th>RF 入射束长 RMS</th><th>RMS 相位跨度 / rad</th><th>动量展宽差</th><th>chirp 幅值差</th><th>纵向 RMS 发射度差</th><th>限定结论</th></tr></thead><tbody><tr><td>30 μm</td><td>0.003276</td><td>+0.000518358%</td><td>+0.000536461%</td><td>-2.74701e-08%</td><td>支持本卡 2% 展宽筛查</td></tr><tr><td>300 μm</td><td>0.032755</td><td>+0.053632%</td><td>+0.0536603%</td><td>-0.0274292%</td><td>支持本卡 2% 展宽筛查</td></tr><tr><td>3000 μm</td><td>0.327554</td><td>+5.40995%</td><td>+5.5111%</td><td>-95.5044%</td><td>不支持本卡 2% 展宽筛查</td></tr></tbody></table></div>
+<p class="muted">差值 = 线性值 / 正弦值 − 1。两边使用同一个无限高斯入射和同一套参考常量。chirp 在这里同号，所以这个比值也表示幅值差。只有动量展宽沿用已有 2% 筛查目标；没有为 chirp、纵向发射度新设统一物理阈值。<a href="analysis.json">完整数值与逐项核对</a></p>
+<div class="notice"><strong>300 μm 是本卡规定的 RF 入射束长。</strong>它不是默认束线经过 400 mm 漂移、磁透镜或 SC 后的实际 RF 入射状态。3000 μm 是放大曲率的数学压力例；不证明大展宽下的一阶动量转换或真实设备有效。</div>
+<img src="approximation_error.png" alt="三个规定相位跨度下，线性RF相对正弦RF的动量展宽、chirp和RMS发射度误差">
+<p>因此，不能用“束宽或展宽接近”替代发射度检查。大跨度例中，AG 的纵向 RMS 发射度保持约 0.197 mm·mrad，正弦高斯参考约 4.374 mm·mrad；差异可由曲线在二阶矩中的投影直接推得，不需要先指认某条路线写错。</p>
+</section>
+<section id="layers"><h2>2 · 这次怎样把误差拆开</h2><div class="scroll"><table><thead><tr><th>差异来源</th><th>这次怎样分开</th><th>结果与边界</th></tr></thead><tbody><tr><td>线性化近似</td><td>同一无限高斯、同一常量，直线剪切 vs 正弦剪切</td><td>主表只含这一项，不混入粒子噪声或 ppm 常量差。</td></tr><tr><td>生成器固定输入偏差</td><td>无限高斯 vs 当前库的截断/插值总体</td><td>±5σ、500 节点 CDF 线性反演 → 分段均匀总体；总体束长比名义值高 59.492 ppm。</td></tr><tr><td>有限粒子抽样</td><td>生成器总体 vs 实际 N=50000 单云</td><td>主要量差异均落在各自的单云渐近 95% 半宽内；仅描述本云，不是多种子收敛证明。</td></tr><tr><td>实现与浮点计算</td><td>同一实际初态对独立公式</td><td>AG 最大矩差 3.74e−11；粒子逐点最大 δ 残差 1.11e−16，满足本卡数学目标。</td></tr><tr><td>参考常量历史差异</td><td>两路径实际 β/γ/E 分别保存</td><td>H_AG 比粒子约高 2.070 ppm，状态 βγ 约高 1.123 ppm；本轮未统一，不伪装成完全相同参考。</td></tr></tbody></table></div>
+<p class="muted">依据：<a href="calculation_card.md">运行前计算卡</a>、<a href="execution.json">实际执行与库源码哈希</a>、<a href="generate_parray_source.txt">生成器源码</a>、<a href="invert_cdf_source.txt">CDF 反演源码</a>、<a href="astra_review.md">Astra high 复核记录</a>。</p>
+<img src="phase_space.png" alt="同一实际粒子云在300和3000微米入射束长下，正弦曲率与线性切线的对比">
+<p>图中弯曲会扩大包住粒子云的 RMS 椭圆。这里的“去 chirp 剩余展宽”包含弯曲残差，不能直接全解释成随机热噪声；二阶矩发射度增加也不等于精细相空间面积违反守恒。</p>
+</section>
+<section id="proof"><h2>3 · 参考靠什么成立</h2>
+<div class="two"><div class="card"><h3>一条独立积分路线</h3><p>直接从到达时间计算正弦能量增益，对规定高斯积分；分别使用 45 位、65 位精度。先去均值和线性相关，再积残差平方。</p></div><div class="card"><h3>一条独立解析路线</h3><p>从高斯特征函数推出均值、相关矩、chirp 和剩余方差。它与积分互证，参考模块不调用生产 RF 或生产诊断函数。</p></div></div>
+<div class="scroll"><table><thead><tr><th>检查</th><th>实际最大差</th><th>本卡目标</th><th>说明</th></tr></thead><tbody><tr><td>高斯积分 45/65 位及独立解析矩</td><td>3.97e-42</td><td>≤ 1e−25</td><td>指定数学映射的参考互证</td></tr><tr><td>AG 对自身独立线性参考</td><td>3.74e-11</td><td>≤ 1e−10</td><td>大跨度相关矩消减误差已计入，未放宽目标</td></tr><tr><td>OCELOT 同云逐粒子 δ</td><td>1.11e-16</td><td>绝对值 ≤ 1e−14</td><td>对照独立时间正弦；不把有限抽样当实现错误</td></tr><tr><td>正式执行与保存</td><td>6 / 6</td><td>每例每路线一次</td><td>RF 实际入口 0 m、一次；SC 关闭、实际末点 22 mm</td></tr><tr><td>独立参考局部检查</td><td>8 / 8</td><td>零强度、符号、矩、反例、精度等</td><td>没有据此宣称全项目物理通过</td></tr><tr><td>本卡自动数学/工程核对</td><td>45 / 45</td><td>全部满足各自目标</td><td>非全套回归；不覆盖 SC/真实腔体</td></tr></tbody></table></div>
+<p>正式路径保留原来的初态构建、RF 调用、漂移及 JSON 保存。只读观察器记录真实 RF 前后状态，没有另建追踪循环。这里的“CLI”指调用脚本的正式 main 函数，未另起六个 shell 进程。</p>
+<pre>共享配置（每例另存）
+ ├─ AG.run_shared.main → AG.runner → 原 RF 更新 → 正式 AG_results.json
+ └─ ued_beamline_v2.main(step=3) → 原粒子追踪/RF → 正式 GPT_results.json
+                     ↓ 只读捕获 RF 前／后
+                独立公式与中心矩核对</pre>
+<p class="muted">依据：<a href="capture.log">正式捕获日志</a>、<a href="analysis.log">独立分析日志</a>、<a href="reference_tests_final.log">8 项局部检查</a>、<a href="staged/validation/rf_gaussian_reference_physics_note.md">完整推导、坐标、单位与误差预算</a>。</p>
+<details><summary>实际 RF 后数值与单云误差条</summary>
+<div class="scroll"><table><thead><tr><th>规定束长</th><th>路线</th><th>RF 后 σδ（无量纲）</th><th>RF 后 h / m⁻¹</th><th>RF 后 εnz / mm·mrad</th><th>εnz 近似 95% 半宽</th><th>证据</th></tr></thead><tbody><tr><td>30 μm</td><td>AG</td><td>0.0005443868</td><td>-17.83745</td><td>0.001966515</td><td>确定性；不适用</td><td><a href="runs/sigma_30um/AG/AG_results.json">正式保存 JSON</a></td></tr><tr><td>30 μm</td><td>OCELOT</td><td>0.0005454524</td><td>-17.85986</td><td>0.001968406</td><td>1.738297e-05</td><td><a href="runs/sigma_30um/OCELOT/GPT_results.json">正式保存 JSON</a></td></tr><tr><td>300 μm</td><td>AG</td><td>0.005352168</td><td>-17.83745</td><td>0.01966515</td><td>确定性；不适用</td><td><a href="runs/sigma_300um/AG/AG_results.json">正式保存 JSON</a></td></tr><tr><td>300 μm</td><td>OCELOT</td><td>0.005353995</td><td>-17.82997</td><td>0.01968827</td><td>0.0001739949</td><td><a href="runs/sigma_300um/OCELOT/GPT_results.json">正式保存 JSON</a></td></tr><tr><td>3000 μm</td><td>AG</td><td>0.05351243</td><td>-17.83745</td><td>0.1966515</td><td>确定性；不适用</td><td><a href="runs/sigma_3000um/AG/AG_results.json">正式保存 JSON</a></td></tr><tr><td>3000 μm</td><td>OCELOT</td><td>0.05077143</td><td>-16.89385</td><td>4.490315</td><td>0.1733272</td><td><a href="runs/sigma_3000um/OCELOT/GPT_results.json">正式保存 JSON</a></td></tr></tbody></table></div>
+<p class="muted">AG 数值按其自身实际参考常量；OCELOT 是这一份有限云，均为中心矩。误差条为点态渐近 IID/CLT 95% 半宽；没有多种子研究，不保证联合覆盖，也不包括模型/装置/未知输入误差。三工况共享种子，因此不能当作三次独立重复。完整 σδ、h、剩余展宽与 ε 的半宽在 analysis.json。</p>
+<p>大跨度粒子云 εnz≈4.490，而无限高斯总体≈4.374；前者单云近似 95% 半宽≈0.173。比较到实际生成器总体后也在该半宽内；这只是有限样本兼容性的证据，不是粒子总体等于高斯的证明。</p>
+</details>
+<details><summary>很小的非线性量是否被浮点误差遮住</summary>
+<div class="scroll"><table><thead><tr><th>规定束长</th><th>GL16 vs 65 位：四个主要量最大相对差</th><th>新增非线性方差相对差</th><th>微小均值相对差</th></tr></thead><tbody><tr><td>30 μm</td><td>4.44e-16</td><td>1.75e-11</td><td>8.15e-09</td></tr><tr><td>300 μm</td><td>2.22e-16</td><td>7.99e-15</td><td>7.55e-10</td></tr><tr><td>3000 μm</td><td>4.44e-16</td><td>6.66e-16</td><td>4.61e-11</td></tr></tbody></table></div>
+<p class="muted">自动 1e−12 检查覆盖四个主要量；均值用总 σδ 作尺度。新增非线性方差的小量相对差另行展示，未冒称它也通过 1e−12。区间高精度参考与双精度生产 CDF 的累加存在末位差异，不要求位级相同。</p>
+</details>
+</section>
+<section><h2>4 · 本轮留下的两个结构边界</h2>
+<ol><li><strong>参考常量还没有严格统一。</strong>约 2 ppm 的 H 差来自既有静能/总能量约定。本轮每条路线对照各自实际参数，另外用完全共同的参数计算纯近似误差。后续统一常量应单列工程任务，解释并保存回归变化。</li>
+<li><strong>同一位置还要区分 RF 前／后。</strong>这条特殊短束线把 RF 放在 s=0：AG 的 history[0] 是作用后，OCELOT 是作用前。报告已核对真实事件侧；不直接把两份 z=0 记录相减。未来应明确保存 before/after 的输出契约。</li></ol>
+<p>这些不影响这次事件快照的数学结论，也不能据此声称正式输出语义已完全统一。出口 22 mm 的保存结果含漂移，本轮没有把它误当瞬时 RF 后参考。</p>
+</section>
+<section id="next"><h2>5 · 现在在整个路线图的哪里</h2>
+<pre>已完成：共用正式入口 → 纵向状态/G 项 → α 数值域 → 几何 → 现状/边界
+本轮完成：C1 规定高斯入射的 RF 独立数学参考
+待做：C2 按需取得 SC 数值参考资格 → C3 整线四组合分段归因 → C4 决定 AG 用途/升级</pre>
+<p><strong>下一步先查整线 RF 入口的真实分布和已保存诊断，再决定需要补哪项计算。</strong>不能把这次 300 μm、零相关高斯的结果直接套给经历 SC 的入口。</p>
+<div class="scroll"><table><thead><tr><th>后续卡片</th><th>明确问题</th><th>完成条件</th></tr></thead><tbody><tr><td>C3 前置整理（优先复用）</td><td>现有整线资料能否给出起点、RF 前、RF 后、样品四处的状态与事件侧？</td><td>列出可复用输入/输出及缺口；不默认仍是高斯，不自动新增整线扫描。</td></tr><tr><td>C2（仅为目标量补资格）</td><td>所需 SC 工况的粒子数/网格/步长/抽样误差，是否小到足以判断目标？</td><td>先复用已有31条SC记录；若不足，运行前固定目标、参数及单轮最多6次新增PIC预算。不能外推50mm漂移资格。</td></tr><tr><td>C3 正式归因</td><td>整线差异从 RF 前、RF 后还是后段开始？</td><td>固定几何做SC×纵向RF四组合、每路线一次的基础预算；分清曲率、SC、数值误差及未归因项，不强求吻合。</td></tr></tbody></table></div>
+<p>本轮到 C1 为止。真实 RF 场与设备标定、全阶共同加速、SC 精度及 AG 非高斯闭合仍开放；没有因为这次数学通过就关闭它们。</p>
+</section>
+<section><h2>证据与复现</h2><ul>
+<li><a href="calculation_card.md">运行前问题、参数、目标与六次预算</a>；<a href="completion_receipt.md">完成条件及真实退出码</a>。</li>
+<li><a href="execution.json">六条正式运行、版本、配置与源哈希</a>；<a href="analysis.json">45项核对与全部误差分层</a>。</li>
+<li><a href="staged/validation/rf_reference_study.py">研究脚本</a>；<a href="staged/validation/rf_gaussian_reference.py">独立参考</a>；<a href="staged/validation/test_rf_gaussian_reference.py">局部检查源码</a>。</li>
+<li><a href="staged/PROJECT_STATUS.md">更新后的项目现状</a>；<a href="staged/CHANGELOG_rf_reference_20261024.md">本轮变更记录</a>；<a href="protection.json">现场保护核对</a>。</li>
+</ul><pre>PYTHONDONTWRITEBYTECODE=1 /opt/anaconda3/bin/python3 -m unittest validation.test_rf_gaussian_reference
+# 仅分析已有快照，不再追踪：
+PYTHONDONTWRITEBYTECODE=1 /opt/anaconda3/bin/python3 validation/rf_reference_study.py analyze --out ABS_EXISTING_OUTPUT
+# capture 对已有 runs 拒绝重跑；新输出目录才可启动六条轨迹。</pre>
+<p class="muted">运行环境：Python 3.12.2 / NumPy 1.26.4 / SciPy 1.13.1 / mpmath 1.3.0 / OCELOT 26.06.1。完整初始配置逐例保存在 runs/sigma_*um/config.json。实际运行在隔离副本，仓库旧结果未重写。</p>
+<p class="muted">图像已作本地目视检查；HTML 做结构与本地链接检查。先前浏览器 file 访问受限，本轮未绕过，不宣称浏览器渲染已验收。未提交、推送或上传外部服务。</p>
+</section></main></body></html>

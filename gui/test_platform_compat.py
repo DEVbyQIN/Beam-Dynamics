@@ -50,6 +50,9 @@ class FakeProc:
             return self.returncode
         raise subprocess.TimeoutExpired('fake-worker', timeout)
 
+    def poll(self):
+        return self.returncode
+
     def alive(self):
         return self.returncode is None
 
@@ -116,9 +119,9 @@ class StopPaths(TestCase):
         def forbidden(*_a, **_k):
             raise AssertionError('POSIX signalling must not run on Windows')
 
-        with patch('gui.platform_compat.os.killpg', side_effect=forbidden), \
+        with patch('gui.platform_compat.os.killpg', side_effect=forbidden, create=True), \
                 patch('gui.platform_compat.os.kill', side_effect=forbidden), \
-                patch('gui.platform_compat.os.getpgid', side_effect=forbidden):
+                patch('gui.platform_compat.os.getpgid', side_effect=forbidden, create=True):
             self.assertTrue(compat.request_stop(proc, windows=True))
         self.assertEqual(proc.terminated, 1)
 
@@ -360,7 +363,7 @@ class WindowsServerPath(TestCase):
         proc = FakeProc()
         with TemporaryDirectory() as tmp, \
                 patch('gui.platform_compat.IS_WINDOWS', True), \
-                patch('gui.platform_compat.os.killpg', side_effect=forbidden), \
+                patch('gui.platform_compat.os.killpg', side_effect=forbidden, create=True), \
                 patch('gui.server.subprocess.Popen', return_value=proc) as popen:
             jobs = Jobs(tmp, timeout=30)
             try:

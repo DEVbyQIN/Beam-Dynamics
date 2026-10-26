@@ -1,0 +1,7 @@
+{
+  "taskkill_returncode_5_reported_success": true,
+  "failed_taskkill_fallback_kill_calls": 0,
+  "wait_failed_misreported_dead": true,
+  "openprocess_error_misreported_dead": true,
+  "windows_missing_killpg_breaks_test_patch": true
+}

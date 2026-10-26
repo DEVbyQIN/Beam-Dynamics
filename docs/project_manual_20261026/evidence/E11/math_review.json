@@ -1,0 +1,10 @@
+{
+  "rf_covariance_identity_residual": "0",
+  "ag_state_identity_residual": "0",
+  "ocelot_drift_second_order_residual": "0",
+  "default_H_per_m": -17.837445429727307,
+  "default_K_per_m": 6.238239461556977,
+  "beta": 0.548220432878698,
+  "gamma": 1.1956947162426614,
+  "scope": "Symbolic identities and the documented effective-RF coefficient only; no new beam trajectories or full paper rederivation."
+}

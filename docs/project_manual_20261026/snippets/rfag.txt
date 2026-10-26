@@ -1,0 +1,32 @@
+def apply_rf_thin_lens(beam: Beam6D, H: float) -> Beam6D:
+    """
+    Apply RF longitudinal thin-lens transformation.
+
+    Thin lens: δ_out = δ_in + H·z  (H = total chirp [1/m])
+
+    σ_δ² → σ_δ² + 2H·C_zδ + H²·σ_z²
+    C_zδ → C_zδ + H·σ_z²
+    ν_z   → C_zδ_new / (γ²·σ_z)   (consistent with drift kinematics)
+    σ_z   unchanged by thin lens
+    """
+    from AG.longitudinal_state import inspect_longitudinal_state
+    state = inspect_longitudinal_state(beam)
+    if state['correlation_relative_mismatch'] > state['rtol']:
+        raise ValueError("RF input has inconsistent nu_z and C_zd; repair the upstream state")
+    if not np.isfinite(H):
+        raise ValueError("RF H must be finite [1/m]")
+    b = beam.copy()
+    if H == 0:
+        return b
+    # Sigma+ = L Sigma- L.T, written using the uncorrelated variance to
+    # avoid cancellation near a longitudinal focus. Invalid PSD was checked.
+    uncorrelated = state['determinant_m2'] / beam.sigma_z**2
+    if uncorrelated < 0:
+        if not state['psd_roundoff_limited']:
+            raise ValueError("RF input has negative uncorrelated variance")
+        uncorrelated = 0.0
+    b.C_zd = beam.C_zd + H * beam.sigma_z**2
+    b.sigma_delta = np.sqrt(uncorrelated + (b.C_zd / beam.sigma_z)**2)
+    b.nu_z = beam.nu_z + H * beam.sigma_z / beam.gamma**2
+    b.eps_nz = state['epsilon_from_covariance_mm_mrad'] * 1e-6
+    return b

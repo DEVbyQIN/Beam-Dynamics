@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UED · 束流工作台</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><a class="brand" href="/" aria-label="束流工作台首页"><span class="brandmark">∿</span><div>UED <b>束流工作台</b><small>BEAM DYNAMICS LAB</small></div></a><div class="top-status"><span class="dot"></span>本地运行 <span id="connection">正在连接</span></div><button id="importConfig" class="quiet">导入配置</button><button id="exportConfig" class="quiet">导出配置</button></header>
+<div class="workspace">
+<aside><div class="aside-title"><span>工作配置</span><button id="resetConfig" class="textbutton">恢复共享配置</button></div><p class="muted compact">修改用于下一次运行；每次运行保留独立快照。</p>
+<details open><summary>初始电子束 <span>01</span></summary><div class="fields" id="beamFields"></div><p class="hint">束宽、束长和展宽均为 RMS；纵向发射度由束长与动量展宽推得。</p></details>
+<details open><summary>物理开关 <span>02</span></summary><div id="switches"></div></details>
+<details><summary>数值设置 <span>03</span></summary><div class="fields" id="numericFields"></div><label class="field">SC 网格 x / y / z<input id="mesh" aria-label="SC 网格" value="63, 63, 63"></label><p class="hint">粒子数和网格用于 OCELOT；两模型共用物理初态。大网格与小步长会增加运行时间。</p></details>
+<details><summary>诊断位置 <span>04</span></summary><label class="field">束线位置 / mm<textarea id="probes" rows="3" aria-label="诊断位置"></textarea></label><p class="hint">修改样品或元件位置后，请一起检查这些诊断面。</p></details>
+<div class="run-controls"><button id="validate" class="secondary">检查几何与输入</button><button id="runBoth" class="primary">运行两条路线 <span>↗</span></button><div class="split"><button id="runAG">只运行 AG</button><button id="runOC">只运行 OCELOT</button></div><p class="hint">两条路线按顺序运行；使用同一份工作配置。</p></div>
+</aside>
+<main>
+<section class="intro"><div><p class="eyebrow">CONFIGURE · TRACK · COMPARE</p><h1>从电子束到样品面。</h1><p class="muted">配置束线，观察演化，对照两种物理近似。</p></div><div class="case-label"><span id="configState">共享配置副本</span><small id="sampleLabel">样品面 —</small></div></section>
+<div id="message" role="status" class="message" hidden></div>
+<section class="panel beamline"><div class="section-heading"><div><h2>束线布局</h2><p>点击元件查看参数；位置与长度均用毫米编辑。</p></div><span id="geometryState" class="pill">待检查</span></div><div id="beamline" aria-label="束线位置示意图"></div><details class="geometry-editor"><summary>编辑元件与相邻漂移段</summary><div class="table-scroll"><table><thead><tr><th>元件名称</th><th>类型</th><th>入口 / mm</th><th>长度 / mm</th><th>元件参数</th><th></th></tr></thead><tbody id="elements"></tbody></table></div><div class="editor-footer"><select id="addType" aria-label="新增元件类型"><option value="drift">漂移段</option><option value="solenoid">磁透镜</option><option value="rf_cavity">RF 腔</option></select><button id="addElement" class="quiet">＋ 添加元件行</button><span class="hint">请显式调整邻段；界面不会替你移动其他元件。</span></div></details></section>
+<section class="panel results"><div class="section-heading"><div><h2>束团如何演化</h2><p id="resultContext">尚无计算结果。运行后显示实际轨迹。</p></div><div class="legend"><span class="ag">AG</span><span class="oc">OCELOT</span></div></div>
+<div class="metric-tabs" role="tablist" aria-label="选择观测量"></div><div class="chart-wrap"><svg id="chart" viewBox="0 0 920 300" role="img" aria-label="束流演化曲线"></svg><div id="hover" class="tooltip" hidden></div><div id="emptyChart"><span>∿</span><strong>让参数变成一条轨迹</strong><p>先检查束线，再选择一条或两条路线运行。</p></div></div><div class="chart-footer"><span id="chartNote">AG：高斯包络与统计矩 · OCELOT：宏粒子追踪</span><button id="exportSVG" class="textbutton" disabled>导出 SVG</button><button id="exportPNG" class="textbutton" disabled>导出 PNG</button></div>
+<div class="metrics" id="metrics"></div><details class="limits"><summary>模型近似与结果使用范围</summary><p>AG 使用高斯闭合，SC 下发射度的定量预测仍有限。OCELOT 当前使用漂移二阶、磁透镜一阶和可选自由空间 PIC；共同速度、固定参考粒子等假设仍在。RF 采用入口薄透镜与有效积分电压；修改腔长不会自动计算真实腔体场图或渡越因子。</p><p>最近数值检查只针对 100 keV、100 fC、特定 777 mm 束线与 1 / 0.5 mm 步长的有限设置；联合加密未到样品面。共享配置原默认 5 mm 不在该检查范围。改变参数后，不自动继承精度结论。运行完成表示计算完成。</p></details></section>
+<section class="panel runs"><div class="section-heading"><div><h2>运行记录</h2><p>配置、日志和结果一并保留，可下载复现。</p></div><button id="stop" class="danger" disabled>停止当前与排队任务</button></div><div id="jobs" class="job-list"><p class="muted">还没有运行记录。</p></div><details><summary>最近任务日志</summary><pre id="log">运行后在这里显示日志。</pre></details></section>
+<footer>一份配置 · 两条正式实现 · 可追溯的结果 <span>UED WORKBENCH / v0.1</span></footer>
+</main></div>
+<input type="file" id="configFile" accept=".json,.yaml,.yml" hidden><script src="/app.js" defer></script></body></html>

@@ -1,11 +1,12 @@
 @echo off
 rem UED GUI environment installer for Windows (creates .venv, installs pins).
 rem ASCII-only on purpose; see gui\WINDOWS.md for the full instructions.
-setlocal EnableExtensions
+setlocal EnableExtensions DisableDelayedExpansion
 chcp 65001 >nul 2>nul
 cd /d "%~dp0"
+if errorlevel 1 goto :path_failed
 echo === UED GUI environment installer (Windows) ===
-echo Project: %~dp0
+echo Project: "%~dp0"
 echo.
 
 set "UED_BOOT="
@@ -16,6 +17,9 @@ if not defined UED_BOOT (
   if not errorlevel 1 set "UED_BOOT=python"
 )
 if not defined UED_BOOT goto :no_python312
+
+%UED_BOOT% -c "import sys,sysconfig; sys.exit(0 if sys.implementation.name=='cpython' and sys.version_info[:2]==(3,12) and sysconfig.get_platform()=='win-amd64' else 1)" >nul 2>nul
+if errorlevel 1 goto :no_python312
 
 echo Using Python launcher: %UED_BOOT%
 %UED_BOOT% -c "import sys; print('Python', sys.version.split()[0], 'at', sys.executable)"
@@ -29,6 +33,9 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
   echo Reusing existing virtual environment .venv
 )
 set UED_PY="%~dp0.venv\Scripts\python.exe"
+
+%UED_PY% -c "import sys,sysconfig; sys.exit(0 if sys.implementation.name=='cpython' and sys.version_info[:2]==(3,12) and sysconfig.get_platform()=='win-amd64' else 1)" >nul 2>nul
+if errorlevel 1 goto :wrong_venv
 
 echo.
 echo Upgrading pip ...
@@ -75,5 +82,16 @@ exit /b 1
 
 :verify_failed
 echo [ERROR] The core packages do not import. See gui\WINDOWS.md.
+pause
+exit /b 1
+
+:path_failed
+echo [ERROR] Cannot enter the project folder. Use a local writable path.
+pause
+exit /b 1
+
+:wrong_venv
+echo [ERROR] Existing .venv is not CPython 3.12 x64. No packages were changed.
+echo Rename that environment yourself before reinstalling; it was not deleted.
 pause
 exit /b 1

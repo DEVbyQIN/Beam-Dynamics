@@ -16,6 +16,14 @@ except ImportError:           # direct execution: python gui/server.py
 ROOT=Path(__file__).resolve().parents[1]
 WEB=Path(__file__).parent/'web'
 TERMINAL={'complete','failed','cancelled','timeout','interrupted'}
+CANCEL_GRACE_S=3.0
+STOP_WAIT_S=5.0
+
+def valid_timeout(value):
+    if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value<=0:
+        raise ValueError('运行超时必须是有限的正秒数')
+    return float(value)
+
 def fingerprint(cfg):
     return hashlib.sha256(json.dumps(cfg,sort_keys=True,allow_nan=False,separators=(',',':')).encode()).hexdigest()
 def write_json(path,value):
@@ -64,8 +72,9 @@ def validate_config(cfg):
 
 class Jobs:
     def __init__(self,data,timeout=1800):
+        timeout=valid_timeout(timeout)
         self.data=Path(data).resolve();self.data.mkdir(parents=True,exist_ok=True)
-        self.timeout=timeout;self.lock=threading.RLock();self.wake=threading.Event();self.closed=False
+        self.timeout=timeout;self.lock=threading.RLock();self.wake=threading.Event();self.closed=False;self.paused=False
         self.jobs={};self.process=None;self.active=None
         for p in sorted(self.data.glob('*/job.json')):
             try:
@@ -81,6 +90,10 @@ class Jobs:
         if not isinstance(routes,list) or not routes or len(routes)!=len(set(routes)) or any(r not in ('AG','OCELOT') for r in routes):
             raise ValueError('选择 AG、OCELOT 或两者')
         with self.lock:
+            if self.closed:raise RuntimeError('界面服务正在关闭，不能提交新任务。')
+            if self.process is not None and self.process.poll() is None:
+                raise RuntimeError('上一任务的 worker 尚未退出，队列暂停；请先停止任务或关闭服务。')
+            if self.paused:raise RuntimeError('队列因停止失败而暂停，请关闭并重新启动界面服务。')
             if any(j['status'] not in TERMINAL for j in self.jobs.values()):raise RuntimeError('已有任务在运行或排队，请先完成或停止。')
             batch=uuid.uuid4().hex;created=[]
             for route in routes:
@@ -110,6 +123,26 @@ class Jobs:
                     compat.request_stop(self.process)
                 self.save(j)
         self.wake.set()
+    def wait_worker(self,proc,job):
+        """Observe cancel promptly and bound the wait after a forced stop."""
+        deadline=time.monotonic()+self.timeout
+        cancel_deadline=None
+        while True:
+            code=proc.poll()
+            if code is not None:return code,False
+            now=time.monotonic()
+            if job.get('cancel_requested') and cancel_deadline is None:
+                cancel_deadline=now+CANCEL_GRACE_S
+            timedout=now>=deadline
+            if timedout or (cancel_deadline is not None and now>=cancel_deadline):
+                compat.force_stop(proc)
+                try:return proc.wait(timeout=STOP_WAIT_S),timedout
+                except subprocess.TimeoutExpired as e:
+                    raise RuntimeError('停止 worker 后仍未确认退出，队列已暂停；请关闭服务并检查 worker PID。') from e
+            remaining=min(deadline-now,.1)
+            if cancel_deadline is not None:remaining=min(remaining,max(.001,cancel_deadline-now))
+            try:return proc.wait(timeout=max(.001,remaining)),False
+            except subprocess.TimeoutExpired:pass
     def loop(self):
         while not self.closed:
             self.wake.wait(.3);self.wake.clear()
@@ -129,12 +162,16 @@ class Jobs:
                 # parent-liveness check; a PID from an older session is never
                 # killed because Windows reuses PIDs.
                 j['worker_pid']=proc.pid;self.save(j)
-            timedout=False
-            try:code=proc.wait(timeout=self.timeout)
-            except subprocess.TimeoutExpired:
-                timedout=True
-                compat.force_stop(proc)
-                code=proc.wait()
+            try:code,timedout=self.wait_worker(proc,j)
+            except (OSError,RuntimeError) as e:
+                # Retain the live handle: submit must not overlap a stuck worker.
+                with self.lock:
+                    self.paused=True
+                    j.update(status='failed',error=str(e),stop_failed=True,finished=time.time());self.save(j)
+                    for queued in self.jobs.values():
+                        if queued['status']=='queued':
+                            queued.update(status='cancelled',error='前一任务停止失败，队列已暂停。',finished=time.time());self.save(queued)
+                return
             finally:log.close()
             with self.lock:
                 j.update(exit_code=code,finished=time.time())
@@ -217,6 +254,7 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError,TypeError,KeyError,yaml.YAMLError) as e:self.send({'error':str(e)},400)
 
 def serve(port=8765,data=None,timeout=1800,open_browser=False):
+    timeout=valid_timeout(timeout)
     try:server=ThreadingHTTPServer(('127.0.0.1',port),Handler)
     except OSError as e:
         raise SystemExit(f'无法监听 127.0.0.1:{port}（{e}）。端口可能被占用，可改用 --port 8766。') from e
@@ -229,6 +267,7 @@ def serve(port=8765,data=None,timeout=1800,open_browser=False):
     finally:server.jobs.shutdown();server.server_close()
 def main():
     compat.configure_stdio()
+    compat.configure_shutdown_signals()
     p=argparse.ArgumentParser(description='UED local GUI (existing AG/OCELOT drivers)')
     p.add_argument('--port',type=int,default=8765);p.add_argument('--data-dir',type=Path);p.add_argument('--timeout',type=float,default=1800);p.add_argument('--open',action='store_true')
     a=p.parse_args()

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "entry",
+    "title": "正式入口适配",
+    "path": "validation/backend.py",
+    "start": 39,
+    "end": 48,
+    "sha256": "453fdd538376f764368a0802aa8a33813e57aaae3f591fbb27c74ffae9b05bfb"
+  },
+  {
+    "id": "geometry",
+    "title": "共同几何校验",
+    "path": "shared/geometry.py",
+    "start": 39,
+    "end": 62,
+    "sha256": "92806c89a491b989c44bbda590e34fa46067d081971380a50b2bdfc1697db504"
+  },
+  {
+    "id": "state",
+    "title": "AG 活动状态重建与配对面积演化",
+    "path": "AG/beam_dynamics_6d.py",
+    "start": 1024,
+    "end": 1051,
+    "sha256": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c"
+  },
+  {
+    "id": "g",
+    "title": "AG 三方向面积变化率",
+    "path": "AG/beam_dynamics_6d.py",
+    "start": 356,
+    "end": 369,
+    "sha256": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c"
+  },
+  {
+    "id": "force",
+    "title": "AG 高斯 SC 纵向力及其上下文",
+    "path": "AG/beam_dynamics_6d.py",
+    "start": 318,
+    "end": 340,
+    "sha256": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c"
+  },
+  {
+    "id": "alpha",
+    "title": "直接积分及域外保护",
+    "path": "AG/alpha_coefficients.py",
+    "start": 51,
+    "end": 100,
+    "sha256": "789140ec8fd18021e9d7623f5a049b3cbfa80d35ef791541199733c9c7259c1b"
+  },
+  {
+    "id": "rfshared",
+    "title": "共同 RF 系数与正弦调制",
+    "path": "shared/rf_model.py",
+    "start": 11,
+    "end": 27,
+    "sha256": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e"
+  },
+  {
+    "id": "rfag",
+    "title": "AG 协方差薄透镜",
+    "path": "AG/beam_dynamics_6d.py",
+    "start": 783,
+    "end": 814,
+    "sha256": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c"
+  },
+  {
+    "id": "method",
+    "title": "OCELOT 实际传输方法守门",
+    "path": "GPT模拟/ued_beamline_v2.py",
+    "start": 195,
+    "end": 209,
+    "sha256": "a5dcd535711e1d012fde12f97a25db7b618a8552ba1307266ae28564b643475a"
+  },
+  {
+    "id": "schedule",
+    "title": "OCELOT 原生 SC 调度",
+    "path": "GPT模拟/ued_beamline_v2.py",
+    "start": 518,
+    "end": 536,
+    "sha256": "a5dcd535711e1d012fde12f97a25db7b618a8552ba1307266ae28564b643475a"
+  },
+  {
+    "id": "diagnostic",
+    "title": "共同中心矩与纵向输出",
+    "path": "shared/diagnostics.py",
+    "start": 22,
+    "end": 42,
+    "sha256": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50"
+  },
+  {
+    "id": "worker",
+    "title": "GUI 调用正式模型",
+    "path": "gui/worker.py",
+    "start": 36,
+    "end": 70,
+    "sha256": "1cfc7e6f8dca95f0540224bda0a514a72895c580f4edc30e84b625c35d145b08"
+  },
+  {
+    "id": "platform",
+    "title": "Windows 父进程存活检查（尚待实机验收）",
+    "path": "gui/platform_compat.py",
+    "start": 170,
+    "end": 218,
+    "sha256": "7b840e6e4a6782a718f495db69a773bdec133b97d3d3bea2b130822f4568d69e"
+  }
+]

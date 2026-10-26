@@ -1,0 +1,15 @@
+    # inherits a drift-like T tensor: selecting SecondTM there would not add
+    # the actual solenoid chromatic terms.  Retain its audited linear map.
+    lat = MagneticLattice(elems, method={"global": TransferMap,
+                                        Drift: SecondTM, Solenoid: TransferMap})
+    lat.update_transfer_maps()
+    for element in lat.sequence:
+        expected = SecondTM if isinstance(element, Drift) else TransferMap
+        actual = [type(tm) for tm in element.tms]
+        if not actual or any(tm is not expected for tm in actual):
+            raise RuntimeError(
+                f"OCELOT tracking method mismatch for {element.id}: "
+                f"expected {expected.__name__}, got "
+                f"{[tm.__name__ for tm in actual]}")
+    lat.ued_transport_policy = "drift_second_order_solenoid_linear_v1"
+    return lat, rf_elems

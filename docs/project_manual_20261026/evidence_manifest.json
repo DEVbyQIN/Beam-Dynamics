@@ -1,0 +1,177 @@
+[
+  {
+    "id": "E01",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/implementation_20261021/report.html",
+    "local": "evidence/E01/report.html",
+    "sha256": "ce1352a452cfee46805ca205752494a9bf61b7c97a426f916dc7f878177c954a",
+    "available": true
+  },
+  {
+    "id": "E02",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/alpha_accuracy_20261022/report.html",
+    "local": "evidence/E02/report.html",
+    "sha256": "a072992ff4631373ef0f761edd5ae12ccfd1e5abc759c014b1a0018d98d616dd",
+    "available": true
+  },
+  {
+    "id": "E03",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/rf_reference_20261024/report.html",
+    "local": "evidence/E03/report.html",
+    "sha256": "750d3a185589b33b671216098086885b6ed133afbc5080dcdd367264d6f17eaf",
+    "available": true
+  },
+  {
+    "id": "E04",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/beamline_acceptance_20261024/report.html",
+    "local": "evidence/E04/report.html",
+    "sha256": "3ccda6f07efa5b03812ee3bea910837edb04736732dce1fcf0af1440e388a267",
+    "available": true
+  },
+  {
+    "id": "E05",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ag_emittance_closure_20261025/analysis.json",
+    "local": "evidence/E05/analysis.json",
+    "sha256": "ac37d52eae418591d6e9a8a7867820d78e107f535338bd1b4b3efddf0821cb49",
+    "available": true
+  },
+  {
+    "id": "E05",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ag_emittance_closure_20261025/report.html",
+    "local": "evidence/E05/report.html",
+    "sha256": "94e70c4972cb34f2257a9e87fb85d4a25d2d82238fa53d2d353c14c05b2b7dd7",
+    "available": true
+  },
+  {
+    "id": "E06",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_method_acceptance_20261025/report.html",
+    "local": "evidence/E06/report.html",
+    "sha256": "eda79ec8c6168fd074d040e375fa636f7398508e561cee7b360b961a78eb7e57",
+    "available": true
+  },
+  {
+    "id": "E07",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_sc_local_20261025/analysis.json",
+    "local": "evidence/E07/analysis.json",
+    "sha256": "4d3e004d6a48d9cbfe3e1b77d2266b0a68a1b408ba80ab97d37a10ffef3da6bd",
+    "available": true
+  },
+  {
+    "id": "E07",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_sc_local_20261025/report.html",
+    "local": "evidence/E07/report.html",
+    "sha256": "9bcbb1c9239e2de3fd8542db20befd9b57267f8d4ae46c2ab57bd6cfe9518a52",
+    "available": true
+  },
+  {
+    "id": "E08",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_stability_20261025/analysis.json",
+    "local": "evidence/E08/analysis.json",
+    "sha256": "12e8dabd9fea091464c02559800e294e3f2c4f6daa98af355336a7f876e80d1a",
+    "available": true
+  },
+  {
+    "id": "E08",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_stability_20261025/specs.json",
+    "local": "evidence/E08/specs.json",
+    "sha256": "40f2f682f6a0ea98d282964f6dc7086fab93c1ea9aa029816fd7e11d470212b4",
+    "available": true
+  },
+  {
+    "id": "E08",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_stability_20261025/saved_verification.json",
+    "local": "evidence/E08/saved_verification.json",
+    "sha256": "9219ba32cabba228f49ae12b334f4e4334096b49c1c24269bb615304e1636c56",
+    "available": true
+  },
+  {
+    "id": "E08",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_stability_20261025/ledger.json",
+    "local": "evidence/E08/ledger.json",
+    "sha256": "3db08a41c75b38dcc52316ba600f59da72d19b71fc4cf738988857fdbe3a27d4",
+    "available": true
+  },
+  {
+    "id": "E08",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/ocelot_stability_20261025/runs/combined/termination.json",
+    "local": "evidence/E08/termination.json",
+    "sha256": "b08501ee465fc369b125fdd3215e5c5f023bff2d0adc4a5ab2646b49f208a3b3",
+    "available": true
+  },
+  {
+    "id": "E09",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/gui_mvp_20261025/acceptance.json",
+    "local": "evidence/E09/acceptance.json",
+    "sha256": "a2b03c29109f99c43753ed12a083d3b63a538320acc1ceef0a3fad21e95cc701",
+    "available": true
+  },
+  {
+    "id": "E09",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/gui_mvp_20261025/tracking_cancel_qa.json",
+    "local": "evidence/E09/tracking_cancel_qa.json",
+    "sha256": "61eaba531524a9bf820ac88f1e893f1fdb82f4f4d31fab45ae1188187e9c2599",
+    "available": true
+  },
+  {
+    "id": "E09",
+    "path": "/Users/qin/Documents/Codex/2026-10-04/ued-beam-dynamics-ocelot-ag-astra/outputs/gui_mvp_20261025/installed_browser_qa.json",
+    "local": "evidence/E09/installed_browser_qa.json",
+    "sha256": "304ff576c6eb8cb51aaebeb59378a41e64d550a843977efbdfc3bc7836cf3cc8",
+    "available": true
+  },
+  {
+    "id": "E10",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/.scratch/test_evidence_20261025.log",
+    "local": "evidence/E10/windows_test_log.txt",
+    "sha256": "91b89b5bf65591f9b04dfc9f32287cfc3fed7b4ba667d5c6fbdd58e96fc2a16b",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/REVIEW.md",
+    "local": "evidence/E11/REVIEW.md",
+    "sha256": "9ae5283ac2456453c601561e194b61922c6a0286fa02ab17e9de9272616965db",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/test_summary.json",
+    "local": "evidence/E11/test_summary.json",
+    "sha256": "6a7d7639cf7b4b5c833a827f1b640fd66e485fed89e4fd82ee890548921ecd36",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/math_review.json",
+    "local": "evidence/E11/math_review.json",
+    "sha256": "16d7407d943013defa9ebba2459d34d9091908ca0a4a4e3d5797d62829519be9",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/unit_tests.log",
+    "local": "evidence/E11/unit_tests.log",
+    "sha256": "bc07d7656120706f86638d9d6f2eb4b0efe0a3051080020a071d936eae33a867",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/e2e_tests.log",
+    "local": "evidence/E11/e2e_tests.log",
+    "sha256": "a54308d3585ca9202ae2dd0c33cd212649dce3a98b95c8d4bd416d6a67a5c54a",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/before_repro.json",
+    "local": "evidence/E11/before_repro.json",
+    "sha256": "ffd7a841140fe1ac415ff9733a7a5327c984dae2bbe9ad7c7872fec0c44da69f",
+    "available": true
+  },
+  {
+    "id": "E11",
+    "path": "/Users/qin/Desktop/shuyan/Beam_dynamics_simu/docs/review_20261026/context.json",
+    "local": "evidence/E11/context.json",
+    "sha256": "5dd087dd7690b88e95b4cf04daa06ec6dc821c252400e8b79f24c621a337d274",
+    "available": true
+  }
+]

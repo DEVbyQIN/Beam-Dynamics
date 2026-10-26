@@ -1,0 +1,547 @@
+[
+  {
+    "path": "AG/alpha_coefficients.py",
+    "sha256": "789140ec8fd18021e9d7623f5a049b3cbfa80d35ef791541199733c9c7259c1b",
+    "bytes": 4803
+  },
+  {
+    "path": "AG/alpha_coefficients_physics_note.md",
+    "sha256": "76bdacc9bd0619e450d201d6ae7860045b03f9108e40465c83d685952a84cc00",
+    "bytes": 4407
+  },
+  {
+    "path": "AG/beam_dynamics_6d.py",
+    "sha256": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c",
+    "bytes": 55363
+  },
+  {
+    "path": "AG/beamline_sim.py",
+    "sha256": "8adbf7b00ee5491144cba61a402f848017909909be2672c5cf67d2a3d74df4dd",
+    "bytes": 24158
+  },
+  {
+    "path": "AG/external_forces.py",
+    "sha256": "9482bb4f70ef3794119a0cf8b1a54d2dd50596fed446252e42ecca3666e2fffb",
+    "bytes": 18214
+  },
+  {
+    "path": "AG/longitudinal_state.py",
+    "sha256": "d90b51d77f47a0bd484f9859b81918dbd5e98bfcda916b891f5f335ef7c278d3",
+    "bytes": 7036
+  },
+  {
+    "path": "AG/longitudinal_state_physics_note.md",
+    "sha256": "c65780c7f954bd2d918b421d325cbb7c63cf1e237e637d983ab637d7a5f1898b",
+    "bytes": 8182
+  },
+  {
+    "path": "AG/run_shared.py",
+    "sha256": "ad0fc1b3cfdc3607a64bd1f9ef52c7ee4ad559a14b800c17cb25672fdc44efef",
+    "bytes": 1347
+  },
+  {
+    "path": "AG/runner.py",
+    "sha256": "4066b8ad22dafd7f90443ffacc467faadbe03a5887cd18e726e91ad563ebb866",
+    "bytes": 12008
+  },
+  {
+    "path": "AG/runner_physics_note.md",
+    "sha256": "0a767ca9125a73d20d1d245928d6dd0bcca62584e2968124687dd488b25f5ee8",
+    "bytes": 4847
+  },
+  {
+    "path": "AG/transverse_g_physics_note.md",
+    "sha256": "3dc9717487ce11bfc7ab0c39a57af94c831e6e0e83dd74ec357d91ded8d7b874",
+    "bytes": 4286
+  },
+  {
+    "path": "AGENTS.md",
+    "sha256": "48d5acc33340bfd45e08bb4ca15fef5c52e9ae9ad7c45ffbd473133cf17d160b",
+    "bytes": 11331
+  },
+  {
+    "path": "AI_HANDOFF.md",
+    "sha256": "3c103102d2215743e4b60a61048ad16df769c5d50921dce6f95e0d16f866b164",
+    "bytes": 78154
+  },
+  {
+    "path": "CALCULATION_CARD_TEMPLATE.md",
+    "sha256": "f0f0fad45a4930e41d25c6671f96192a3a454b47dc5f0fcb844f3711e2d15224",
+    "bytes": 2615
+  },
+  {
+    "path": "CHANGELOG_ag_alpha_20261022.md",
+    "sha256": "e6905ed689779d543440dfbafc413a84c61e319474d6968499c884ae673e204c",
+    "bytes": 2368
+  },
+  {
+    "path": "CHANGELOG_ag_longitudinal_gz_20261016.md",
+    "sha256": "cb75466d96a3ce9ef85118d677c478683ecfd3994de2a062010933069af0f7bc",
+    "bytes": 2609
+  },
+  {
+    "path": "CHANGELOG_audit_20261004.md",
+    "sha256": "0061fdd1a05c9fa521bb732ca48b59d54932049612a94b46e250628c58da69fd",
+    "bytes": 1132
+  },
+  {
+    "path": "CHANGELOG_geometry_20261022.md",
+    "sha256": "009d5876cd43ac047a9b30cad53f36ef398c01b0923529292012bac151beda5b",
+    "bytes": 1716
+  },
+  {
+    "path": "CHANGELOG_geometry_refactor.md",
+    "sha256": "83cbdc0c49cf62d8eb336afcb65e6b2d7d314c5817307fc9486cf541faf03522",
+    "bytes": 3548
+  },
+  {
+    "path": "CHANGELOG_gpt_lattice_single_source.md",
+    "sha256": "bdaaf4549629ff4adba3f87284185c1a43a9c269f98a90cc0b69f0e2bce17d5f",
+    "bytes": 1663
+  },
+  {
+    "path": "CHANGELOG_longitudinal_transport.md",
+    "sha256": "bce021b4b32b5f23e60c2edcebb50542550732fe68d23dbd5c31e585086f20b9",
+    "bytes": 3630
+  },
+  {
+    "path": "CHANGELOG_ocelot_transport_20261025.md",
+    "sha256": "286522953e3bde148ad0b3bd9245d1412acff8018f508ae0b387ce861d9e2d73",
+    "bytes": 2707
+  },
+  {
+    "path": "CHANGELOG_r56_variable_adapter.md",
+    "sha256": "14a2193b0574f863134d1c0670badca163b9c24761119e353df24fc1c7e20aae",
+    "bytes": 3282
+  },
+  {
+    "path": "CHANGELOG_review_20261026.md",
+    "sha256": "401f4cbfe741b66d3d9b376d01aa2de670a311ebb9ac6d9fb0d97f4419e273f4",
+    "bytes": 1224
+  },
+  {
+    "path": "CHANGELOG_rf_reference_20261024.md",
+    "sha256": "89e094f58f38583a2ae2572d9db863b1fce9eef2883194def0688dcd252641ba",
+    "bytes": 1423
+  },
+  {
+    "path": "CHANGELOG_runner_unification_20261005.md",
+    "sha256": "2b970f44fc3dfb1331714bef59a9b011b2c9fad474ffa19710e77367e6dc844c",
+    "bytes": 4015
+  },
+  {
+    "path": "CHANGELOG_shared_rf_gxyz_20261021.md",
+    "sha256": "5b5dfc7e685bf41ea87e354d108602ce678332870e7e72f5d8af7595c1b1317e",
+    "bytes": 2589
+  },
+  {
+    "path": "CHANGELOG_windows_gui_20261025.md",
+    "sha256": "dd47777d1b9e75d025026a2135da3f56d7d246e7f7224f9dc7ea8a51cb8ebbfc",
+    "bytes": 5301
+  },
+  {
+    "path": "GPT模拟/runner_physics_note.md",
+    "sha256": "7119fd61b4450da2f3ec7b5a14ebf79ab357fc91b0a3fc95b326709c83c608b5",
+    "bytes": 5162
+  },
+  {
+    "path": "GPT模拟/sc_local_physics_note.md",
+    "sha256": "5d88c5f29118a3536c530cea75fbf1dbbcfb42e90ec4548b2c26d8ef69b6eb8f",
+    "bytes": 6069
+  },
+  {
+    "path": "GPT模拟/transport_physics_note.md",
+    "sha256": "962500b75c3da65cb02d60c3c339c8128d5c99157abf455a43282006b8544bcb",
+    "bytes": 4810
+  },
+  {
+    "path": "GPT模拟/ued_beamline_v2.py",
+    "sha256": "a5dcd535711e1d012fde12f97a25db7b618a8552ba1307266ae28564b643475a",
+    "bytes": 39961
+  },
+  {
+    "path": "LICENSE",
+    "sha256": "c35f6c22b5838bb8e12a9367aca734b8ba5b666958b0a89aaf1da6f1fb0f59e6",
+    "bytes": 1087
+  },
+  {
+    "path": "PROJECT_STATUS.md",
+    "sha256": "f710e5f5c51c01a8281d2455e309d55e811559894bd45dea44f9585fd70414bf",
+    "bytes": 41157
+  },
+  {
+    "path": "README.md",
+    "sha256": "5b29eddeb09b85b98346efc95daf61aab0abbb45cd3a19b67ac651d88a7e10ed",
+    "bytes": 20986
+  },
+  {
+    "path": "gui/README.md",
+    "sha256": "9ba0fe6db89e1f5be89e27fdc598f9d21e94569734c6de2e9f1b89e4c2e7ddc9",
+    "bytes": 4328
+  },
+  {
+    "path": "gui/WINDOWS.md",
+    "sha256": "7569383f2f17b1445c2547667f2e37382de263ba175bb44640b8a937c111cf07",
+    "bytes": 11763
+  },
+  {
+    "path": "gui/__init__.py",
+    "sha256": "f975b6ad7b380830b068a5fd783427b6182c79cc371c4ec4db5467d9c20594b4",
+    "bytes": 59
+  },
+  {
+    "path": "gui/platform_compat.py",
+    "sha256": "7b840e6e4a6782a718f495db69a773bdec133b97d3d3bea2b130822f4568d69e",
+    "bytes": 11565
+  },
+  {
+    "path": "gui/server.py",
+    "sha256": "b8b3d1147c54c5d4246108cc8da7146fba3bc6e4eafbb0b52f671606b5f7f769",
+    "bytes": 17610
+  },
+  {
+    "path": "gui/test_gui.py",
+    "sha256": "fa96b486fc674ff1af3e16935e4593dda0d712e0c2117facdf69b43cb578c76b",
+    "bytes": 3188
+  },
+  {
+    "path": "gui/test_gui_e2e.py",
+    "sha256": "23da50dfdf193629089753d1725bde0e2d8a046eef861ba1363bff33a58a6b91",
+    "bytes": 10105
+  },
+  {
+    "path": "gui/test_platform_compat.py",
+    "sha256": "f64ccd69df4795a92a85ff0c97c069337a4d86b7b0df02bb66f7c8b114517045",
+    "bytes": 17241
+  },
+  {
+    "path": "gui/test_review_regressions.py",
+    "sha256": "a662bfbff168f9d3d35b0b982f7a871a81c1bde411bd9c8a6ce085d76093c042",
+    "bytes": 7321
+  },
+  {
+    "path": "gui/test_windows_native.py",
+    "sha256": "97200a2f9eaac540f03bd4a1c6791aef9bd2bd9d56be64b2739011d03c45e48c",
+    "bytes": 3835
+  },
+  {
+    "path": "gui/web/app.js",
+    "sha256": "c924d87ba182afed7e157ae4afb6885c0f0312b89ba9a9367b21d1cf6c41eb7e",
+    "bytes": 19614
+  },
+  {
+    "path": "gui/web/index.html",
+    "sha256": "e70b2c171bf27b77fb118e41dd0a1be89c72d2133700b4d7b099e2dc9ab4eb07",
+    "bytes": 5895
+  },
+  {
+    "path": "gui/web/style.css",
+    "sha256": "76ee1f473ff4eeac0e1b80b08b57ca6a966169ebfa57ec207f9f1df784ef1b61",
+    "bytes": 10699
+  },
+  {
+    "path": "gui/worker.py",
+    "sha256": "1cfc7e6f8dca95f0540224bda0a514a72895c580f4edc30e84b625c35d145b08",
+    "bytes": 4067
+  },
+  {
+    "path": "requirements-gui.txt",
+    "sha256": "883af7aa60929c84a130f376d0f6387a344c7c6e37ed846331bec483c92131ea",
+    "bytes": 650
+  },
+  {
+    "path": "run_gui.py",
+    "sha256": "3fdcb71ace7b18145735b67468bf3ae47cac487f6c38067609fddaa64cf7c934",
+    "bytes": 129
+  },
+  {
+    "path": "shared/__init__.py",
+    "sha256": "45af2d0a494c9333a5a543494dfa39401e1fbf5b0d38c349fb2a8efb9dc3a6f2",
+    "bytes": 156
+  },
+  {
+    "path": "shared/beam_physics.py",
+    "sha256": "0829709d5ddf5ad815b99b51c0377f9ea81c01fb0d55d50cf23e684f03422ffe",
+    "bytes": 1101
+  },
+  {
+    "path": "shared/beam_result.py",
+    "sha256": "101223e23f06589fc1002c8ac529b9df130d53fd5c343a0a4d4dbd9450c48944",
+    "bytes": 9809
+  },
+  {
+    "path": "shared/beam_result_physics_note.md",
+    "sha256": "b6cd34e3ae92b71f1ae517d855573f90c86e6e776a6200b38b19a9799ea5a2d8",
+    "bytes": 4158
+  },
+  {
+    "path": "shared/beamline_config.yaml",
+    "sha256": "d1950983c4e1a852a31ef1333ec70e21ee069050a9fb8a04a13fad90c215d965",
+    "bytes": 4192
+  },
+  {
+    "path": "shared/compare.py",
+    "sha256": "3053878bd6138a0f8c3acba63b0f400ebbc4ef29e5367ff23836ca122fb3954f",
+    "bytes": 6170
+  },
+  {
+    "path": "shared/constants.py",
+    "sha256": "4a8cd1a11df8e2d1b7766b69b0ebb0c46dac1b2b9992ec0651b041f160e934e6",
+    "bytes": 1092
+  },
+  {
+    "path": "shared/diagnostics.py",
+    "sha256": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50",
+    "bytes": 2900
+  },
+  {
+    "path": "shared/geometry.py",
+    "sha256": "92806c89a491b989c44bbda590e34fa46067d081971380a50b2bdfc1697db504",
+    "bytes": 4019
+  },
+  {
+    "path": "shared/geometry_contract.md",
+    "sha256": "a08b4f5a50a9afafc973c1033f47acc3821b50e8f022c58d4b01a1c9fc501a7f",
+    "bytes": 4350
+  },
+  {
+    "path": "shared/ocelot_coords.py",
+    "sha256": "73aa6d5718deff9c5f761517d5f909c87f79e0e4999e77281c4b63a35c043922",
+    "bytes": 1544
+  },
+  {
+    "path": "shared/output_schema.py",
+    "sha256": "39bc1b86564c7e06d48ae8d95f8263c7828755e38c58af05bc1ecea25675c39e",
+    "bytes": 3876
+  },
+  {
+    "path": "shared/params.py",
+    "sha256": "84a4ff8e1c2578fd67444398a868b088d302135047f627b9ba41586fd56fcc5a",
+    "bytes": 8961
+  },
+  {
+    "path": "shared/rf_model.py",
+    "sha256": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e",
+    "bytes": 1259
+  },
+  {
+    "path": "shared/rf_model_physics_note.md",
+    "sha256": "701fb3cf065b415c59f79df616a0f6c6806b0f51a0bdfc5aae0507f5ff5ff16c",
+    "bytes": 3462
+  },
+  {
+    "path": "shared/run_contract.py",
+    "sha256": "949bd4d87660efaee56258bcdd4ec57c3476bbb095d37db11159e3f5dd6e1b8d",
+    "bytes": 2937
+  },
+  {
+    "path": "shared/sc_state.py",
+    "sha256": "522574bd960a1dbf8238e1ade5b2a687a184742085bb4c394bc0a258d9b63a7a",
+    "bytes": 3828
+  },
+  {
+    "path": "validation/alpha_reference.py",
+    "sha256": "c75daad06177b10798f366350ec6913905e2d88316e2f12c4853944d1fe15337",
+    "bytes": 1476
+  },
+  {
+    "path": "validation/backend.py",
+    "sha256": "453fdd538376f764368a0802aa8a33813e57aaae3f591fbb27c74ffae9b05bfb",
+    "bytes": 2894
+  },
+  {
+    "path": "validation/common.py",
+    "sha256": "83e584a5d3a857adc80bec88c69c1037f8120709de282173fb8ec6d6076d1ba1",
+    "bytes": 3098
+  },
+  {
+    "path": "validation/config_check.py",
+    "sha256": "1b8eb2bede1e208daf031a762e0cb69774d70bd6c2187d1bd35dbdaed553799d",
+    "bytes": 3703
+  },
+  {
+    "path": "validation/reference.py",
+    "sha256": "5e5b6974d5938a27cc6638cb11f81a7ada5844055f74ad3787ee9d51bf2729a6",
+    "bytes": 3159
+  },
+  {
+    "path": "validation/rf_gaussian_reference.py",
+    "sha256": "00d2dc5ecab7e2e508c120c1131c73da09acb8f3de4f5e1ecbddce1896fd74be",
+    "bytes": 11127
+  },
+  {
+    "path": "validation/rf_gaussian_reference_physics_note.md",
+    "sha256": "057c4bf48d8dde6310c378472ae754fd1ba2a25f884691b5ec8b267c0d07c15b",
+    "bytes": 8820
+  },
+  {
+    "path": "validation/run_all.py",
+    "sha256": "20aff89b25d682933552b29bf8575cf2cd75ba70c8ed1b1db9e2133c438f8f3b",
+    "bytes": 3805
+  },
+  {
+    "path": "validation/sc_scope_study_physics_note.md",
+    "sha256": "ab610faec689f313fbd40de9d2efcd931c6ebdcbba0e9412b4c301731f1ca0ed",
+    "bytes": 6887
+  },
+  {
+    "path": "validation/test_ag_acceleration_damping.py",
+    "sha256": "86f2dcc11c7980bdad5d4d8ed704dd99eb7d9bfd9058c510ee432e40080422d4",
+    "bytes": 9669
+  },
+  {
+    "path": "validation/test_ag_alpha_coefficients.py",
+    "sha256": "1f17d3cf190e38195a96fff1407951e941a35b40d71c2a4de1f00377139f8160",
+    "bytes": 3718
+  },
+  {
+    "path": "validation/test_ag_alpha_numerics.py",
+    "sha256": "33ca895d94c40a975125ddd7da3e6738ff1b3210f36e21710a6c8d6bfb9df6fc",
+    "bytes": 3846
+  },
+  {
+    "path": "validation/test_ag_charge_semantics.py",
+    "sha256": "60a8c67a3f6f6f6f84078872b3e84f8be0ba6cf1f52305cc0233a99006054b62",
+    "bytes": 6144
+  },
+  {
+    "path": "validation/test_ag_longitudinal_state.py",
+    "sha256": "914a00ea893147176ef137f4371a1ed88777ffa54bfd32caef0301c2fa391fe9",
+    "bytes": 9505
+  },
+  {
+    "path": "validation/test_ag_transverse_g.py",
+    "sha256": "95c6b9088c0eb82cba50d17cb9fd3e17abb1d16f57f4bb4c2338cccdf543b77c",
+    "bytes": 4940
+  },
+  {
+    "path": "validation/test_benchmark4_scmech.py",
+    "sha256": "666b5e1b09128d4e0a753662b3a3da79d2a766e5dc2792551836b86447751948",
+    "bytes": 3018
+  },
+  {
+    "path": "validation/test_config_consistency.py",
+    "sha256": "f5d99e6b974516992046e5765d8df1152bbba30ece33fa2f0c286377feba6a77",
+    "bytes": 1035
+  },
+  {
+    "path": "validation/test_drift.py",
+    "sha256": "2bbfb55c70384d694ca88f9a1461f087d5eacb0177fec7875cd12d4bbf72aa99",
+    "bytes": 4786
+  },
+  {
+    "path": "validation/test_full_beamline.py",
+    "sha256": "9beccee1c58973caf7509cad08450559aa27f1bb1ff87ea27c2388426ffab054",
+    "bytes": 8996
+  },
+  {
+    "path": "validation/test_geometry_contract.py",
+    "sha256": "85d724e1f67b256831d2fc5f60d8366b64f245acdac905755a60c32fa55ee76f",
+    "bytes": 7158
+  },
+  {
+    "path": "validation/test_gpt_config_override.py",
+    "sha256": "a6a8d4acd2b163e4951014ed77a5e7f8ce273801e370fba7a72a1f3d65575601",
+    "bytes": 8506
+  },
+  {
+    "path": "validation/test_gpt_route_equivalence.py",
+    "sha256": "297eccedd3d64b9cd0b6e3c7492e578920b6705d4371f4d4fcd6f7d0b6e8b8f8",
+    "bytes": 8517
+  },
+  {
+    "path": "validation/test_gpt_saved_output.py",
+    "sha256": "6c30678ad44e42b29f9aa13d4400d4b90b538cef6f8edebf64d328d2807a15d6",
+    "bytes": 7433
+  },
+  {
+    "path": "validation/test_gpt_sc_contract.py",
+    "sha256": "1cc95416a404ec4235d110cdd439972452ee4b73d025b3df7489c0d7e56c2777",
+    "bytes": 7637
+  },
+  {
+    "path": "validation/test_gpt_tail_sample.py",
+    "sha256": "2a5e614156e3c3512ca79f25eb82e9d4399fba19a4b27a7567f0e4c192303b92",
+    "bytes": 6589
+  },
+  {
+    "path": "validation/test_ocelot_transport.py",
+    "sha256": "1accf27df324985b5bf576da0684f67bb8195f35a1290069e43c0b47896b6ec2",
+    "bytes": 8813
+  },
+  {
+    "path": "validation/test_r56_convention.py",
+    "sha256": "cf61c98375fa06c1704c0024ade3d7c6153c99171e6346e3a38aa882f20b72a5",
+    "bytes": 15762
+  },
+  {
+    "path": "validation/test_rf.py",
+    "sha256": "dd9d51c7c6a1544a1e948d7ba009a48d91ce861351964425c04826a3be6810b2",
+    "bytes": 8056
+  },
+  {
+    "path": "validation/test_rf_gaussian_reference.py",
+    "sha256": "7ec822f21f6d826b513b6d1bccc05890ec8512176510c126352b8c82a33a585c",
+    "bytes": 4735
+  },
+  {
+    "path": "validation/test_rf_switches_entrypoints.py",
+    "sha256": "1cf695eb121ea35c314d90074bdbcb151af870a8fe94c173f0c08b7b51a2a173",
+    "bytes": 7998
+  },
+  {
+    "path": "validation/test_run_all_exitcode.py",
+    "sha256": "aa56f9cbdb5cb11b79f2b283218e5f44708b74badf59be592cedae3ed48404bf",
+    "bytes": 3610
+  },
+  {
+    "path": "validation/test_runner_contract.py",
+    "sha256": "d5de5f143175ca1c6c8974cc50e5af426186d96779615438293a7b755f74f6ca",
+    "bytes": 6239
+  },
+  {
+    "path": "validation/test_sc_runtime_state.py",
+    "sha256": "7105407e40e4e2395ccc26ebb8c7a47ce361592795183c8b90f801e98f468153",
+    "bytes": 10235
+  },
+  {
+    "path": "validation/test_sc_scheduler_equivalence.py",
+    "sha256": "1dc2859e59545a8d0d72338fd8597ff10531b83d65160d417ebf0b3454b470ef",
+    "bytes": 28066
+  },
+  {
+    "path": "validation/test_sc_scope_study.py",
+    "sha256": "90feeedfa30fe65e0063906fb4bfc750b28dcfd80db75638aeb40ef203e4d189",
+    "bytes": 4023
+  },
+  {
+    "path": "validation/test_shared_diagnostics_rf.py",
+    "sha256": "bf11015dafb218fd1455670bc76389facb1ecadb9cafa43be5047b4345e27fa4",
+    "bytes": 6046
+  },
+  {
+    "path": "validation/test_solenoid.py",
+    "sha256": "0f88da34c029de8a3c867dc717e16588aeea205b3c76f9d62b9a6f5ed11f453e",
+    "bytes": 6583
+  },
+  {
+    "path": "启动界面.bat",
+    "sha256": "dfcf5f5517d4fb7f043686bac65fabde63bbb52f5c8712c3ca6dbccde04771b2",
+    "bytes": 2403
+  },
+  {
+    "path": "启动界面.command",
+    "sha256": "688cc614c7cd4eef90f0937af4a9113962b4e32fc694a67e48b5a0089a19d27d",
+    "bytes": 160
+  },
+  {
+    "path": "安装环境.bat",
+    "sha256": "54c4cb21900e02d1fc14d617236d92779cacda589dc0f0157383371f534c96d6",
+    "bytes": 3330
+  },
+  {
+    "path": "运行GUI测试.bat",
+    "sha256": "1305bb3e85a50ddf94e0188ae763e8d28f2a52a02e433a7649b3596784db9dd0",
+    "bytes": 1507
+  }
+]

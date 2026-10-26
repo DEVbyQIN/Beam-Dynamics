@@ -1,0 +1,102 @@
+# UED Beamline Configuration — SHARED (single source of truth)
+# ============================================================
+# Read by BOTH independent routes:
+#   - GPT模拟/ : OCELOT macroparticle tracking
+#   - AG/      : Kelisani 6D envelope ODE
+#
+# GEOMETRY REFACTOR (2026-08-01): lattice.elements is the ONLY geometry
+# definition and carries every element's physical parameters.  The former
+# top-level `solenoid:` / `rf_cavity:` sections have been REMOVED — their
+# parameters now live inside each element's `parameters:` block.
+# Element fields: name, type, z_start, length, parameters.
+# Element types: cathode, drift, solenoid, rf_cavity, sample.
+
+beam:
+  energy_keV: 100.0          # beam kinetic energy
+  charge_fC: 100.0           # bunch charge [fC]
+  n_particles: 50000         # OCELOT numerical macroparticles; AG uses Ne=|Q|/e
+
+initial_distribution:
+  spot_rms_um: 85.0          # RMS transverse spot size [μm]
+  bunch_length_um: 300.0     # RMS bunch length [μm]
+  epsilon_n_mm_mrad: 0.08    # normalized transverse emittance [mm·mrad]
+  # Initial longitudinal emittance is DERIVED from sigma_z, sigma_delta and
+  # zero initial correlation, not an independent input.
+  # MOMENTUM deviation δ_p = Δp/p0 (project standard, see R56 audit;
+  # historically labeled ΔE/E — semantic clarified 2026-08-08, value unchanged)
+  sigma_delta: 1.0e-4
+
+space_charge:
+  enabled: false             # SC off by default (enable for SC mode)
+  mesh: [63, 63, 63]        # PIC mesh dimensions (GPT)
+  step: 1                    # apply every step
+  # ── v0.15 hardened convergence parameters (see SC_native_baseline.md) ──
+  # N (macroparticles, beam.n_particles) = 5e4 → σx converged ±0.3%
+  #   (1e4: 2444.1 / 5e4: 2436.1 / 1e5: 2438.9 µm @500 fC, 0.5 m drift)
+  # mesh = 63³               → σx converged ±0.6%
+  #   (33³: 2424.9 / 63³: 2436.1 / 127³: 2438.9 µm — 127³ is 8× slower)
+  # SC step ≤ 5              → step=10 deviates +7.5% (step=5: +1.5%)
+  # Full-beamline native SC baseline @100 fC (production, dz=0.001):
+  #   σx 1996→2557 µm (+28%), σz 474→525 µm (+11%), σδ 2.94→4.69e-3 (+60%),
+  #   εnx 0.080→0.129 (+61%); coverage [0, 0.777] = cathode→sample.
+
+physics_switches:
+  # RF thin-lens model switches — read identically by BOTH backends.
+  # Longitudinal: time-phase modulation minus reference gain; H=eV*k*cosφ/(β³E₀).
+  # Transverse  : Panofsky-Wenzel RF transverse kick (x' += K_trans·x).
+  rf_longitudinal_kick: true
+  rf_transverse_kick: false
+
+random:
+  # Random-number policy (v0.13): single configured seed for ALL stochastic
+  # sources.  Beam generation: seed → generate_parray (x/y/tau), then
+  # seed+1 → px/py/δ_p (independent draws, avoids the x–px correlation trap).
+  seed: 42
+
+lattice:
+  # THE ONLY GEOMETRY DEFINITION (single source of truth).
+  # z_start/length in [m]; each element carries its own physical parameters.
+  elements:
+    - name: cathode
+      type: cathode
+      z_start: 0.000
+      length: 0.000
+      parameters: {}
+    - name: drift1
+      type: drift
+      z_start: 0.000
+      length: 0.100          # cathode → solenoid
+      parameters: {}
+    - name: solenoid1
+      type: solenoid         # TL1
+      z_start: 0.100
+      length: 0.060
+      parameters:
+        B_field_T: 0.05      # on-axis magnetic field [T]
+    - name: drift2
+      type: drift
+      z_start: 0.160
+      length: 0.240          # solenoid → RF
+      parameters: {}
+    - name: rf1
+      type: rf_cavity        # RF longitudinal lens
+      z_start: 0.400
+      length: 0.022
+      parameters:
+        frequency_GHz: 2.856 # S-band
+        voltage_kV: 30.0     # effective integrated voltage [kV], includes transit-time effect
+        phase_rad: 3.1416    # RF phase [rad] (π for max chirp)
+    - name: drift3
+      type: drift
+      z_start: 0.422
+      length: 0.355          # RF → sample
+      parameters: {}
+    - name: sample
+      type: sample           # diagnostic plane
+      z_start: 0.777
+      length: 0.000
+      parameters: {}
+
+output:
+  z_diagnostics_mm: [0, 100, 160, 400, 422, 500, 600, 700, 777]  # probe positions
+  step_size_m: 0.005       # tracking step

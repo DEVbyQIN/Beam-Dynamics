@@ -1,0 +1,2153 @@
+{
+  "scope": "SC local mathematical audit; no full beamline trajectories",
+  "ocelot_version": "26.06.1",
+  "checks": [
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis0 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis0 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis0 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis0 r2.5",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis1 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis1 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis1 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis1 r2.5",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis2 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis2 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis2 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n33 axis2 r2.5",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis0 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis0 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis0 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis0 r2.5",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis1 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis1 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis1 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis1 r2.5",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis2 r0.4",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis2 r0.8",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis2 r1.6",
+      "passed": true
+    },
+    {
+      "name": "Gaussian integral vs Gauss law n63 axis2 r2.5",
+      "passed": true
+    },
+    {
+      "name": "native to simultaneous lab 100.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        6.776263578034403e-21,
+        5.421010862427522e-20,
+        4.547473508864641e-13,
+        9.094947017729282e-13,
+        1.7462298274040222e-10
+      ],
+      "bound": [
+        5.684341886080802e-17,
+        5.684341886080802e-17,
+        5.684341886080802e-17,
+        3.47313289239537e-08,
+        3.47313289239537e-08,
+        3.47313289239537e-08
+      ]
+    },
+    {
+      "name": "independent inverse 100.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        8.673617379884035e-19,
+        0.0,
+        8.673617379884035e-19,
+        1.0842021724855044e-19,
+        2.177077962350893e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "independent roundtrip 100.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        0.0,
+        6.776263578034403e-21,
+        1.0842021724855044e-19,
+        5.421010862427522e-20,
+        7.827939685345342e-17
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 100.0keV [12000.0, 0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        3.469446951953614e-18,
+        6.776263578034403e-21,
+        2.6020852139652106e-18,
+        2.168404344971009e-19,
+        2.927345865710862e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751807412641e-17,
+        5.741211286715119e-14,
+        6.02454803810673e-17,
+        5.718220393190675e-14,
+        8.526512856472709e-17,
+        5.694679511909316e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 100.0keV [0, -9000.0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        1.734723475976807e-18,
+        1.0842021724855044e-19,
+        2.7820627745978044e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167510946434224e-17,
+        5.741185304998899e-14,
+        6.024544032663069e-17,
+        5.718239879412615e-14,
+        8.526512839900613e-17,
+        5.694679429817136e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 100.0keV [0, 0, 18000.0]",
+      "passed": true,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        3.469446951953614e-18,
+        6.776263578034403e-21,
+        1.3010426069826053e-18,
+        1.0842021724855044e-19,
+        2.96637714392034e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167511021030864e-17,
+        5.741185355178965e-14,
+        6.024548081964988e-17,
+        5.718220431305696e-14,
+        8.526493428249859e-17,
+        5.694710017146648e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 100.0keV [0, 0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        1.734723475976807e-18,
+        5.421010862427522e-20,
+        1.95590071916385e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 100.0keV [3500.0, -4000.0, 8000.0]",
+      "passed": true,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        1.734723475976807e-18,
+        0.0,
+        8.673617379884035e-19,
+        1.0842021724855044e-19,
+        4.200199216208844e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167513055086489e-17,
+        5.741192905312059e-14,
+        6.024546277383769e-17,
+        5.718229070687561e-14,
+        8.526504203299323e-17,
+        5.694693053298847e-14
+      ]
+    },
+    {
+      "name": "native to simultaneous lab 1000.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        0.0,
+        5.421010862427522e-20,
+        2.7284841053187847e-12,
+        3.637978807091713e-12,
+        4.656612873077393e-10
+      ],
+      "bound": [
+        5.684341886080802e-17,
+        5.684341886080802e-17,
+        5.684341886080802e-17,
+        8.589040589868091e-08,
+        8.589040589868091e-08,
+        8.589040589868091e-08
+      ]
+    },
+    {
+      "name": "independent inverse 1000.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        1.734723475976807e-18,
+        0.0,
+        1.0842021724855044e-19,
+        5.421010862427522e-20,
+        9.454242944073599e-17
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "independent roundtrip 1000.0keV",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        0.0,
+        6.776263578034403e-21,
+        8.673617379884035e-19,
+        0.0,
+        1.0907073855204175e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 1000.0keV [12000.0, 0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        2.6020852139652106e-18,
+        0.0,
+        4.336808689942018e-18,
+        5.421010862427522e-20,
+        4.0066691284201816e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167511221067633e-17,
+        5.741185887979705e-14,
+        6.02454803810202e-17,
+        5.718220393145177e-14,
+        8.526512830931654e-17,
+        5.694679417289372e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 1000.0keV [0, -9000.0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        4.336808689942018e-18,
+        5.421010862427522e-20,
+        4.119968255444917e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167510946423045e-17,
+        5.741185304964776e-14,
+        6.024547883831465e-17,
+        5.71822083038e-14,
+        8.526512829834582e-17,
+        5.694679408955034e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 1000.0keV [0, 0, 18000.0]",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        3.469446951953614e-18,
+        0.0,
+        3.469446951953614e-18,
+        1.0842021724855044e-19,
+        2.448662136229039e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751097029061e-17,
+        5.74118532525635e-14,
+        6.024548044823326e-17,
+        5.718220408557948e-14,
+        8.526512393653648e-17,
+        5.694686597981134e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 1000.0keV [0, 0, 0]",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        3.469446951953614e-18,
+        0.0,
+        3.469446951953614e-18,
+        5.421010862427522e-20,
+        3.3046482217358175e-16
+      ],
+      "absolute_bound_by_row": [
+        6.16751094639767e-17,
+        5.74118530494161e-14,
+        6.024548038091344e-17,
+        5.718220393114289e-14,
+        8.526512829121202e-17,
+        5.694679400981223e-14
+      ]
+    },
+    {
+      "name": "prescribed vector kick 1000.0keV [3500.0, -4000.0, 8000.0]",
+      "passed": true,
+      "max_error_by_row": [
+        0.0,
+        2.6020852139652106e-18,
+        0.0,
+        3.469446951953614e-18,
+        1.0842021724855044e-19,
+        2.3093506273941244e-16
+      ],
+      "absolute_bound_by_row": [
+        6.167511036938167e-17,
+        5.741185484033457e-14,
+        6.024547972521877e-17,
+        5.718220594327462e-14,
+        8.526512635370513e-17,
+        5.694682607948164e-14
+      ]
+    },
+    {
+      "name": "uniform axial field spatial-work consistency order",
+      "passed": true,
+      "energy_error_eV": [
+        0.003046932823622228,
+        0.0007617582387204891,
+        0.0001904426301155837
+      ],
+      "error_ratios": [
+        3.9998685524427064,
+        3.9999355094926052
+      ]
+    },
+    {
+      "name": "zero path-length kick identity",
+      "passed": true
+    },
+    {
+      "name": "real short SC runtime",
+      "passed": true
+    },
+    {
+      "name": "real first-kick frozen-field independent bridge",
+      "passed": true,
+      "max_error_by_row": [
+        2.710505431213761e-20,
+        2.168404344971009e-18,
+        2.710505431213761e-20,
+        2.6020852139652106e-18,
+        8.673617379884035e-19,
+        7.297934229589381e-16
+      ],
+      "absolute_bound_by_row": [
+        7.576251294521329e-17,
+        5.71139919214818e-14,
+        7.577442836946505e-17,
+        5.714455120349287e-14,
+        1.7811408284085874e-16,
+        5.685503565952146e-14
+      ]
+    },
+    {
+      "name": "nonround off-axis field odd symmetry",
+      "passed": true,
+      "relative_residual": 7.000596144905597e-15
+    }
+  ],
+  "field_cases": [
+    {
+      "shape": "sphere",
+      "mesh": 33,
+      "sigma_m": [
+        8.5e-05,
+        8.5e-05,
+        8.5e-05
+      ],
+      "charge_grid_C": 9.99999994080474e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "point_m": [
+            4.636363636363632e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 15886.747380427916,
+          "reference_V_per_m": 16517.654461039227,
+          "reference_quad_error_V_per_m": 7.212630050866728e-11,
+          "relative_error": -0.03819592437288555
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            7.72727272727272e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 22810.27619025605,
+          "reference_V_per_m": 23611.554437994615,
+          "reference_quad_error_V_per_m": 8.314559641971367e-10,
+          "relative_error": -0.033935853306175656
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00013909090909090897,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 25280.544706886612,
+          "reference_V_per_m": 25828.143637371493,
+          "reference_quad_error_V_per_m": 1.6228417614450136e-08,
+          "relative_error": -0.021201637182028943
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00020090909090909073,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 19137.830685832592,
+          "reference_V_per_m": 19292.609465208425,
+          "reference_quad_error_V_per_m": 1.1178449605397981e-07,
+          "relative_error": -0.008022698000234474
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            4.636363636363632e-05,
+            0.0
+          ],
+          "field_V_per_m": 15886.747380427802,
+          "reference_V_per_m": 16517.654461039227,
+          "reference_quad_error_V_per_m": 7.212630050866728e-11,
+          "relative_error": -0.03819592437289254
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            7.72727272727272e-05,
+            0.0
+          ],
+          "field_V_per_m": 22810.276190255965,
+          "reference_V_per_m": 23611.554437994615,
+          "reference_quad_error_V_per_m": 8.314559641971367e-10,
+          "relative_error": -0.03393585330617921
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00013909090909090897,
+            0.0
+          ],
+          "field_V_per_m": 25280.544706886525,
+          "reference_V_per_m": 25828.143637371493,
+          "reference_quad_error_V_per_m": 1.6228417614450136e-08,
+          "relative_error": -0.021201637182032385
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00020090909090909073,
+            0.0
+          ],
+          "field_V_per_m": 19137.830685832647,
+          "reference_V_per_m": 19292.609465208425,
+          "reference_quad_error_V_per_m": 1.1178449605397981e-07,
+          "relative_error": -0.008022698000231698
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            4.636363636363632e-05
+          ],
+          "field_V_per_m": 15886.74738042786,
+          "reference_V_per_m": 16517.654461039227,
+          "reference_quad_error_V_per_m": 7.212630050866728e-11,
+          "relative_error": -0.03819592437288899
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            7.72727272727272e-05
+          ],
+          "field_V_per_m": 22810.27619025602,
+          "reference_V_per_m": 23611.554437994615,
+          "reference_quad_error_V_per_m": 8.314559641971367e-10,
+          "relative_error": -0.03393585330617688
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.00013909090909090897
+          ],
+          "field_V_per_m": 25280.544706886412,
+          "reference_V_per_m": 25828.143637371493,
+          "reference_quad_error_V_per_m": 1.6228417614450136e-08,
+          "relative_error": -0.021201637182036714
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.00020090909090909073
+          ],
+          "field_V_per_m": 19137.830685832305,
+          "reference_V_per_m": 19292.609465208425,
+          "reference_quad_error_V_per_m": 1.1178449605397981e-07,
+          "relative_error": -0.008022698000249351
+        }
+      ],
+      "max_abs_relative_error": 0.03819592437289254
+    },
+    {
+      "shape": "sphere",
+      "mesh": 63,
+      "sigma_m": [
+        8.5e-05,
+        8.5e-05,
+        8.5e-05
+      ],
+      "charge_grid_C": 9.999999940804743e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "point_m": [
+            4.047619047619044e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 14562.200076816282,
+          "reference_V_per_m": 14724.862965419223,
+          "reference_quad_error_V_per_m": 2.623641883582474e-11,
+          "relative_error": -0.01104681849908884
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            7.285714285714279e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 22630.455644425412,
+          "reference_V_per_m": 22855.103829344625,
+          "reference_quad_error_V_per_m": 6.56435199272335e-10,
+          "relative_error": -0.009829234931358233
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.0001376190476190475,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 25765.92373619339,
+          "reference_V_per_m": 25921.72271782693,
+          "reference_quad_error_V_per_m": 1.5351978117594488e-08,
+          "relative_error": -0.006010363714229361
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00021857142857142838,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 17183.965164020574,
+          "reference_V_per_m": 17207.37371071391,
+          "reference_quad_error_V_per_m": 1.7595178809848085e-07,
+          "relative_error": -0.0013603788170626352
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            4.047619047619044e-05,
+            0.0
+          ],
+          "field_V_per_m": 14562.200076816282,
+          "reference_V_per_m": 14724.862965419223,
+          "reference_quad_error_V_per_m": 2.623641883582474e-11,
+          "relative_error": -0.01104681849908884
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            7.285714285714279e-05,
+            0.0
+          ],
+          "field_V_per_m": 22630.455644425194,
+          "reference_V_per_m": 22855.103829344625,
+          "reference_quad_error_V_per_m": 6.56435199272335e-10,
+          "relative_error": -0.00982923493136778
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.0001376190476190475,
+            0.0
+          ],
+          "field_V_per_m": 25765.923736193334,
+          "reference_V_per_m": 25921.72271782693,
+          "reference_quad_error_V_per_m": 1.5351978117594488e-08,
+          "relative_error": -0.00601036371423147
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00021857142857142838,
+            0.0
+          ],
+          "field_V_per_m": 17183.965164020574,
+          "reference_V_per_m": 17207.37371071391,
+          "reference_quad_error_V_per_m": 1.7595178809848085e-07,
+          "relative_error": -0.0013603788170626352
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            4.047619047619044e-05
+          ],
+          "field_V_per_m": 14562.20007681639,
+          "reference_V_per_m": 14724.862965419223,
+          "reference_quad_error_V_per_m": 2.623641883582474e-11,
+          "relative_error": -0.011046818499081401
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            7.285714285714279e-05
+          ],
+          "field_V_per_m": 22630.45564442525,
+          "reference_V_per_m": 22855.103829344625,
+          "reference_quad_error_V_per_m": 6.56435199272335e-10,
+          "relative_error": -0.009829234931365338
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0001376190476190475
+          ],
+          "field_V_per_m": 25765.923736193552,
+          "reference_V_per_m": 25921.72271782693,
+          "reference_quad_error_V_per_m": 1.5351978117594488e-08,
+          "relative_error": -0.006010363714223144
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.00021857142857142838
+          ],
+          "field_V_per_m": 17183.9651640206,
+          "reference_V_per_m": 17207.37371071391,
+          "reference_quad_error_V_per_m": 1.7595178809848085e-07,
+          "relative_error": -0.001360378817061192
+        }
+      ],
+      "max_abs_relative_error": 0.01104681849908884
+    },
+    {
+      "shape": "project_rest",
+      "mesh": 33,
+      "sigma_m": [
+        8.5e-05,
+        8.5e-05,
+        0.0003587092100887107
+      ],
+      "charge_grid_C": 9.99999994080474e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "point_m": [
+            4.636363636363632e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 5320.8807338778215,
+          "reference_V_per_m": 5520.321537575591,
+          "reference_quad_error_V_per_m": 2.2823315954085346e-07,
+          "relative_error": -0.036128475912176605
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            7.72727272727272e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 7791.856608398002,
+          "reference_V_per_m": 8054.115598962787,
+          "reference_quad_error_V_per_m": 3.8674347727436487e-07,
+          "relative_error": -0.032562109066147316
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00013909090909090897,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 9281.872469056747,
+          "reference_V_per_m": 9494.543129579473,
+          "reference_quad_error_V_per_m": 7.394974354340202e-07,
+          "relative_error": -0.022399251614347637
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00020090909090909073,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 7881.164357695525,
+          "reference_V_per_m": 7983.509741072749,
+          "reference_quad_error_V_per_m": 1.1439768451350295e-06,
+          "relative_error": -0.01281959773289787
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            4.636363636363632e-05,
+            0.0
+          ],
+          "field_V_per_m": 5320.880733877851,
+          "reference_V_per_m": 5520.321537575591,
+          "reference_quad_error_V_per_m": 2.2823315954085346e-07,
+          "relative_error": -0.036128475912171276
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            7.72727272727272e-05,
+            0.0
+          ],
+          "field_V_per_m": 7791.85660839803,
+          "reference_V_per_m": 8054.115598962787,
+          "reference_quad_error_V_per_m": 3.8674347727436487e-07,
+          "relative_error": -0.03256210906614376
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00013909090909090897,
+            0.0
+          ],
+          "field_V_per_m": 9281.872469056832,
+          "reference_V_per_m": 9494.543129579473,
+          "reference_quad_error_V_per_m": 7.394974354340202e-07,
+          "relative_error": -0.022399251614338644
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00020090909090909073,
+            0.0
+          ],
+          "field_V_per_m": 7881.164357695497,
+          "reference_V_per_m": 7983.509741072749,
+          "reference_quad_error_V_per_m": 1.1439768451350295e-06,
+          "relative_error": -0.012819597732901422
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0001956595691392966
+          ],
+          "field_V_per_m": 3257.738170580359,
+          "reference_V_per_m": 3389.6294062587613,
+          "reference_quad_error_V_per_m": 3.3011683436591246e-07,
+          "relative_error": -0.03891022288008017
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0003260992818988277
+          ],
+          "field_V_per_m": 4463.568320829008,
+          "reference_V_per_m": 4617.649326568013,
+          "reference_quad_error_V_per_m": 3.9373321491785176e-08,
+          "relative_error": -0.03336784472837451
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0005869787074178898
+          ],
+          "field_V_per_m": 4173.661967069411,
+          "reference_V_per_m": 4239.797963888696,
+          "reference_quad_error_V_per_m": 1.9415274346058674e-07,
+          "relative_error": -0.015598855743264362
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.000847858132936952
+          ],
+          "field_V_per_m": 2419.659717751371,
+          "reference_V_per_m": 2407.604978786174,
+          "reference_quad_error_V_per_m": 7.387097510013343e-07,
+          "relative_error": 0.005006942198331199
+        }
+      ],
+      "max_abs_relative_error": 0.03891022288008017
+    },
+    {
+      "shape": "project_rest",
+      "mesh": 63,
+      "sigma_m": [
+        8.5e-05,
+        8.5e-05,
+        0.0003587092100887107
+      ],
+      "charge_grid_C": 9.999999940804743e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "point_m": [
+            4.047619047619044e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 4855.62669230373,
+          "reference_V_per_m": 4907.9342033804705,
+          "reference_quad_error_V_per_m": 1.9882679695305973e-07,
+          "relative_error": -0.010657744971542704
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            7.285714285714279e-05,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 7693.455534076016,
+          "reference_V_per_m": 7768.183105655224,
+          "reference_quad_error_V_per_m": 3.635919007883216e-07,
+          "relative_error": -0.009619697497192825
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.0001376190476190475,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 9445.01794789899,
+          "reference_V_per_m": 9506.838681296864,
+          "reference_quad_error_V_per_m": 7.302860613308383e-07,
+          "relative_error": -0.006502764533019345
+        },
+        {
+          "axis": 0,
+          "point_m": [
+            0.00021857142857142838,
+            0.0,
+            0.0
+          ],
+          "field_V_per_m": 7383.744833953562,
+          "reference_V_per_m": 7406.364278848674,
+          "reference_quad_error_V_per_m": 8.661756905506269e-09,
+          "relative_error": -0.0030540551400785043
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            4.047619047619044e-05,
+            0.0
+          ],
+          "field_V_per_m": 4855.626692303785,
+          "reference_V_per_m": 4907.9342033804705,
+          "reference_quad_error_V_per_m": 1.9882679695305973e-07,
+          "relative_error": -0.010657744971531491
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            7.285714285714279e-05,
+            0.0
+          ],
+          "field_V_per_m": 7693.455534076071,
+          "reference_V_per_m": 7768.183105655224,
+          "reference_quad_error_V_per_m": 3.635919007883216e-07,
+          "relative_error": -0.00961969749718583
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.0001376190476190475,
+            0.0
+          ],
+          "field_V_per_m": 9445.01794789902,
+          "reference_V_per_m": 9506.838681296864,
+          "reference_quad_error_V_per_m": 7.302860613308383e-07,
+          "relative_error": -0.0065027645330162365
+        },
+        {
+          "axis": 1,
+          "point_m": [
+            0.0,
+            0.00021857142857142838,
+            0.0
+          ],
+          "field_V_per_m": 7383.7448339536995,
+          "reference_V_per_m": 7406.364278848674,
+          "reference_quad_error_V_per_m": 8.661756905506269e-09,
+          "relative_error": -0.0030540551400599636
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0001708139095660526
+          ],
+          "field_V_per_m": 3005.9068556548978,
+          "reference_V_per_m": 3040.9836235728503,
+          "reference_quad_error_V_per_m": 2.6900037240577993e-07,
+          "relative_error": -0.011534678334354509
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.00030746503721889467
+          ],
+          "field_V_per_m": 4462.880338069132,
+          "reference_V_per_m": 4507.551126712409,
+          "reference_quad_error_V_per_m": 7.887307765096077e-07,
+          "relative_error": -0.009910212305424881
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.0005807672925245788
+          ],
+          "field_V_per_m": 4259.168823001223,
+          "reference_V_per_m": 4278.285699266816,
+          "reference_quad_error_V_per_m": 1.8554210847358377e-07,
+          "relative_error": -0.004468349616966627
+        },
+        {
+          "axis": 2,
+          "point_m": [
+            0.0,
+            0.0,
+            0.000922395111656684
+          ],
+          "field_V_per_m": 1970.5374687118788,
+          "reference_V_per_m": 1964.8203392162227,
+          "reference_quad_error_V_per_m": 1.1178688406012326e-06,
+          "relative_error": 0.0029097466987422216
+        }
+      ],
+      "max_abs_relative_error": 0.011534678334354509
+    }
+  ],
+  "pipeline_field_cases": [
+    {
+      "mesh": 34,
+      "source_nodes": 32768,
+      "gamma": 1.1956973669623692,
+      "charge_C": 9.999999982352597e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "rest_point_m": [
+            3.4000000000000007e-05,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            4663.719019036976,
+            0.0,
+            0.0
+          ],
+          "reference_lab_field_V_per_m": [
+            5015.364871744536,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.07011371290026291
+        },
+        {
+          "axis": 0,
+          "rest_point_m": [
+            8.5e-05,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            9358.325253964571,
+            -1.4120857458868141e-11,
+            -2.7984412532470598e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            10152.759921357494,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.07824814863609042
+        },
+        {
+          "axis": 0,
+          "rest_point_m": [
+            0.00017,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            10199.488941713229,
+            -1.6138122810135012e-11,
+            3.1982185751394963e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            10660.916585369201,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.04328217371939902
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            3.4000000000000007e-05,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            1.721399766414404e-11,
+            4663.7190190370575,
+            4.264291433519532e-13
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            5015.364871744536,
+            0.0
+          ],
+          "relative_component_error": -0.0701137129002466
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            8.5e-05,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            1.950023172891317e-11,
+            9358.325253964673,
+            -1.4658501802722684e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            10152.759921357494,
+            0.0
+          ],
+          "relative_component_error": -0.07824814863608043
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            0.00017,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            5.3793742700449765e-12,
+            10199.488941713198,
+            4.2642914335193284e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            10660.916585369201,
+            0.0
+          ],
+          "relative_component_error": -0.043282173719401906
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.00014348368403548428
+          ],
+          "lab_field_V_per_m": [
+            3.3352120474279025e-11,
+            -7.531123978062966e-12,
+            2457.2404273452853
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            2621.1301072951806
+          ],
+          "relative_component_error": -0.06252634292885895
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.0003587092100887107
+          ],
+          "lab_field_V_per_m": [
+            3.362108918778103e-11,
+            8.069061405067493e-12,
+            4405.595983918656
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            4758.185075133824
+          ],
+          "relative_component_error": -0.07410159244494108
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.0007174184201774214
+          ],
+          "lab_field_V_per_m": [
+            1.6138122810135e-11,
+            -1.4488149615702755e-26,
+            3277.8780684427534
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            3320.7914792023007
+          ],
+          "relative_component_error": -0.012922645407972388
+        }
+      ],
+      "max_abs_relative_error": 0.07824814863609042
+    },
+    {
+      "mesh": 64,
+      "source_nodes": 238328,
+      "gamma": 1.1956973669623692,
+      "charge_C": 9.999999967851477e-14,
+      "samples": [
+        {
+          "axis": 0,
+          "rest_point_m": [
+            3.4000000000000007e-05,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            4918.973081807621,
+            -4.6574969486454145e-11,
+            -2.517307523658215e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            5015.364871744536,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.019219297578918826
+        },
+        {
+          "axis": 0,
+          "rest_point_m": [
+            8.5e-05,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            9971.722281452014,
+            0.0,
+            0.0
+          ],
+          "reference_lab_field_V_per_m": [
+            10152.759921357494,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.01783137209072061
+        },
+        {
+          "axis": 0,
+          "rest_point_m": [
+            0.00017,
+            0.0,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            10536.484491519466,
+            -3.175566101349131e-11,
+            -2.0977562697151423e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            10660.916585369201,
+            0.0,
+            0.0
+          ],
+          "relative_component_error": -0.011671800717445113
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            3.4000000000000007e-05,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            -4.869201355402012e-11,
+            4918.973081807648,
+            -1.5523396395892122e-11
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            5015.364871744536,
+            0.0
+          ],
+          "relative_component_error": -0.019219297578913608
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            8.5e-05,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            -6.880393219589823e-11,
+            9971.722281451974,
+            -2.622195337143922e-12
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            10152.759921357494,
+            0.0
+          ],
+          "relative_component_error": -0.017831372090724495
+        },
+        {
+          "axis": 1,
+          "rest_point_m": [
+            0.0,
+            0.00017,
+            0.0
+          ],
+          "lab_field_V_per_m": [
+            -3.175566101349131e-11,
+            10536.484491519393,
+            -1.0488781348575757e-11
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            10660.916585369201,
+            0.0
+          ],
+          "relative_component_error": -0.011671800717451997
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.00014348368403548428
+          ],
+          "lab_field_V_per_m": [
+            -4.869201355402012e-11,
+            -7.833063049994558e-11,
+            2576.22192427015
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            2621.1301072951806
+          ],
+          "relative_component_error": -0.017133137687458277
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.0003587092100887107
+          ],
+          "lab_field_V_per_m": [
+            -4.498718643577945e-11,
+            -1.8524135591203406e-11,
+            4687.300252577302
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            4758.185075133824
+          ],
+          "relative_component_error": -0.014897449644606153
+        },
+        {
+          "axis": 2,
+          "rest_point_m": [
+            0.0,
+            0.0,
+            0.0007174184201774214
+          ],
+          "lab_field_V_per_m": [
+            1.5877830506745938e-11,
+            -2.1170440675660872e-11,
+            3310.0475509544203
+          ],
+          "reference_lab_field_V_per_m": [
+            0.0,
+            0.0,
+            3320.7914792023007
+          ],
+          "relative_component_error": -0.0032353516669649807
+        }
+      ],
+      "max_abs_relative_error": 0.019219297578918826
+    }
+  ],
+  "coordinate_cases": [
+    {
+      "kinetic_keV": 100.0,
+      "lab_conversion_max_error": [
+        0.0,
+        6.776263578034403e-21,
+        5.421010862427522e-20,
+        4.547473508864641e-13,
+        9.094947017729282e-13,
+        1.7462298274040222e-10
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "lab_conversion_max_error": [
+        0.0,
+        0.0,
+        5.421010862427522e-20,
+        2.7284841053187847e-12,
+        3.637978807091713e-12,
+        4.656612873077393e-10
+      ]
+    }
+  ],
+  "kick_cases": [
+    {
+      "kinetic_keV": 100.0,
+      "field_V_per_m": [
+        12000.0,
+        0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        3.469446951953614e-18,
+        6.776263578034403e-21,
+        2.6020852139652106e-18,
+        2.168404344971009e-19,
+        2.927345865710862e-16
+      ]
+    },
+    {
+      "kinetic_keV": 100.0,
+      "field_V_per_m": [
+        0,
+        -9000.0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        1.734723475976807e-18,
+        1.0842021724855044e-19,
+        2.7820627745978044e-16
+      ]
+    },
+    {
+      "kinetic_keV": 100.0,
+      "field_V_per_m": [
+        0,
+        0,
+        18000.0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        3.469446951953614e-18,
+        6.776263578034403e-21,
+        1.3010426069826053e-18,
+        1.0842021724855044e-19,
+        2.96637714392034e-16
+      ]
+    },
+    {
+      "kinetic_keV": 100.0,
+      "field_V_per_m": [
+        0,
+        0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        0.0,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        1.734723475976807e-18,
+        5.421010862427522e-20,
+        1.95590071916385e-16
+      ]
+    },
+    {
+      "kinetic_keV": 100.0,
+      "field_V_per_m": [
+        3500.0,
+        -4000.0,
+        8000.0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        1.734723475976807e-18,
+        0.0,
+        8.673617379884035e-19,
+        1.0842021724855044e-19,
+        4.200199216208844e-16
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "field_V_per_m": [
+        12000.0,
+        0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        1.3552527156068805e-20,
+        2.6020852139652106e-18,
+        0.0,
+        4.336808689942018e-18,
+        5.421010862427522e-20,
+        4.0066691284201816e-16
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "field_V_per_m": [
+        0,
+        -9000.0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        0.0,
+        1.734723475976807e-18,
+        6.776263578034403e-21,
+        4.336808689942018e-18,
+        5.421010862427522e-20,
+        4.119968255444917e-16
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "field_V_per_m": [
+        0,
+        0,
+        18000.0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        0.0,
+        3.469446951953614e-18,
+        0.0,
+        3.469446951953614e-18,
+        1.0842021724855044e-19,
+        2.448662136229039e-16
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "field_V_per_m": [
+        0,
+        0,
+        0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        0.0,
+        3.469446951953614e-18,
+        0.0,
+        3.469446951953614e-18,
+        5.421010862427522e-20,
+        3.3046482217358175e-16
+      ]
+    },
+    {
+      "kinetic_keV": 1000.0,
+      "field_V_per_m": [
+        3500.0,
+        -4000.0,
+        8000.0
+      ],
+      "ds_m": 0.0001,
+      "max_error_by_row": [
+        0.0,
+        2.6020852139652106e-18,
+        0.0,
+        3.469446951953614e-18,
+        1.0842021724855044e-19,
+        2.3093506273941244e-16
+      ]
+    }
+  ],
+  "counts": {
+    "potential": 11,
+    "el_field": 7,
+    "apply": 18,
+    "formal_short_runs": 1,
+    "formal_full_runs": 0
+  },
+  "real_short": {
+    "config": {
+      "beam": {
+        "energy_keV": 100.0,
+        "charge_fC": 100.0,
+        "n_particles": 4000
+      },
+      "initial_distribution": {
+        "spot_rms_um": 85.0,
+        "bunch_length_um": 300.0,
+        "epsilon_n_mm_mrad": 0.08,
+        "sigma_delta": 0.0001
+      },
+      "space_charge": {
+        "enabled": true,
+        "mesh": [
+          33,
+          33,
+          33
+        ],
+        "step": 1
+      },
+      "physics_switches": {
+        "rf_longitudinal_kick": false,
+        "rf_transverse_kick": false
+      },
+      "random": {
+        "seed": 42
+      },
+      "lattice": {
+        "elements": [
+          {
+            "name": "cathode",
+            "type": "cathode",
+            "z_start": 0.0,
+            "length": 0.0,
+            "parameters": {}
+          },
+          {
+            "name": "d",
+            "type": "drift",
+            "z_start": 0.0,
+            "length": 0.002,
+            "parameters": {}
+          },
+          {
+            "name": "sample",
+            "type": "sample",
+            "z_start": 0.002,
+            "length": 0.0,
+            "parameters": {}
+          }
+        ]
+      },
+      "output": {
+        "z_diagnostics_mm": [
+          0,
+          1,
+          2
+        ],
+        "step_size_m": 0.0005
+      }
+    },
+    "meta": {
+      "model": "OCELOT macroparticle tracking (active methods in lattice_sequence)",
+      "ocelot_version": "26.06.1",
+      "transport_policy": "drift_second_order_solenoid_linear_v1",
+      "transport_limits": [
+        "Solenoid uses a linear hard-edge map; nonlinear/chromatic solenoid transport is not represented",
+        "Drift SecondTM is a second-order expansion around the fixed reference particle"
+      ],
+      "runner": "GPT模拟.ued_beamline_v2.run_from_config",
+      "rf": "RF OFF",
+      "rf_model": "effective_voltage; reference_subtracted; axisymmetric_linear_transverse; fixed_reference",
+      "rf_kicks_applied": 0,
+      "rf_instances_scheduled": 0,
+      "rf_events": [],
+      "switches": {
+        "rf_longitudinal_kick": false,
+        "rf_transverse_kick": false
+      },
+      "effective_switches": {
+        "rf_longitudinal_kick": false,
+        "rf_transverse_kick": false
+      },
+      "config_sha": "aa013a97879e",
+      "provenance": {
+        "git_commit": "90e9684",
+        "config_sha": "aa013a97879e",
+        "lattice_hash": "ce80b9a0cec1",
+        "timestamp": "2026-10-25 15:39:31",
+        "python": "3.12.2",
+        "random_seed": 42,
+        "coordinate_convention": "delta_p = dp/p0; OCELOT native p_oc = dE/(c*p0)",
+        "source_sha256": {
+          "AG/alpha_coefficients.py": "789140ec8fd18021e9d7623f5a049b3cbfa80d35ef791541199733c9c7259c1b",
+          "AG/beam_dynamics_6d.py": "685d01adf08d5400c7665b7270a4f9cab37f060f82ff23fef35e91c82aaacc9c",
+          "AG/external_forces.py": "9482bb4f70ef3794119a0cf8b1a54d2dd50596fed446252e42ecca3666e2fffb",
+          "AG/runner.py": "4066b8ad22dafd7f90443ffacc467faadbe03a5887cd18e726e91ad563ebb866",
+          "AG/longitudinal_state.py": "d90b51d77f47a0bd484f9859b81918dbd5e98bfcda916b891f5f335ef7c278d3",
+          "AG/beamline_sim.py": "8adbf7b00ee5491144cba61a402f848017909909be2672c5cf67d2a3d74df4dd",
+          "GPT模拟/ued_beamline_v2.py": "a5dcd535711e1d012fde12f97a25db7b618a8552ba1307266ae28564b643475a",
+          "shared/params.py": "84a4ff8e1c2578fd67444398a868b088d302135047f627b9ba41586fd56fcc5a",
+          "shared/constants.py": "4a8cd1a11df8e2d1b7766b69b0ebb0c46dac1b2b9992ec0651b041f160e934e6",
+          "shared/beam_physics.py": "0829709d5ddf5ad815b99b51c0377f9ea81c01fb0d55d50cf23e684f03422ffe",
+          "shared/diagnostics.py": "088927920ce6d97b30af2900a02f15a796c1ab8b458c21281f84568541004a50",
+          "shared/rf_model.py": "5167ceb5ce0c20a246c9482619eaf68c6ceeb7e0ec21a891501fa4e2aa3f6f9e",
+          "shared/beam_result.py": "101223e23f06589fc1002c8ac529b9df130d53fd5c343a0a4d4dbd9450c48944"
+        },
+        "dependency_versions": {
+          "numpy": "1.26.4",
+          "scipy": "1.13.1",
+          "ocelot-desy": "unavailable"
+        }
+      },
+      "tracked_length_m": 0.002,
+      "lattice_sequence": [
+        {
+          "name": "cathode_MARKER",
+          "type": "Drift",
+          "length_m": 0.0,
+          "tracking_methods": [
+            "SecondTM"
+          ]
+        },
+        {
+          "name": "d",
+          "type": "Drift",
+          "length_m": 0.002,
+          "tracking_methods": [
+            "SecondTM"
+          ]
+        },
+        {
+          "name": "sample_MARKER",
+          "type": "Drift",
+          "length_m": 0.0,
+          "tracking_methods": [
+            "SecondTM"
+          ]
+        }
+      ],
+      "sc_enabled": true,
+      "longitudinal_native_coordinate": "p_oc = dE/(c*p0)",
+      "reported_delta": "delta_p = dp/p0",
+      "conversion_beta": 0.548220432878698,
+      "diagnostic_convention": "charge_weighted_centered_population_moments; delta_p=p_oc/beta (first order)",
+      "run_params": {
+        "energy_keV": 100.0,
+        "charge_C": 1e-13,
+        "n_particles_requested": 4000,
+        "n_particles_actual": 4000,
+        "charge_total_C": 1.0000000000000003e-13,
+        "sigma_x0_m": 8.499999999999999e-05,
+        "sigma_z0_m": 0.0003,
+        "sigma_xp_rad": 0.0014358052366473318,
+        "sigma_delta": 0.0001,
+        "gamma": 1.1956947162426614,
+        "beta": 0.548220432878698,
+        "p0": 1.7901326766010946e-22,
+        "dz_track_m": 0.0005,
+        "seed": 42,
+        "z_probes_mm": [
+          0,
+          1,
+          2
+        ],
+        "effective_switches": {
+          "rf_longitudinal_kick": false,
+          "rf_transverse_kick": false
+        }
+      },
+      "sc_requested": true,
+      "sc_available": true,
+      "sc_configured": true,
+      "sc_attached": true,
+      "sc_apply_count": 4,
+      "sc_effective": true,
+      "sc_coverage_start_m": 0.0,
+      "sc_coverage_stop_m": 0.002,
+      "sc_scheduler": "ocelot_native",
+      "sc_events": [
+        [
+          0.0005,
+          0.0005
+        ],
+        [
+          0.001,
+          0.0005
+        ],
+        [
+          0.0015,
+          0.0005
+        ],
+        [
+          0.002,
+          0.0005
+        ]
+      ],
+      "section": "full",
+      "geometry": {
+        "sample_m": 0.002,
+        "rf_entrances_m": [],
+        "elements": [
+          {
+            "name": "cathode",
+            "type": "cathode",
+            "z_start_m": 0.0,
+            "z_end_m": 0.0,
+            "length_m": 0.0
+          },
+          {
+            "name": "d",
+            "type": "drift",
+            "z_start_m": 0.0,
+            "z_end_m": 0.002,
+            "length_m": 0.002
+          },
+          {
+            "name": "sample",
+            "type": "sample",
+            "z_start_m": 0.002,
+            "z_end_m": 0.002,
+            "length_m": 0.0
+          }
+        ],
+        "convention": "ordered contiguous explicit geometry; no automatic repair",
+        "coordinate_tolerance": "64 ULP at max(1 m, coordinate magnitude)"
+      },
+      "active_types": [
+        "drift",
+        "rf_cavity",
+        "solenoid"
+      ]
+    },
+    "history": {
+      "z_mm": [
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0
+      ],
+      "sigma_x_um": [
+        84.74748777753858,
+        84.74241399408274,
+        84.74777827953932,
+        84.76357885369495,
+        84.78981177121345
+      ],
+      "sigma_y_um": [
+        84.18992351505902,
+        84.19857441118346,
+        84.21766658473425,
+        84.24719657337764,
+        84.28715617428645
+      ],
+      "sigma_z_um": [
+        302.1938388161009,
+        302.19333796112005,
+        302.1951266497463,
+        302.19920375987346,
+        302.2055686060041
+      ],
+      "sigma_delta_e3": [
+        0.10106697392369629,
+        0.1012124924600643,
+        0.10192931823855793,
+        0.10320364163657741,
+        0.10501258952640505
+      ],
+      "eps_nx_mm_mrad": [
+        0.07993255055784831,
+        0.07993582624641005,
+        0.07994073010831498,
+        0.07994664023132209,
+        0.07995341917931108
+      ],
+      "eps_ny_mm_mrad": [
+        0.07911131510636497,
+        0.07911439171076337,
+        0.07911817821226524,
+        0.07912276657842131,
+        0.07912820241420407
+      ],
+      "C_zdelta_m": [
+        -4.752919958685642e-10,
+        1.5029081489524272e-09,
+        3.4803146393136634e-09,
+        5.4570318939779406e-09,
+        7.432684052221835e-09
+      ],
+      "chirp_per_m": [
+        -0.005204623153442566,
+        0.01645745467236108,
+        0.03811040775783845,
+        0.059754395962759624,
+        0.08138432147592768
+      ],
+      "eps_nz_mm_mrad": [
+        0.02001786712979603,
+        0.02002486507254717,
+        0.020061901683158925,
+        0.02012852639467969,
+        0.02022408785839102
+      ],
+      "eps_z_zprime_m": [
+        2.136001993698357e-08,
+        2.1367487076000582e-08,
+        2.1407006907755673e-08,
+        2.1478098655800155e-08,
+        2.1580067299954213e-08
+      ],
+      "sigma_t_fs": [
+        1838.6949550538302,
+        1838.6919076074291,
+        1838.7027908629123,
+        1838.727597992837,
+        1838.7663248263023
+      ],
+      "energy_keV": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "beta_ref": [
+        0.548220432878698,
+        0.548220432878698,
+        0.548220432878698,
+        0.548220432878698,
+        0.548220432878698
+      ],
+      "gamma_ref": [
+        1.1956947162426614,
+        1.1956947162426614,
+        1.1956947162426614,
+        1.1956947162426614,
+        1.1956947162426614
+      ]
+    },
+    "captured_ds_m": 0.0005,
+    "captured_gamma_av": 1.1956965149797576,
+    "weights_equal": true,
+    "reference_note": "Recorded PIC field is input to bridge check, not an independent field truth"
+  },
+  "elapsed_s": 3.224750736000715,
+  "completed": true,
+  "frozen_model_approximations": {
+    "description": "Frozen first-kick diagnostic; not a replacement physical model or an emittance error bound",
+    "mass_eV": 510998.8671734102,
+    "gamma_av": 1.1956965149797576,
+    "force_particle_velocity_vs_common_RMS_relative_by_axis": [
+      3.051758295013657e-05,
+      2.9936130709471922e-05,
+      0.0011208826455345333
+    ],
+    "force_total_RMS_relative": 0.0005343137971347639,
+    "exact_momentum_vs_first_order_adapter": {
+      "max_abs_delta_difference": 5.0977098103627445e-08,
+      "sigma_delta_relative_difference": -2.7309504628814096e-06
+    }
+  },
+  "no_extra_native_calls_in_postprocess": true,
+  "off_axis_control": {
+    "mesh": 64,
+    "sigma_rest_m": [
+      8.5e-05,
+      0.00012,
+      0.0003587092100887107
+    ],
+    "source_nodes": 238328,
+    "rest_probes_m": [
+      [
+        3.4000000000000007e-05,
+        8.4e-05,
+        0.00021522552605322644
+      ],
+      [
+        8.5e-05,
+        -6e-05,
+        0.0004304510521064529
+      ],
+      [
+        -0.0001275,
+        9.6e-05,
+        -0.00014348368403548428
+      ],
+      [
+        -3.4000000000000007e-05,
+        -8.4e-05,
+        -0.00021522552605322644
+      ],
+      [
+        -8.5e-05,
+        6e-05,
+        -0.0004304510521064529
+      ],
+      [
+        0.0001275,
+        -9.6e-05,
+        0.00014348368403548428
+      ]
+    ],
+    "lab_field_V_per_m": [
+      [
+        3003.055789292985,
+        5218.654467609508,
+        2809.7555835639423
+      ],
+      [
+        4219.090787482536,
+        -2164.0476968748862,
+        3606.2227775538945
+      ],
+      [
+        -7535.17152124495,
+        4254.132638572455,
+        -1517.5194104878897
+      ],
+      [
+        -3003.055789293038,
+        -5218.654467609479,
+        -2809.7555835639514
+      ],
+      [
+        -4219.090787482528,
+        2164.0476968748526,
+        -3606.2227775538836
+      ],
+      [
+        7535.171521244944,
+        -4254.132638572457,
+        1517.5194104878765
+      ]
+    ],
+    "reference_lab_field_V_per_m": [
+      [
+        3044.412665403955,
+        5329.797078676767,
+        2850.733944290257
+      ],
+      [
+        4246.426839014371,
+        -2192.4282801412683,
+        3643.897797494237
+      ],
+      [
+        -7643.837632219016,
+        4306.892151283006,
+        -1536.6778534366204
+      ],
+      [
+        -3044.412665403955,
+        -5329.797078676767,
+        -2850.733944290257
+      ],
+      [
+        -4246.426839014371,
+        2192.4282801412683,
+        -3643.897797494237
+      ],
+      [
+        7643.837632219016,
+        -4306.892151283006,
+        1536.6778534366204
+      ]
+    ],
+    "relative_vector_errors": [
+      0.018539262434623078,
+      0.009071485521615479,
+      0.013731156521468658,
+      0.01853926243462388,
+      0.009071485521620333,
+      0.013731156521469346
+    ],
+    "max_relative_vector_error": 0.01853926243462388,
+    "odd_symmetry_relative_residual": 7.000596144905597e-15,
+    "extra_potential_calls": 1,
+    "extra_el_field_calls": 1,
+    "extra_apply_calls": 0,
+    "extra_trajectories": 0
+  },
+  "environment": {
+    "python": "3.12.2",
+    "numpy": "1.26.4",
+    "scipy": "1.13.1",
+    "physical_mass_eV": 510998.8671734102
+  }
+}

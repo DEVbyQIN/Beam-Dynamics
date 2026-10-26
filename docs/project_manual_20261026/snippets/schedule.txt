@@ -1,0 +1,19 @@
+        for t_maps, dz_step, proc_list, phys_steps in navi.get_next_step():
+            z_start = navi.z0 - dz_step
+            _kick_rf_if_due(z_start)
+            for tm in t_maps:
+                tm.apply(p)
+            for proc, zstep in zip(proc_list, phys_steps):
+                proc.z0 = navi.z0
+                proc.apply(p, zstep)
+                if proc is sc_proc:
+                    sc_apply_count += 1
+                    sc_events.append((float(navi.z0), float(zstep)))
+            _sample_now(navi.z0, z_start)
+    else:
+        # ── SC OFF: fixed-step loop (tracking_step; no PhysProc attached) ──
+        # v0.15 task D: int(total/dz) silently DROPS the final sub-step
+        # (777 mm / 5 mm → 155 steps → 775 mm; the sample plane at 777 mm was
+        # never reached).  Keep every existing full step (physics along the
+        # way unchanged) and append ONE tail step with the remaining length.
+        # The configured step size is NOT modified.

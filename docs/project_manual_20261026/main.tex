@@ -1,0 +1,82 @@
+% !TeX program = xelatex
+\documentclass[UTF8,fontset=fandol,11pt,a4paper]{ctexart}
+\usepackage[margin=23mm,top=23mm,bottom=23mm,headheight=16pt]{geometry}
+\usepackage{amsmath,amssymb,bm,booktabs,longtable,tabularx,array}
+\usepackage{graphicx,xcolor,tikz,tcolorbox,enumitem,fancyhdr,fvextra,xurl,float,needspace}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\tcbuselibrary{breakable}
+\usepackage[unicode,pdfencoding=auto,bookmarksnumbered,colorlinks=true]{hyperref}
+\setmonofont{DejaVuSansMono.ttf}[Path=fonts/,Scale=0.88]
+\xeCJKsetup{Verb=true,CJKmath=true}
+\setlength{\emergencystretch}{4em}
+\setlength{\tabcolsep}{4pt}
+\definecolor{ink}{HTML}{203841}
+\definecolor{accent}{HTML}{22766B}
+\definecolor{pale}{HTML}{EDF6F3}
+\definecolor{warm}{HTML}{9B612F}
+\hypersetup{linkcolor=accent,citecolor=accent,urlcolor=blue!60!black,bookmarksdepth=2,
+ pdftitle={UED 双路线束流动力学模拟平台：架构、物理与边界},pdfauthor={项目技术文档}}
+\setlength{\parskip}{.3em}\setlength{\parindent}{2em}\linespread{1.18}
+\setlist{itemsep=.2em,topsep=.4em,leftmargin=2em}
+\renewcommand{\arraystretch}{1.23}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{ink}UED 双路线模拟平台}
+\fancyhead[R]{\small\color{ink}项目文档 · 2026-10-26}
+\fancyfoot[C]{\small\thepage}\renewcommand{\headrulewidth}{.3pt}
+\ctexset{section={format=\Large\bfseries\color{ink},beforeskip=1.4em},
+ subsection={format=\large\bfseries\color{accent},beforeskip=1em}}
+\newtcolorbox{plainbox}{colback=pale,colframe=accent!40,boxrule=.5pt,
+ arc=1mm,left=3mm,right=3mm,top=2mm,bottom=2mm,breakable}
+\newcommand{\mmemit}{\mathrm{mm\cdot mrad}}
+\newcommand{\coderef}[1]{附录~\ref{code:#1}}
+\newcommand{\ev}[1]{\hyperref[ev:#1]{\textsf{#1}}}
+\newcommand{\source}[1]{\par\noindent{\small\color{accent}依据：#1}\par}
+\fvset{fontsize=\scriptsize,baselinestretch=1,breaklines=true,breakanywhere=true,
+ numbers=left,numbersep=5pt,frame=single,framesep=2mm,rulecolor=\color{black!20},
+ xleftmargin=6mm,xrightmargin=1mm,tabsize=4}
+\setcounter{tocdepth}{2}
+\begin{document}
+\begin{titlepage}\color{ink}\vspace*{16mm}
+{\large 项目技术文档\par}\vspace{9mm}
+{\Huge\bfseries UED 束流动力学\par 模拟平台\par}\vspace{7mm}
+{\LARGE 架构、物理模型与使用边界\par}\vspace{5mm}
+{\large AG 高斯包络与 OCELOT 宏粒子追踪\par}\vspace{15mm}
+\begin{tikzpicture}[x=1cm,y=1cm]
+\draw[accent!40,line width=1.5pt] (0,0)--(13.8,0);
+\foreach \x/\t in {0/给定束团,3/磁透镜,7/RF 调制,13/样品面}{
+ \fill[accent] (\x,0) circle (2.5pt);\node[above=3mm] at (\x,0) {\t};}
+\node[below=5mm,anchor=west,text=black!55,font=\small] at (0,0) {流程示意，不代表计算轨迹};
+\end{tikzpicture}\vfill
+\begin{plainbox}\textbf{这份文档解决什么问题}\par
+程序从什么初态出发，各元件怎样改变束团，两种模型各自忽略了什么；现有证据能支持哪些结论，下一步该怎样改。正文用于理解和使用；附录用于核查文献、证据与代码。
+\end{plainbox}\vspace{6mm}
+\noindent 整理日期：2026 年 10 月 26 日\par
+\noindent 版本：1.1，已复核并修订文档与 Windows 工程\par
+\noindent Git 基点：\texttt{f9810dab40037ef8bfb5c1cb4cf99baefa9bf9d2}\par
+\noindent 复核新增：4 条完整 10 mm 工程短例；4 次中断 SC 调用；物理核心未改
+\end{titlepage}
+\pagenumbering{roman}
+\section*{阅读说明}\addcontentsline{toc}{section}{阅读说明}
+本说明书描述 2026-10-26 的\textbf{当前本地实现}，不是新增一次全项目物理认证。依据是实际源码、Physics Note、已保存结果摘要和测试日志。论文与官方文档的关键定义和书目信息在同日核对。v1 原始编写没有新增模拟；v1.1 复核修复了 GUI/Windows 工程缺陷，并执行两轮工程端到端检查，合计 4 条完整 10 mm 短轨迹和 4 次中断的 SC 调用。没有新增完整 SC 研究，没有修改原默认、物理核心、科学测试阈值或历史证据。
+
+先读第~\ref{sec:overview}、\ref{sec:architecture}、\ref{sec:issues} 节可建立全局认识。第~\ref{sec:physics}--\ref{sec:evidence} 节说明公式与可信范围。附录提供文献、证据编号、关键代码原行号及源码索引。
+\begin{plainbox}
+\textbf{三种结论必须分开}\par
+工程通过：输入、开关、事件、保存与失败处理按约定工作。\par
+数学/数值通过：给定方程、参考比较或特定设置的稳定性满足本次检查。\par
+真实装置验证：还需设备场、标定、测量及不确定度。当前项目没有覆盖任意设置的这一级资格。
+\end{plainbox}
+文中 $s$ 专指束线位置，$\zeta$ 专指束内纵向坐标；代码中的 \texttt{z} 需按接口区分。物理研究数字来自已有档案，注明日期与工况；本次工程复核单列为 E11。2026-10-25 OCELOT 修复了实际传输方法，旧方法的 SC 数字不能直接变成当前设置的精度证明。
+
+\path{version.json}、\path{source_manifest.json} 和 \path{evidence_manifest.json} 确定本说明引用的版本。正文的行号属于随附快照；仓库后续修改后应先检查哈希。本地 Git 基点仍为 \texttt{f9810dab}；复核时实际 GitHub main 为 \texttt{b4aa241}，两者不能混称同一提交。本轮修复尚未推送。完整相关源码附在 \path{source_snapshot/}，不是把全部历史文件逐页打印进 PDF。
+\clearpage
+\begingroup\small\setlength{\parskip}{0pt}\linespread{1.02}\selectfont
+\tableofcontents\endgroup
+\clearpage\pagenumbering{arabic}
+\input{snapshot_info.tex}
+\input{content.tex}
+\clearpage\appendix
+\input{appendices.tex}
+\end{document}

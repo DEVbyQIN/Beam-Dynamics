@@ -1,0 +1,24 @@
+        length = number(e['length'], f'{name}.length')
+        if start < 0 or length < 0:
+            fail(f'{name}: z_start and length must be nonnegative')
+        if kind in ('cathode','sample') and length != 0:
+            fail(f'{name}: {kind} must have zero length')
+        if kind in ('solenoid','rf_cavity') and length == 0:
+            fail(f'{name}: {kind} must have positive length; use physics switches to disable RF')
+        if not same(start, cursor):
+            reason = 'gap' if start > cursor else 'overlap/out-of-order element'
+            fail(f'{name}: {reason}; z_start={start:.17g} m, expected {cursor:.17g} m; '
+                 'update the adjacent drift/element positions together')
+        if kind == 'cathode':
+            if i != 0:
+                fail(f'{name}: cathode must be the first element at 0 m')
+        if kind == 'sample':
+            samples.append(i)
+            if i != len(elements)-1:
+                fail(f'{name}: sample must be the last element')
+        end = start+length
+        if not math.isfinite(end):
+            fail(f'{name}: nonfinite element end')
+        rows.append(dict(name=name, type=kind, z_start_m=start, z_end_m=end, length_m=length))
+        # OCELOT assembles by lengths. Check against that actual convention.
+        cursor += length
