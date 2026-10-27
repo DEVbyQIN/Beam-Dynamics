@@ -168,9 +168,9 @@ python -X utf8 run_gui.py --open
 
 首次使用可保留共享默认配置，先“只运行 AG”熟悉流程。右上角“导入配置”支持 JSON / YAML；左侧“恢复共享配置”可以重新载入默认配置副本。
 
-![GUI 的束团参数、物理开关与运行按钮](docs/images/gui/01-parameters.jpg)
+[![GUI 桌面总览：左侧参数与开关，右侧束线和结果](docs/images/gui/01-parameters.jpg)](docs/images/gui/01-parameters.jpg)
 
-*实际界面的参数区。截图载入的是已完成的历史配置，SC 与 RF 纵向、横向作用均开启；共享默认配置的 SC 与 RF 横向作用关闭。窄窗口时参数区显示在上方，宽屏时位于左侧。*
+*实际桌面界面总览，点击图片可查看 1600 像素宽的原图。截图载入的是已完成的历史配置，SC 与 RF 纵向、横向作用均开启；共享默认配置的 SC 与 RF 横向作用关闭。*
 
 ### 4. 编辑束线并检查几何
 
@@ -180,9 +180,9 @@ python -X utf8 run_gui.py --open
 
 点击 **“检查几何与输入”**，看到“输入与几何已检查”后再运行；若显示错误，按提示修正空隙、重叠或越界诊断面。界面不会自动移动其他元件。
 
-![实际 GUI 的束线布局与 RF 元件编辑表](docs/images/gui/02-beamline-editor.jpg)
+[![实际 GUI 的束线布局与 RF 元件编辑表](docs/images/gui/02-beamline-editor.jpg)](docs/images/gui/02-beamline-editor.jpg)
 
-*点击 RF 元件后展开编辑表：示例 RF 入口为 400 mm、长度 22 mm，样品面为 777 mm；表内同时显示相邻漂移和 RF 参数。*
+*点击 RF 元件后展开编辑表：示例 RF 入口为 400 mm、长度 22 mm，样品面为 777 mm；表内同时显示相邻漂移和 RF 参数。点击图片可看 1118 像素宽的原图。*
 
 ### 5. 选择路线并运行
 
@@ -196,7 +196,18 @@ python -X utf8 run_gui.py --open
 
 “运行记录”中的“查看”可重新载入历史配置与结果。修改参数后需要再次运行；原曲线不会自动重新计算，界面会提示仍在显示之前的结果。
 
-![真实完成任务的 AG 与 OCELOT 曲线、样品面参数和运行记录](docs/images/gui/03-results.jpg)
+![程序原生导出的 AG 与 OCELOT 束长曲线，SVG 矢量图](docs/images/gui/04-bunch-length.svg)
+
+*上图由程序“导出 SVG”直接生成，坐标与文字可随页面放大。[打开矢量原图](docs/images/gui/04-bunch-length.svg)。*
+
+<details>
+<summary>查看完整 GUI 结果截图与运行记录</summary>
+
+[![真实完成任务的 AG 与 OCELOT 曲线、样品面参数和运行记录](docs/images/gui/03-results.jpg)](docs/images/gui/03-results.jpg)
+
+[查看 1118 像素宽的截图原图](docs/images/gui/03-results.jpg)
+
+</details>
 
 *同一配置下的两路线束长曲线、样品面参数和完成记录，均来自实际保存结果，已推进到 777 mm。绿色为 AG，橙色为 OCELOT；上方标签可以切换 chirp、展宽和发射度等观测量，下方可下载任务记录。这些截图用于说明操作，模型精度仍按各自适用范围判断。*
 

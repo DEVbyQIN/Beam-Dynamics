@@ -1,7 +1,7 @@
 {
   "captured_date": "2026-10-27",
   "source": "Actual local GUI at http://127.0.0.1:8765; browser screenshots, not generated mockups.",
-  "capture_tool": "cua_repl browser screenshot with document clips; default responsive viewport preserved.",
+  "capture_tool": "cua_repl actual desktop browser screenshots; native GUI SVG export for scalable chart text. No image upscaling or data changes.",
   "batch": "b9439712",
   "config_fingerprint": "ad3e50278a60ca8ae010373681da35b594052551c004d1093877313bb5a6fec1",
   "job_ids": {
@@ -114,30 +114,75 @@
   "files": [
     {
       "path": "01-parameters.jpg",
-      "sha256": "ee318813cc44e3c23b38070d376358498e9dd459e5ad21ce48fe9e794c5c0d77",
+      "sha256": "b86c2af6911baacd3e9e23c3b3066540461f4f174b112a4e0096d8b71e813293",
+      "bytes": 128870,
       "pixels": [
-        487,
-        815
-      ],
-      "bytes": 29382
+        1600,
+        1562
+      ]
     },
     {
       "path": "02-beamline-editor.jpg",
-      "sha256": "53fe272cb0fc8f488fd7177caf78adc6b40a78adb9af978c539e3b883865ed73",
+      "sha256": "29eb9680c624dcfccfbc7d5a41a9a48eddb8ca0646f6d53c85dcf8b47e336203",
+      "bytes": 37647,
       "pixels": [
-        487,
-        670
-      ],
-      "bytes": 25972
+        1118,
+        652
+      ]
     },
     {
       "path": "03-results.jpg",
-      "sha256": "d321a152af4b48d8540460ed8083f917c396c1d20b8ff7e5f105273139f5851e",
+      "sha256": "85e08d45b0cd67b176fe9c30e5ca81b87f42d95a641da293af389f65979f1c09",
+      "bytes": 62063,
       "pixels": [
-        487,
-        896
-      ],
-      "bytes": 37601
+        1118,
+        925
+      ]
+    },
+    {
+      "path": "04-bunch-length.svg",
+      "sha256": "50ad472633a1546b9432ab47b6bd9d5ebda211868fe7ca2f85c8306e20c150f8",
+      "bytes": 34256,
+      "viewBox": "0 0 920 300"
     }
-  ]
+  ],
+  "viewport": {
+    "capture_width": 1920,
+    "capture_height": 1280,
+    "mode": "desktop",
+    "restored_after_capture": true
+  },
+  "previous_capture": {
+    "publication_commit": "facf6eb8c07c720c633eb9fd6b15619608fb03b1",
+    "files": [
+      {
+        "path": "01-parameters.jpg",
+        "sha256": "ee318813cc44e3c23b38070d376358498e9dd459e5ad21ce48fe9e794c5c0d77",
+        "pixels": [
+          487,
+          815
+        ],
+        "bytes": 29382
+      },
+      {
+        "path": "02-beamline-editor.jpg",
+        "sha256": "53fe272cb0fc8f488fd7177caf78adc6b40a78adb9af978c539e3b883865ed73",
+        "pixels": [
+          487,
+          670
+        ],
+        "bytes": 25972
+      },
+      {
+        "path": "03-results.jpg",
+        "sha256": "d321a152af4b48d8540460ed8083f917c396c1d20b8ff7e5f105273139f5851e",
+        "pixels": [
+          487,
+          896
+        ],
+        "bytes": 37601
+      }
+    ],
+    "reason_replaced": "487px-wide JPEG captures were insufficient for README text readability. Prior PDF/ZIP source copies remain unchanged."
+  }
 }
